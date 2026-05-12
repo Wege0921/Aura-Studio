@@ -1,0 +1,728 @@
+import express, { Request, Response } from 'express';
+import { prisma } from '../lib/prisma';
+import { authenticateToken, requireAdmin } from '../middleware/auth';
+
+// Extend Request interface to include user property
+interface AuthenticatedRequest extends Request {
+  user?: {
+    id: string;
+    email: string;
+    role: string;
+  };
+}
+
+const router = express.Router();
+
+// Get dashboard statistics
+router.get('/dashboard/stats', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const [
+      totalUsers,
+      totalClasses,
+      totalBookings,
+      totalRevenue,
+      activePackages,
+      pendingPayments,
+    ] = await Promise.all([
+      prisma.user.count(),
+      prisma.class.count(),
+      prisma.booking.count(),
+      prisma.payment.aggregate({
+        where: { status: 'VERIFIED' },
+        _sum: { amount: true },
+      }),
+      prisma.userPackage.count({
+        where: {
+          remainingSessions: { gt: 0 },
+          OR: [
+            { expiresAt: null },
+            { expiresAt: { gte: new Date() } },
+          ],
+        },
+      }),
+      prisma.payment.count({
+        where: { status: 'PENDING' },
+      }),
+    ]);
+
+    res.json({
+      totalUsers,
+      totalClasses,
+      totalBookings,
+      totalRevenue: totalRevenue._sum.amount || 0,
+      activePackages,
+      pendingPayments,
+    });
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get recent bookings with user and class details
+router.get('/bookings', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { page = 1, limit = 10, status } = req.query;
+    
+    const where: any = {};
+    if (status) {
+      where.status = status;
+    }
+
+    const bookings = await prisma.booking.findMany({
+      where,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+          },
+        },
+        class: true,
+      },
+      orderBy: { createdAt: 'desc' },
+      skip: (Number(page) - 1) * Number(limit),
+      take: Number(limit),
+    });
+
+    const total = await prisma.booking.count({ where });
+
+    res.json({
+      bookings,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        pages: Math.ceil(total / Number(limit)),
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching bookings:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get all classes for admin management
+router.get('/classes', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const classes = await prisma.class.findMany({
+      include: {
+        _count: {
+          select: {
+            bookings: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    res.json(classes);
+  } catch (error) {
+    console.error('Error fetching classes:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Create new class
+router.post('/classes', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const {
+      name,
+      description,
+      instructor,
+      date,
+      time,
+      duration,
+      capacity,
+      classType,
+      price,
+    } = req.body;
+
+    const newClass = await prisma.class.create({
+      data: {
+        name,
+        description,
+        instructor,
+        date: new Date(date),
+        time,
+        duration,
+        capacity,
+        classType,
+      },
+      include: {
+        _count: {
+          select: {
+            bookings: true,
+          },
+        },
+      },
+    });
+
+    res.json(newClass);
+  } catch (error) {
+    console.error('Error creating class:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update class
+router.put('/classes/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const {
+      name,
+      description,
+      instructor,
+      date,
+      time,
+      duration,
+      capacity,
+      classType,
+      price,
+    } = req.body;
+
+    const updatedClass = await prisma.class.update({
+      where: { id },
+      data: {
+        name,
+        description,
+        instructor,
+        date: new Date(date),
+        time,
+        duration,
+        capacity,
+        classType,
+      },
+      include: {
+        _count: {
+          select: {
+            bookings: true,
+          },
+        },
+      },
+    });
+
+    res.json(updatedClass);
+  } catch (error) {
+    console.error('Error updating class:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Delete class
+router.delete('/classes/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    await prisma.class.delete({
+      where: { id },
+    });
+
+    res.json({ message: 'Class deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting class:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Toggle class status
+router.patch('/classes/:id/toggle-status', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { isActive } = req.body;
+
+    // Toggle status functionality temporarily disabled
+    // await prisma.class.update({
+    //   where: { id },
+    //   data: { isActive },
+    // });
+    res.json({ message: 'Class status toggle temporarily disabled' });
+  } catch (error) {
+    console.error('Error toggling class status:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get all packages for admin management
+router.get('/packages', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const packages = await prisma.package.findMany({
+      include: {
+        _count: {
+          select: {
+            userPackages: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    res.json(packages);
+  } catch (error) {
+    console.error('Error fetching packages:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Create new package
+router.post('/packages', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const {
+      name,
+      description,
+      sessionsCount,
+      price,
+      validityDays,
+    } = req.body;
+
+    const newPackage = await prisma.package.create({
+      data: {
+        name,
+        description,
+        sessionsCount,
+        price,
+        validityDays: validityDays || null,
+      },
+      include: {
+        _count: {
+          select: {
+            userPackages: true,
+          },
+        },
+      },
+    });
+
+    res.json(newPackage);
+  } catch (error) {
+    console.error('Error creating package:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update package
+router.put('/packages/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const {
+      name,
+      description,
+      sessionsCount,
+      price,
+      validityDays,
+    } = req.body;
+
+    const updatedPackage = await prisma.package.update({
+      where: { id },
+      data: {
+        name,
+        description,
+        sessionsCount,
+        price,
+        validityDays: validityDays || null,
+      },
+      include: {
+        _count: {
+          select: {
+            userPackages: true,
+          },
+        },
+      },
+    });
+
+    res.json(updatedPackage);
+  } catch (error) {
+    console.error('Error updating package:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Delete package
+router.delete('/packages/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    await prisma.package.delete({
+      where: { id },
+    });
+
+    res.json({ message: 'Package deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting package:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Toggle package status
+router.patch('/packages/:id/toggle-status', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { isActive } = req.body;
+
+    await prisma.package.update({
+      where: { id },
+      data: { isActive },
+    });
+
+    res.json({ message: `Package ${isActive ? 'activated' : 'deactivated'} successfully` });
+  } catch (error) {
+    console.error('Error toggling package status:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get all payments for admin management
+router.get('/payments', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { page = 1, limit = 20, status, paymentMethod, search } = req.query;
+    
+    const where: any = {};
+    if (status) {
+      where.status = status;
+    }
+    if (paymentMethod) {
+      where.paymentMethod = paymentMethod;
+    }
+    if (search) {
+      where.user = {
+        OR: [
+          { name: { contains: search as string, mode: 'insensitive' } },
+          { email: { contains: search as string, mode: 'insensitive' } },
+        ],
+      };
+    }
+
+    const payments = await prisma.payment.findMany({
+      where,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      skip: (Number(page) - 1) * Number(limit),
+      take: Number(limit),
+    });
+
+    const total = await prisma.payment.count({ where });
+
+    res.json({
+      payments,
+      totalPages: Math.ceil(total / Number(limit)),
+    });
+  } catch (error) {
+    console.error('Error fetching payments:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Verify payment
+router.patch('/payments/:id/verify', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const payment = await prisma.payment.update({
+      where: { id },
+      data: {
+        status,
+        verifiedAt: status === 'VERIFIED' ? new Date() : null,
+      },
+    });
+
+    res.json({ message: `Payment ${status.toLowerCase()} successfully` });
+  } catch (error) {
+    console.error('Error verifying payment:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get users with their package information
+router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { page = 1, limit = 10, search } = req.query;
+    
+    const where: any = {};
+    if (search) {
+      where.OR = [
+        { name: { contains: search as string, mode: 'insensitive' } },
+        { email: { contains: search as string, mode: 'insensitive' } },
+      ];
+    }
+
+    const users = await prisma.user.findMany({
+      where,
+      include: {
+        userPackages: {
+          include: {
+            package: true,
+          },
+        },
+        _count: {
+          select: {
+            bookings: true,
+            payments: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      skip: (Number(page) - 1) * Number(limit),
+      take: Number(limit),
+    });
+
+    const total = await prisma.user.count({ where });
+
+    res.json({
+      users,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        pages: Math.ceil(total / Number(limit)),
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get package expiry information
+router.get('/packages/expiry', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { days = 7 } = req.query;
+    
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + Number(days));
+
+    const expiringPackages = await prisma.userPackage.findMany({
+      where: {
+        expiresAt: {
+          lte: futureDate,
+          gte: new Date(),
+        },
+        remainingSessions: {
+          gt: 0,
+        },
+      },
+      include: {
+        package: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+          },
+        },
+      },
+      orderBy: {
+        expiresAt: 'asc',
+      },
+    });
+
+    res.json(expiringPackages);
+  } catch (error) {
+    console.error('Error fetching expiring packages:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get all packages with usage statistics
+router.get('/packages/stats', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const packages = await prisma.package.findMany({
+      include: {
+        userPackages: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            userPackages: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const packageStats = packages.map((pkg: any) => {
+      const activeUserPackages = pkg.userPackages.filter((up: any) => up.remainingSessions > 0).length;
+      const totalRevenue = pkg.userPackages.reduce((sum: any, up: any) => sum + pkg.price, 0);
+      return {
+        ...pkg,
+        stats: {
+          activeUserPackages,
+          totalRevenue,
+        },
+      };
+    });
+
+    res.json(packageStats);
+  } catch (error) {
+    console.error('Error fetching package stats:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get class attendance statistics
+router.get('/classes/attendance', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+    
+    const dateFilter: any = {};
+    if (startDate) dateFilter.gte = new Date(startDate as string);
+    if (endDate) dateFilter.lte = new Date(endDate as string);
+
+    const classes = await prisma.class.findMany({
+      where: dateFilter ? { date: dateFilter } : {},
+      include: {
+        bookings: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { date: 'desc' },
+    });
+
+    const classStats = classes.map((cls: any) => {
+      const totalBookings = cls.bookings.length;
+      const confirmedBookings = cls.bookings.filter((b: any) => b.status === 'CONFIRMED').length;
+      const cancelledBookings = cls.bookings.filter((b: any) => b.status === 'CANCELLED').length;
+      const completedBookings = cls.bookings.filter((b: any) => b.status === 'COMPLETED').length;
+      const attendanceRate = totalBookings > 0 ? completedBookings / totalBookings : 0;
+
+      return {
+        ...cls,
+        stats: {
+          totalBookings,
+          confirmedBookings,
+          cancelledBookings,
+          completedBookings,
+          attendanceRate,
+        },
+      };
+    });
+
+    res.json(classStats);
+  } catch (error) {
+    console.error('Error fetching class attendance:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Extend user package expiry
+router.patch('/packages/:userPackageId/extend', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { userPackageId } = req.params;
+    const { additionalDays } = req.body;
+
+    if (!additionalDays || additionalDays <= 0) {
+      return res.status(400).json({ error: 'Additional days must be positive' });
+    }
+
+    const userPackage = await prisma.userPackage.findUnique({
+      where: { id: userPackageId },
+      include: { package: true },
+    });
+
+    if (!userPackage) {
+      return res.status(404).json({ error: 'User package not found' });
+    }
+
+    let newExpiryDate = new Date();
+    
+    if (userPackage.expiresAt) {
+      newExpiryDate = new Date(userPackage.expiresAt);
+    }
+
+    newExpiryDate.setDate(newExpiryDate.getDate() + additionalDays);
+
+    const updatedPackage = await prisma.userPackage.update({
+      where: { id: userPackageId },
+      data: {
+        expiresAt: newExpiryDate,
+      },
+      include: {
+        package: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    res.json({
+      message: 'Package expiry extended successfully',
+      package: updatedPackage,
+    });
+  } catch (error) {
+    console.error('Error extending package expiry:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get system health metrics
+router.get('/health', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const now = new Date();
+    const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    const [
+      recentUsers,
+      recentBookings,
+      recentPayments,
+      systemUptime,
+    ] = await Promise.all([
+      prisma.user.count({
+        where: { createdAt: { gte: last24Hours } },
+      }),
+      prisma.booking.count({
+        where: { createdAt: { gte: last24Hours } },
+      }),
+      prisma.payment.count({
+        where: { createdAt: { gte: last24Hours } },
+      }),
+      process.uptime(),
+    ]);
+
+    res.json({
+      health: 'OK',
+      uptime: systemUptime,
+      last24Hours: {
+        newUsers: recentUsers,
+        newBookings: recentBookings,
+        newPayments: recentPayments,
+      },
+      timestamp: now.toISOString(),
+    });
+  } catch (error) {
+    console.error('Error fetching system health:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+export default router;

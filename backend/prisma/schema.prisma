@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  phone     String?
+  password  String
+  role      String   @default("USER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  bookings     Booking[]
+  userPackages UserPackage[]
+  payments     Payment[]
+
+  @@map("users")
+}
+
+model Class {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  instructor  String
+  date        DateTime
+  time        String
+  duration    Int
+  capacity    Int
+  classType   String   @default("YOGA")
+  price       Float?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  bookings Booking[]
+
+  @@map("classes")
+}
+
+model Booking {
+  id          String    @id @default(cuid())
+  userId      String
+  classId     String
+  status      String    @default("CONFIRMED")
+  cancelledAt DateTime?
+  paymentStatus String  @default("PENDING") // PENDING, PAID, FAILED
+  paymentMethod String? // BANK_TRANSFER, MOBILE_MONEY, CASH
+  paymentAmount Float?
+  paymentReceiptUrl String?
+  paidAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, classId])
+  @@map("bookings")
+}
+
+model Package {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  sessionsCount Int
+  price         Float
+  validityDays  Int?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  userPackages UserPackage[]
+  payments     Payment[]
+
+  @@map("packages")
+}
+
+model UserPackage {
+  id                String    @id @default(cuid())
+  userId            String
+  packageId         String
+  remainingSessions Int
+  expiresAt         DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@map("user_packages")
+}
+
+model Payment {
+  id            String    @id @default(cuid())
+  userId        String
+  amount        Float
+  paymentMethod String    @default("BANK_TRANSFER")
+  receiptUrl    String?
+  status        String    @default("PENDING")
+  verifiedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  packageId     String?
+
+  // Relations
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package Package? @relation(fields: [packageId], references: [id])
+
+  @@map("payments")
+}
+
+// Note: SQLite doesn't support enums, using strings instead

@@ -1,0 +1,19 @@
+{
+  "name": "aura-yoga-app",
+  "version": "1.0.0",
+  "description": "AURA Yoga & Pilates Web App - Women Only Studio",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "install-deps": "npm install && cd backend && npm install && cd ../frontend && npm install"
+  },
+  "keywords": ["yoga", "pilates", "booking", "women-only", "studio"],
+  "author": "AURA Yoga Studio",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
