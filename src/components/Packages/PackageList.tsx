@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PackageCard from './PackageCard';
 
 interface Package {
@@ -31,22 +31,16 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  useEffect(() => {
-    fetchData();
-  }, [showUserPackages]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      
-      // Fetch available packages
+
       const packagesResponse = await fetch('/api/packages/available');
       if (packagesResponse.ok) {
         const packagesData = await packagesResponse.json();
         setPackages(packagesData);
       }
 
-      // Fetch user packages if authenticated
       const token = localStorage.getItem('token');
       if (token && !showUserPackages) {
         const userPackagesResponse = await fetch('/api/packages/my-packages', {
@@ -64,7 +58,11 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
     } finally {
       setLoading(false);
     }
-  };
+  }, [showUserPackages]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handlePurchase = async (packageId: string) => {
     try {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface OfflineAction {
   id: string;
@@ -13,46 +13,7 @@ export const useOfflineSync = () => {
   const [pendingActions, setPendingActions] = useState<OfflineAction[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
 
-  useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      syncPendingActions();
-    };
-
-    const handleOffline = () => {
-      setIsOnline(false);
-    };
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    // Load pending actions from localStorage
-    const stored = localStorage.getItem('offlineActions');
-    if (stored) {
-      setPendingActions(JSON.parse(stored));
-    }
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
-
-  const saveOfflineAction = (type: OfflineAction['type'], data: any) => {
-    const action: OfflineAction = {
-      id: Date.now().toString(),
-      type,
-      data,
-      timestamp: Date.now(),
-      retryCount: 0
-    };
-
-    const updatedActions = [...pendingActions, action];
-    setPendingActions(updatedActions);
-    localStorage.setItem('offlineActions', JSON.stringify(updatedActions));
-  };
-
-  const syncPendingActions = async () => {
+  const syncPendingActions = useCallback(async () => {
     if (!isOnline || pendingActions.length === 0) return;
 
     setIsSyncing(true);
@@ -65,7 +26,7 @@ export const useOfflineSync = () => {
       for (const action of updatedActions) {
         try {
           let response;
-          
+
           switch (action.type) {
             case 'booking':
               response = await fetch('/api/bookings', {
@@ -104,10 +65,8 @@ export const useOfflineSync = () => {
           if (response.ok) {
             successfulActions.push(action.id);
           } else {
-            // Increment retry count
             action.retryCount++;
-            
-            // Remove if max retries reached
+
             if (action.retryCount >= 3) {
               successfulActions.push(action.id);
               console.error(`Failed to sync action ${action.id} after 3 retries`);
@@ -116,14 +75,13 @@ export const useOfflineSync = () => {
         } catch (error) {
           console.error(`Error syncing action ${action.id}:`, error);
           action.retryCount++;
-          
+
           if (action.retryCount >= 3) {
             successfulActions.push(action.id);
           }
         }
       }
 
-      // Remove successful or max-retry actions
       const remainingActions = updatedActions.filter(
         action => !successfulActions.includes(action.id)
       );
@@ -133,6 +91,47 @@ export const useOfflineSync = () => {
     } finally {
       setIsSyncing(false);
     }
+  }, [isOnline, pendingActions]);
+
+  const syncRef = useRef(syncPendingActions);
+  syncRef.current = syncPendingActions;
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      syncRef.current();
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    const stored = localStorage.getItem('offlineActions');
+    if (stored) {
+      setPendingActions(JSON.parse(stored));
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  const saveOfflineAction = (type: OfflineAction['type'], data: any) => {
+    const action: OfflineAction = {
+      id: Date.now().toString(),
+      type,
+      data,
+      timestamp: Date.now(),
+      retryCount: 0
+    };
+
+    const updatedActions = [...pendingActions, action];
+    setPendingActions(updatedActions);
+    localStorage.setItem('offlineActions', JSON.stringify(updatedActions));
   };
 
   const clearPendingActions = () => {

@@ -421,9 +421,9 @@ const Homepage: React.FC = () => {
             <h3>AURA</h3>
             <p>Women-only yoga and pilates studio. Move. Breathe. Transform.</p>
             <div className="social-icons">
-              <a href="#" className="social-icon">f</a>
-              <a href="#" className="social-icon">𝕏</a>
-              <a href="#" className="social-icon">i</a>
+              <button className="social-icon" aria-label="Facebook">f</button>
+              <button className="social-icon" aria-label="Twitter">𝕏</button>
+              <button className="social-icon" aria-label="Instagram">i</button>
             </div>
           </div>
           <div className="footer-section">
@@ -438,19 +438,19 @@ const Homepage: React.FC = () => {
           <div className="footer-section">
             <h3>Studio</h3>
             <ul>
-              <li><a href="#">About Us</a></li>
-              <li><a href="#">Instructors</a></li>
-              <li><a href="#">Contact</a></li>
-              <li><a href="#">Careers</a></li>
+              <li><button className="footer-link">About Us</button></li>
+              <li><button className="footer-link">Instructors</button></li>
+              <li><button className="footer-link">Contact</button></li>
+              <li><button className="footer-link">Careers</button></li>
             </ul>
           </div>
           <div className="footer-section">
             <h3>Support</h3>
             <ul>
-              <li><a href="#">FAQ</a></li>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Service</a></li>
-              <li><a href="#">Accessibility</a></li>
+              <li><button className="footer-link">FAQ</button></li>
+              <li><button className="footer-link">Privacy Policy</button></li>
+              <li><button className="footer-link">Terms of Service</button></li>
+              <li><button className="footer-link">Accessibility</button></li>
             </ul>
           </div>
         </div>

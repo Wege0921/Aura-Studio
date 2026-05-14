@@ -23,37 +23,37 @@ const PaymentHistory: React.FC = () => {
   const [filter, setFilter] = useState('all');
 
   useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('token');
+
+        let url = '/api/payments/my-payments';
+        if (filter !== 'all') {
+          url += `?status=${filter}`;
+        }
+
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch payments');
+        }
+
+        const data = await response.json();
+        setPayments(data);
+      } catch (err) {
+        setError('Failed to load payment history');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchPayments();
   }, [filter]);
-
-  const fetchPayments = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('token');
-      
-      let url = '/api/payments/my-payments';
-      if (filter !== 'all') {
-        url += `?status=${filter}`;
-      }
-
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch payments');
-      }
-
-      const data = await response.json();
-      setPayments(data);
-    } catch (err) {
-      setError('Failed to load payment history');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
