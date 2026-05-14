@@ -1,7 +1,7 @@
 {
   "framework": "create-react-app",
   "buildCommand": "npm run vercel-build",
-  "installCommand": "npm install --legacy-peer-deps && cd backend && npm install",
+  "installCommand": "npm install --legacy-peer-deps && cd backend && npm install --legacy-peer-deps",
   "outputDirectory": "build",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
