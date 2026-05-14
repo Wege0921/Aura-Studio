@@ -32,7 +32,7 @@
     "server": "cd backend && npm run dev",
     "client": "react-scripts start",
     "eject": "react-scripts eject",
-    "install-deps": "npm install && cd backend && npm install",
+    "install-deps": "npm install --legacy-peer-deps && cd backend && npm install",
     "vercel-build": "npx prisma generate --schema=backend/prisma/schema.prisma && npm run build"
   },
   "eslintConfig": {
