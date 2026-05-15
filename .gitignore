@@ -189,3 +189,4 @@ scripts/output/
 # Config files that may contain secrets
 config/local.json
 config/production.json
+.env*.local
