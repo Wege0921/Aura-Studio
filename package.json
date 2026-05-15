@@ -22,7 +22,27 @@
     "react-hook-form": "^7.48.2",
     "react-query": "^3.39.3",
     "date-fns": "^2.30.0",
-    "clsx": "^2.0.0"
+    "clsx": "^2.0.0",
+    "@prisma/client": "^5.7.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "form-data": "^4.0.5",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "node-cron": "^4.2.1",
+    "nodemailer": "^6.9.7",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/multer": "^1.4.11",
+    "@types/nodemailer": "^6.4.14",
+    "@types/node-cron": "^3.0.11",
+    "prisma": "^5.7.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -33,7 +53,7 @@
     "client": "react-scripts start",
     "eject": "react-scripts eject",
     "install-deps": "npm install --legacy-peer-deps && cd backend && npm install --legacy-peer-deps",
-    "vercel-build": "npm install --legacy-peer-deps && cd backend && npm install --legacy-peer-deps && npx prisma generate --schema=prisma/schema.prisma && npx prisma db push --schema=prisma/schema.prisma && npm run seed && npm run build && cd .. && node -e \"const fs = require('fs'); const path = require('path'); const src = path.join(__dirname, 'backend', 'dist'); const dest = path.join(__dirname, 'api', 'dist'); if (!fs.existsSync(dest)) fs.mkdirSync(dest, {recursive: true}); const copyDir = (s, d) => { fs.readdirSync(s).forEach(f => { const srcPath = path.join(s, f); const destPath = path.join(d, f); if (fs.lstatSync(srcPath).isDirectory()) { if (!fs.existsSync(destPath)) fs.mkdirSync(destPath, {recursive: true}); copyDir(srcPath, destPath); } else { fs.copyFileSync(srcPath, destPath); } }); }; copyDir(src, dest);\" && CI=false npm run build"
+    "vercel-build": "npx prisma generate --schema=backend/prisma/schema.prisma && npx prisma db push --schema=backend/prisma/schema.prisma --accept-data-loss && cd backend && npx ts-node src/seed.ts && cd .. && CI=false npm run build"
   },
   "eslintConfig": {
     "extends": [
@@ -56,6 +76,7 @@
   "proxy": "http://localhost:5000",
   "devDependencies": {
     "@types/jest": "^29.5.8",
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "ts-node": "^10.9.1"
   }
 }

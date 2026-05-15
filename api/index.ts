@@ -1,3 +1,5 @@
-import app from './dist/index';
+import app from '../backend/src/app';
 
-export default app;
+export default function handler(req: any, res: any) {
+  return (app as any)(req, res);
+}
