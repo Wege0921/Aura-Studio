@@ -1,7 +1,4 @@
 {
-  "buildCommand": "npm run vercel-build",
-  "installCommand": "npm install --legacy-peer-deps && cd backend && npm install --legacy-peer-deps",
-  "outputDirectory": "build",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/(.*)", "destination": "/index.html" }
