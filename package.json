@@ -33,7 +33,7 @@
     "client": "react-scripts start",
     "eject": "react-scripts eject",
     "install-deps": "npm install --legacy-peer-deps && cd backend && npm install --legacy-peer-deps",
-    "vercel-build": "npm install --legacy-peer-deps && cd backend && npm install --legacy-peer-deps && npx prisma generate --schema=prisma/schema.prisma && npx prisma db push --schema=prisma/schema.prisma && npm run seed && npm run build && cd .. && CI=false npm run build"
+    "vercel-build": "npm install --legacy-peer-deps && cd backend && npm install --legacy-peer-deps && npx prisma generate --schema=prisma/schema.prisma && npx prisma db push --schema=prisma/schema.prisma && npm run seed && npm run build && cd .. && mkdir -p api/dist && cp -r backend/dist/* api/dist/ && CI=false npm run build"
   },
   "eslintConfig": {
     "extends": [
