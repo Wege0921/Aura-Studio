@@ -49,9 +49,10 @@ router.get('/my-packages', authenticateToken, async (req: AuthenticatedRequest, 
   }
 });
 
-// Purchase a package
+// Purchase a package — creates a PENDING payment; admin must verify to activate
 router.post('/purchase', authenticateToken, [
   body('packageId').notEmpty().withMessage('Package ID is required'),
+  body('paymentMethod').isIn(['BANK_TRANSFER', 'MOBILE_MONEY', 'CASH']).withMessage('Invalid payment method'),
 ], async (req: AuthenticatedRequest, res: Response) => {
   try {
     const errors = validationResult(req);
@@ -59,7 +60,7 @@ router.post('/purchase', authenticateToken, [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { packageId } = req.body;
+    const { packageId, paymentMethod } = req.body;
     const userId = req.user!.id;
 
     // Get package details
@@ -75,30 +76,20 @@ router.post('/purchase', authenticateToken, [
       return res.status(400).json({ error: 'Package is not available' });
     }
 
-    // Calculate expiry date
-    let expiresAt = null;
-    if (packageInfo.validityDays) {
-      const expiryDate = new Date();
-      expiryDate.setDate(expiryDate.getDate() + packageInfo.validityDays);
-      expiresAt = expiryDate;
-    }
-
-    // Create user package
-    const userPackage = await prisma.userPackage.create({
+    // Create a pending payment record for admin verification
+    const payment = await prisma.payment.create({
       data: {
         userId,
+        amount: packageInfo.price,
+        paymentMethod: paymentMethod || 'BANK_TRANSFER',
+        status: 'PENDING',
         packageId,
-        remainingSessions: packageInfo.sessionsCount,
-        expiresAt,
-      },
-      include: {
-        package: true,
       },
     });
 
     res.status(201).json({
-      message: 'Package purchased successfully',
-      userPackage,
+      message: 'Purchase request submitted. Waiting for admin verification.',
+      payment,
     });
   } catch (error) {
     console.error('Package purchase error:', error);

@@ -195,26 +195,54 @@ router.patch('/:id/verify', authenticateToken, requireAdmin, [
       return res.status(400).json({ error: 'Payment has already been processed' });
     }
 
-    const updatedPayment = await prisma.payment.update({
-      where: { id },
-      data: {
-        status,
-        verifiedAt: status === 'VERIFIED' ? new Date() : null,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
+    const result = await prisma.$transaction(async (tx) => {
+      const updatedPayment = await tx.payment.update({
+        where: { id },
+        data: {
+          status,
+          verifiedAt: status === 'VERIFIED' ? new Date() : null,
         },
-      },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          package: true,
+        },
+      });
+
+      // If verifying a package payment, create the UserPackage
+      if (status === 'VERIFIED' && updatedPayment.packageId) {
+        const pkg = updatedPayment.package;
+        if (pkg) {
+          let expiresAt = null;
+          if (pkg.validityDays) {
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + pkg.validityDays);
+            expiresAt = expiryDate;
+          }
+
+          await tx.userPackage.create({
+            data: {
+              userId: updatedPayment.userId,
+              packageId: updatedPayment.packageId,
+              remainingSessions: pkg.sessionsCount,
+              expiresAt,
+              source: 'PURCHASE',
+            },
+          });
+        }
+      }
+
+      return updatedPayment;
     });
 
     res.json({
       message: `Payment ${status.toLowerCase()} successfully`,
-      payment: updatedPayment,
+      payment: result,
     });
   } catch (error) {
     console.error('Payment verification error:', error);

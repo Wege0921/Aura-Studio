@@ -46,10 +46,10 @@ const upload = multer({
   }
 });
 
-// Create a booking with payment screenshot
+// Create a booking with payment screenshot or package session
 router.post('/', authenticateToken, upload.single('paymentReceipt'), [
   body('classId').notEmpty().withMessage('Class ID is required'),
-  body('paymentMethod').isIn(['BANK_TRANSFER', 'MOBILE_MONEY', 'CASH']).withMessage('Invalid payment method'),
+  body('paymentMethod').isIn(['BANK_TRANSFER', 'MOBILE_MONEY', 'CASH', 'PACKAGE_SESSION']).withMessage('Invalid payment method'),
 ], async (req: AuthenticatedRequest, res: Response) => {
   try {
     const errors = validationResult(req);
@@ -57,14 +57,10 @@ router.post('/', authenticateToken, upload.single('paymentReceipt'), [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { classId, paymentMethod, paymentAmount } = req.body;
+    const { classId, paymentMethod, paymentAmount, usePackageSession } = req.body;
     const userId = req.user!.id;
     const paymentReceiptFile = req.file;
-
-    // Validate payment receipt requirement for non-cash payments
-    if (paymentMethod !== 'CASH' && !paymentReceiptFile) {
-      return res.status(400).json({ error: 'Payment receipt is required for bank transfer and mobile money payments' });
-    }
+    const useSession = usePackageSession === 'true' || usePackageSession === true;
 
     // Check if class exists and has available spots
     const classItem = await prisma.class.findUnique({
@@ -103,20 +99,62 @@ router.post('/', authenticateToken, upload.single('paymentReceipt'), [
       return res.status(400).json({ error: 'You have already booked this class' });
     }
 
-    // Prepare payment receipt URL
-    const receiptUrl = paymentReceiptFile ? `/uploads/${paymentReceiptFile.filename}` : null;
+    let bookingData: any = {
+      userId,
+      classId,
+      status: 'CONFIRMED',
+      paymentMethod: paymentMethod || null,
+      paymentAmount: parseFloat(paymentAmount) || classItem.price || 0,
+    };
+    let userPackageId: string | null = null;
+
+    if (useSession) {
+      // Find an active user package with remaining sessions
+      const activePackages = await prisma.userPackage.findMany({
+        where: {
+          userId,
+          remainingSessions: { gt: 0 },
+          OR: [
+            { expiresAt: null },
+            { expiresAt: { gte: new Date() } },
+          ],
+        },
+        orderBy: { expiresAt: 'asc' },
+      });
+
+      if (activePackages.length === 0) {
+        return res.status(400).json({ error: 'No active package with available sessions found' });
+      }
+
+      // Use the package that expires soonest
+      const targetPackage = activePackages[0];
+      userPackageId = targetPackage.id;
+
+      // Deduct session in transaction
+      await prisma.$transaction(async (tx) => {
+        await tx.userPackage.update({
+          where: { id: targetPackage.id },
+          data: { remainingSessions: { decrement: 1 } },
+        });
+      });
+
+      bookingData.paymentStatus = 'PAID';
+      bookingData.paidAt = new Date();
+      bookingData.userPackageId = userPackageId;
+    } else {
+      // Validate payment receipt requirement for non-cash payments
+      if (paymentMethod !== 'CASH' && !paymentReceiptFile) {
+        return res.status(400).json({ error: 'Payment receipt is required for bank transfer and mobile money payments' });
+      }
+
+      const receiptUrl = paymentReceiptFile ? `/uploads/${paymentReceiptFile.filename}` : null;
+      bookingData.paymentStatus = paymentMethod === 'CASH' ? 'PENDING' : 'PENDING';
+      bookingData.paymentReceiptUrl = receiptUrl;
+    }
 
     // Create booking with payment information
     const booking = await prisma.booking.create({
-      data: {
-        userId,
-        classId,
-        status: 'CONFIRMED',
-        paymentStatus: paymentMethod === 'CASH' ? 'PENDING' : 'PENDING', // Both pending until verification
-        paymentMethod: paymentMethod || null,
-        paymentAmount: parseFloat(paymentAmount) || classItem.price || 0,
-        paymentReceiptUrl: receiptUrl,
-      },
+      data: bookingData,
       include: {
         class: true,
         user: {
@@ -126,11 +164,15 @@ router.post('/', authenticateToken, upload.single('paymentReceipt'), [
             email: true,
           },
         },
+        userPackage: {
+          include: { package: true },
+        },
       },
     });
 
     // Send Telegram notification to admin
-    if (paymentMethod !== 'CASH' && receiptUrl) {
+    if (!useSession && paymentMethod !== 'CASH' && booking.paymentReceiptUrl) {
+      const receiptUrl = booking.paymentReceiptUrl;
       const fullReceiptUrl = `${process.env.SERVER_URL || 'http://localhost:5000'}${receiptUrl}`;
       
       try {
@@ -173,6 +215,19 @@ router.post('/', authenticateToken, upload.single('paymentReceipt'), [
         console.error('Telegram notification failed:', telegramError);
         // Continue with booking even if Telegram fails
       }
+    } else if (useSession) {
+      try {
+        await telegramService.sendBookingConfirmationNotification({
+          userName: booking.user.name || 'Unknown User',
+          userEmail: booking.user.email,
+          className: booking.class.name,
+          classDate: new Date(booking.class.date).toLocaleDateString(),
+          classTime: booking.class.time,
+          paymentStatus: 'PAID (Package Session)',
+        });
+      } catch (telegramError) {
+        console.error('Telegram notification failed:', telegramError);
+      }
     } else if (paymentMethod === 'CASH') {
       try {
         await telegramService.sendBookingConfirmationNotification({
@@ -189,7 +244,9 @@ router.post('/', authenticateToken, upload.single('paymentReceipt'), [
       }
     }
 
-    const message = paymentMethod === 'CASH' 
+    const message = useSession
+      ? `Booking successful! Session deducted from ${booking.userPackage?.package?.name || 'your package'}.`
+      : paymentMethod === 'CASH'
       ? 'Booking successful! Please pay at the studio to complete your booking.'
       : 'Booking successful! Payment receipt sent to admin for verification.';
 
@@ -315,6 +372,14 @@ router.patch('/:id/cancel', authenticateToken, async (req: AuthenticatedRequest,
     twoHoursFromNow.setHours(twoHoursFromNow.getHours() + 2);
     if (classDateTime < twoHoursFromNow) {
       return res.status(400).json({ error: 'Cannot cancel less than 2 hours before class' });
+    }
+
+    // Refund package session if one was used
+    if (booking.userPackageId) {
+      await prisma.userPackage.update({
+        where: { id: booking.userPackageId },
+        data: { remainingSessions: { increment: 1 } },
+      });
     }
 
     // Update booking status

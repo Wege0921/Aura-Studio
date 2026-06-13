@@ -34,10 +34,35 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
     classType: '',
     instructor: '',
   });
+  const [activePackages, setActivePackages] = useState<{ id: string; name: string; remainingSessions: number }[]>([]);
 
   useEffect(() => {
     fetchClasses();
+    fetchActivePackages();
   }, [filters]);
+
+  const fetchActivePackages = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      const response = await fetch('/api/packages/my-packages', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const active = data
+          .filter((pkg: any) => pkg.remainingSessions > 0 && (!pkg.expiresAt || new Date(pkg.expiresAt) >= new Date()))
+          .map((pkg: any) => ({
+            id: pkg.id,
+            name: pkg.package.name,
+            remainingSessions: pkg.remainingSessions,
+          }));
+        setActivePackages(active);
+      }
+    } catch (e) {
+      console.error('Failed to fetch active packages', e);
+    }
+  };
 
   const fetchClasses = async () => {
     try {
@@ -78,7 +103,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
     }
   };
 
-  const handleConfirmBooking = async (paymentMethod: string, receiptFile?: File) => {
+  const handleConfirmBooking = async (paymentMethod: string, receiptFile?: File, usePackageSession?: boolean) => {
     if (!selectedClass) return;
 
     try {
@@ -90,6 +115,9 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
       formData.append('classId', selectedClass.id);
       formData.append('paymentMethod', paymentMethod);
       formData.append('paymentAmount', (selectedClass.price || 0).toString());
+      if (usePackageSession) {
+        formData.append('usePackageSession', 'true');
+      }
       
       if (receiptFile) {
         formData.append('paymentReceipt', receiptFile);
@@ -106,15 +134,12 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
       const data = await response.json();
 
       if (response.ok) {
-        if (paymentMethod === 'CASH') {
-          setSuccessMessage('Booking successful! Please pay at the studio to complete your booking.');
-        } else {
-          setSuccessMessage('Booking successful! Payment receipt sent to admin for verification.');
-        }
+        setSuccessMessage(data.message || 'Booking successful!');
         setShowBookingModal(false);
         setSelectedClass(null);
-        // Refresh classes to update availability
+        // Refresh classes and packages to update availability
         fetchClasses();
+        fetchActivePackages();
         
         // Clear success message after 5 seconds
         setTimeout(() => setSuccessMessage(''), 5000);
@@ -250,6 +275,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
           duration: selectedClass.duration,
         } : null}
         loading={bookingLoading}
+        activePackages={activePackages}
       />
     </div>
   );
