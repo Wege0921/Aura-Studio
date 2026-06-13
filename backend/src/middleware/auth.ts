@@ -1,7 +1,6 @@
-import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
-import { findUserByEmail } from '../mocks/mockAuth';
+import { supabase } from '../lib/supabase';
 
 interface AuthRequest extends Request {
   user?: {
@@ -20,41 +19,32 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-    
-    // Try database first
-    let user = null;
-    
-    try {
-      user = await prisma.user.findUnique({
-        where: { id: decoded.userId },
+    // Verify token with Supabase
+    const { data: authData, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !authData.user) {
+      return res.status(403).json({ error: 'Invalid token' });
+    }
+
+    // Look up app profile in Prisma
+    let user = await prisma.user.findUnique({
+      where: { id: authData.user.id },
+      select: { id: true, email: true, role: true }
+    });
+
+    // If no profile exists yet, create one from Supabase metadata
+    if (!user) {
+      const metadata = authData.user.user_metadata || {};
+      user = await prisma.user.create({
+        data: {
+          id: authData.user.id,
+          email: authData.user.email || metadata.email || '',
+          name: metadata.name || metadata.full_name || 'User',
+          phone: metadata.phone || null,
+          role: metadata.role || 'USER',
+        },
         select: { id: true, email: true, role: true }
       });
-    } catch (dbError) {
-      console.error('Database error in auth middleware:', dbError);
-    }
-
-    // If database user not found, fall back to mock authentication
-    if (!user) {
-      console.log('Database user not found, checking mock users for:', decoded.userId);
-      // For mock users, we need to find by ID, but our mock only has email lookup
-      // So we'll check if it's one of our known mock users by ID
-      const mockUsers = [
-        { id: 'admin-1', email: 'admin@aura-yoga.com', role: 'ADMIN' },
-        { id: 'user-1', email: 'user@aura-yoga.com', role: 'USER' },
-        { id: 'instructor-1', email: 'instructor@aura-yoga.com', role: 'USER' }
-      ];
-      
-      user = mockUsers.find(u => u.id === decoded.userId);
-      
-      if (user) {
-        console.log('Using mock user:', user);
-      }
-    }
-
-    if (!user) {
-      console.log('No user found for ID:', decoded.userId);
-      return res.status(401).json({ error: 'Invalid token - user not found' });
     }
 
     req.user = user;
@@ -72,6 +62,17 @@ export const requireAdmin = (req: AuthRequest, res: Response, next: NextFunction
   next();
 };
 
-export const generateToken = (userId: string) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET!, { expiresIn: '7d' });
+// Token generation is now handled by Supabase Auth.
+// These exports are kept for compatibility with any existing imports,
+// but they should not be used. Use Supabase sessions instead.
+export const generateAccessToken = (_userId: string) => {
+  throw new Error('generateAccessToken is deprecated. Use Supabase Auth instead.');
+};
+
+export const generateRefreshToken = (_userId: string) => {
+  throw new Error('generateRefreshToken is deprecated. Use Supabase Auth instead.');
+};
+
+export const generateToken = (_userId: string) => {
+  throw new Error('generateToken is deprecated. Use Supabase Auth instead.');
 };
