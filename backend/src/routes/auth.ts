@@ -1,11 +1,33 @@
 import express, { Request, Response } from 'express';
-import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
 import { prisma } from '../lib/prisma';
-import { generateToken } from '../middleware/auth';
-import { findUserByEmail, validatePassword } from '../mocks/mockAuth';
+import { supabase, supabaseAuth } from '../lib/supabase';
 
 const router = express.Router();
+
+// Helper: ensure Prisma user profile exists for a Supabase auth user
+async function ensureUserProfile(authUser: { id: string; email?: string | null; user_metadata?: any }) {
+  let user = await prisma.user.findUnique({
+    where: { id: authUser.id },
+    select: { id: true, email: true, name: true, phone: true, role: true, createdAt: true }
+  });
+
+  if (!user) {
+    const meta = authUser.user_metadata || {};
+    user = await prisma.user.create({
+      data: {
+        id: authUser.id,
+        email: authUser.email || meta.email || '',
+        name: meta.name || meta.full_name || 'User',
+        phone: meta.phone || null,
+        role: meta.role || 'USER',
+      },
+      select: { id: true, email: true, name: true, phone: true, role: true, createdAt: true }
+    });
+  }
+
+  return user;
+}
 
 // Register
 router.post('/register', [
@@ -21,41 +43,48 @@ router.post('/register', [
 
     const { email, name, password, phone } = req.body;
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
+    // Create user in Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { name, phone },
     });
 
-    if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
+    if (authError || !authData.user) {
+      return res.status(400).json({ error: authError?.message || 'Registration failed' });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user
+    // Create Prisma profile
     const user = await prisma.user.create({
       data: {
+        id: authData.user.id,
         email,
         name,
-        password: hashedPassword,
-        phone,
+        phone: phone || null,
+        role: 'USER',
       },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        createdAt: true,
-      }
+      select: { id: true, email: true, name: true, role: true, createdAt: true }
     });
 
-    const token = generateToken(user.id);
+    // Sign in to get session tokens
+    const { data: sessionData, error: sessionError } = await supabaseAuth.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (sessionError || !sessionData.session) {
+      return res.status(201).json({
+        message: 'User created successfully. Please sign in.',
+        user,
+      });
+    }
 
     res.status(201).json({
       message: 'User created successfully',
       user,
-      token
+      token: sessionData.session.access_token,
+      refreshToken: sessionData.session.refresh_token,
     });
   } catch (error) {
     console.error('Registration error:', error);
@@ -76,48 +105,24 @@ router.post('/login', [
 
     const { email, password } = req.body;
 
-    // Try database first, then fall back to mock
-    let user = null;
-    
-    try {
-      user = await prisma.user.findUnique({
-        where: { email }
-      });
+    // Authenticate with Supabase
+    const { data: authData, error: authError } = await supabaseAuth.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-      if (user) {
-        // Check password with bcrypt
-        const isValidPassword = await bcrypt.compare(password, user.password);
-        if (!isValidPassword) {
-          user = null;
-        }
-      }
-    } catch (dbError) {
-      console.log('Database not available, using mock auth');
-    }
-
-    // Fall back to mock authentication
-    if (!user) {
-      const mockUser = findUserByEmail(email);
-      if (mockUser && validatePassword(mockUser, password)) {
-        user = mockUser;
-      }
-    }
-
-    if (!user) {
+    if (authError || !authData.user || !authData.session) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const token = generateToken(user.id);
+    // Ensure Prisma profile exists
+    const user = await ensureUserProfile(authData.user);
 
     res.json({
       message: 'Login successful',
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-      },
-      token
+      user,
+      token: authData.session.access_token,
+      refreshToken: authData.session.refresh_token,
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -135,28 +140,79 @@ router.get('/me', async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Access token required' });
     }
 
-    const jwt = require('jsonwebtoken');
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    const { data: authData, error: authError } = await supabase.auth.getUser(token);
 
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        phone: true,
-        role: true,
-        createdAt: true,
-      }
-    });
-
-    if (!user) {
+    if (authError || !authData.user) {
       return res.status(401).json({ error: 'Invalid token' });
     }
 
+    const user = await ensureUserProfile(authData.user);
     res.json({ user });
   } catch (error) {
     res.status(403).json({ error: 'Invalid token' });
+  }
+});
+
+// Logout
+router.post('/logout', async (_req: Request, res: Response) => {
+  // Supabase sessions are invalidated client-side; backend just acknowledges.
+  res.json({ message: 'Logged out successfully' });
+});
+
+// Refresh access token using Supabase refresh token
+router.post('/refresh', async (req: Request, res: Response) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(401).json({ error: 'Refresh token required' });
+    }
+
+    const { data, error } = await supabaseAuth.auth.refreshSession(refreshToken);
+
+    if (error || !data.session) {
+      return res.status(403).json({ error: 'Invalid refresh token' });
+    }
+
+    res.json({
+      token: data.session.access_token,
+      refreshToken: data.session.refresh_token,
+    });
+  } catch (error) {
+    res.status(403).json({ error: 'Invalid refresh token' });
+  }
+});
+
+// Forgot password — delegate to Supabase
+router.post('/forgot-password', [
+  body('email').isEmail().normalizeEmail(),
+], async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email } = req.body;
+
+    // In a real app, set the redirect URL to your frontend reset-password page
+    const redirectUrl = process.env.FRONTEND_URL
+      ? `${process.env.FRONTEND_URL}/reset-password`
+      : 'http://localhost:3000/reset-password';
+
+    const { error } = await supabaseAuth.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl,
+    });
+
+    if (error) {
+      console.error('Supabase forgot password error:', error);
+    }
+
+    // Always return success to avoid email enumeration
+    res.json({ message: 'If an account exists, a reset email has been sent.' });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
