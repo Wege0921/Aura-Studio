@@ -15,15 +15,15 @@ model User {
   email     String   @unique
   name      String
   phone     String?
-  password  String
   role      String   @default("USER")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  bookings     Booking[]
-  userPackages UserPackage[]
-  payments     Payment[]
+  bookings         Booking[]
+  userPackages     UserPackage[]
+  payments         Payment[]
+  waitlistEntries  WaitlistEntry[]
 
   @@map("users")
 }
@@ -44,7 +44,8 @@ model Class {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  bookings Booking[]
+  bookings         Booking[]
+  waitlistEntries  WaitlistEntry[]
 
   @@map("classes")
 }
@@ -63,9 +64,12 @@ model Booking {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  userPackageId String?
+
   // Relations
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class      Class       @relation(fields: [classId], references: [id], onDelete: Cascade)
+  userPackage UserPackage? @relation(fields: [userPackageId], references: [id])
 
   @@unique([userId, classId])
   @@map("bookings")
@@ -98,9 +102,12 @@ model UserPackage {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
+  source        String    @default("PURCHASE") // PURCHASE, ADMIN_GRANT, PROMOTION
+
   // Relations
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   package Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  bookings Booking[]
 
   @@map("user_packages")
 }
@@ -122,6 +129,22 @@ model Payment {
   package Package? @relation(fields: [packageId], references: [id])
 
   @@map("payments")
+}
+
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  classId   String
+  status    String   @default("WAITING") // WAITING, PROMOTED, CANCELLED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, classId])
+  @@map("waitlist_entries")
 }
 
 // Note: SQLite doesn't support enums, using strings instead
