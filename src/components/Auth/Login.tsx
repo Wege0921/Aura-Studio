@@ -101,10 +101,16 @@ const Login: React.FC = () => {
             </button>
           </div>
 
-          <div className="text-center">
+          <div className="flex items-center justify-between">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-purple-600 hover:text-purple-500"
+            >
+              Forgot your password?
+            </Link>
             <Link
               to="/register"
-              className="font-medium text-purple-600 hover:text-purple-500"
+              className="text-sm text-purple-600 hover:text-purple-500"
             >
               Don't have an account? Sign up
             </Link>
