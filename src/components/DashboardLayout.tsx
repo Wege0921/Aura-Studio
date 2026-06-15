@@ -53,11 +53,7 @@ const DashboardLayout: React.FC = () => {
     }
   }, [location.pathname, user]);
 
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-
-  const isAdmin = user.role === 'ADMIN';
+  const isAdmin = user?.role === 'ADMIN';
 
   const userTabs: TabDef[] = useMemo(() => [
     { id: 'home', label: 'Home', icon: <HomeIcon className="w-5 h-5" /> },
@@ -75,6 +71,10 @@ const DashboardLayout: React.FC = () => {
     { id: 'admin-users', label: 'Users', icon: <UsersIcon className="w-5 h-5" /> },
     { id: 'admin-payments', label: 'Payments', icon: <PaymentsIcon className="w-5 h-5" /> },
   ], []);
+
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
 
   const tabs = isAdmin ? adminTabs : userTabs;
 
