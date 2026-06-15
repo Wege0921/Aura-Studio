@@ -10,6 +10,8 @@ import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
 import DashboardLayout from './components/DashboardLayout';
 import OfflineIndicator from './components/OfflineIndicator';
+import PWAInstallBanner from './components/PWAInstallBanner';
+import NetworkStatusBar from './components/NetworkStatusBar';
 import ClassManagement from './components/Admin/ClassManagement';
 import UserManagement from './components/Admin/UserManagement';
 import BookingManagement from './components/Admin/BookingManagement';
@@ -17,7 +19,7 @@ import PackageManagement from './components/Admin/PackageManagement';
 import PaymentManagement from './components/Admin/PaymentManagement';
 import AdminDashboard from './components/Admin/AdminDashboard';
 import NotificationSettings from './components/Notifications/NotificationSettings';
-import { register, registerInstallPrompt, registerNetworkStatusDetector } from './utils/serviceWorkerRegistration';
+import { register } from './utils/serviceWorkerRegistration';
 import './App.css';
 
 function AppRoutes() {
@@ -160,25 +162,20 @@ function App() {
       },
       onUpdate: (registration) => {
         console.log('Service worker updated');
-        // Show update notification to user
         if (window.confirm('New version available! Reload to update?')) {
           window.location.reload();
         }
       }
     });
-
-    // Register PWA install prompt
-    registerInstallPrompt();
-
-    // Register network status detector
-    registerNetworkStatusDetector();
   }, []);
 
   return (
     <AuthProvider>
       <Router>
         <div className="min-h-screen bg-gray-50">
+          <NetworkStatusBar />
           <OfflineIndicator />
+          <PWAInstallBanner />
           <AppRoutes />
         </div>
       </Router>

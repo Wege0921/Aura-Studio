@@ -145,52 +145,6 @@ export function unregister() {
   }
 }
 
-// PWA Installation Prompt
-export function registerInstallPrompt() {
-  let deferredPrompt: any;
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent the mini-infobar from appearing on mobile
-    e.preventDefault();
-    // Stash the event so it can be triggered later
-    deferredPrompt = e;
-    // Show install button
-    showInstallPrompt(deferredPrompt);
-  });
-
-  window.addEventListener('appinstalled', () => {
-    // Log install to analytics
-    console.log('PWA was installed');
-    hideInstallButton();
-  });
-}
-
-function showInstallPrompt(deferredPrompt: any) {
-  const installButton = document.createElement('button');
-  installButton.innerHTML = '📱 Install App';
-  installButton.className = 'fixed bottom-4 right-4 bg-purple-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 hover:bg-purple-700 transition-colors';
-  installButton.id = 'pwa-install-button';
-  
-  installButton.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`User response to the install prompt: ${outcome}`);
-      deferredPrompt = null;
-      hideInstallButton();
-    }
-  });
-
-  document.body.appendChild(installButton);
-}
-
-function hideInstallButton() {
-  const button = document.getElementById('pwa-install-button');
-  if (button) {
-    button.remove();
-  }
-}
-
 // Push Notification Subscription
 export async function subscribeToPushNotifications() {
   if ('serviceWorker' in navigator && 'PushManager' in window) {
@@ -234,31 +188,3 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray;
 }
 
-// Network Status Detection
-export function registerNetworkStatusDetector() {
-  const updateOnlineStatus = () => {
-    const isOnline = navigator.onLine;
-    const statusElement = document.getElementById('network-status');
-    
-    if (statusElement) {
-      if (isOnline) {
-        statusElement.className = 'fixed top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-lg text-sm z-50';
-        statusElement.textContent = '🟢 Online';
-      } else {
-        statusElement.className = 'fixed top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-lg text-sm z-50';
-        statusElement.textContent = '🔴 Offline';
-      }
-    }
-  };
-
-  window.addEventListener('online', updateOnlineStatus);
-  window.addEventListener('offline', updateOnlineStatus);
-  
-  // Create status element if it doesn't exist
-  if (!document.getElementById('network-status')) {
-    const statusElement = document.createElement('div');
-    statusElement.id = 'network-status';
-    document.body.appendChild(statusElement);
-    updateOnlineStatus();
-  }
-}
