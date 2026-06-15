@@ -7,24 +7,39 @@ const router = express.Router();
 
 // Helper: ensure Prisma user profile exists for a Supabase auth user
 async function ensureUserProfile(authUser: { id: string; email?: string | null; user_metadata?: any }) {
-  let user = await prisma.user.findUnique({
-    where: { id: authUser.id },
-    select: { id: true, email: true, name: true, phone: true, role: true, createdAt: true }
-  });
+  const select = { id: true, email: true, name: true, phone: true, role: true, createdAt: true };
 
-  if (!user) {
-    const meta = authUser.user_metadata || {};
-    user = await prisma.user.create({
-      data: {
-        id: authUser.id,
-        email: authUser.email || meta.email || '',
-        name: meta.name || meta.full_name || 'User',
-        phone: meta.phone || null,
-        role: meta.role || 'USER',
-      },
-      select: { id: true, email: true, name: true, phone: true, role: true, createdAt: true }
-    });
+  // 1. Look up by Supabase UUID
+  let user = await prisma.user.findUnique({ where: { id: authUser.id }, select });
+  if (user) return user;
+
+  // 2. Fall back to email lookup (handles seeded/hardcoded-id profiles)
+  const email = authUser.email || '';
+  if (email) {
+    const byEmail = await prisma.user.findUnique({ where: { email }, select });
+    if (byEmail) {
+      // Update the profile's id to the real Supabase UUID so future lookups work
+      user = await prisma.user.update({
+        where: { email },
+        data: { id: authUser.id },
+        select,
+      });
+      return user;
+    }
   }
+
+  // 3. Create a brand-new profile
+  const meta = authUser.user_metadata || {};
+  user = await prisma.user.create({
+    data: {
+      id: authUser.id,
+      email,
+      name: meta.name || meta.full_name || 'User',
+      phone: meta.phone || null,
+      role: meta.role || 'USER',
+    },
+    select,
+  });
 
   return user;
 }

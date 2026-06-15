@@ -80,6 +80,89 @@ router.get('/', authenticateToken, async (req: AuthenticatedRequest, res: Respon
   }
 });
 
+// Get instructors only (admin only)
+router.get('/instructors', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    if (req.user!.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const instructors = await prisma.user.findMany({
+      where: { role: 'INSTRUCTOR' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json({
+      instructors,
+      count: instructors.length
+    });
+  } catch (error) {
+    console.error('Get instructors error:', error);
+    res.status(500).json({ error: 'Failed to get instructors' });
+  }
+});
+
+// Get user statistics (admin only)
+router.get('/stats/overview', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    // Check if user is admin
+    if (req.user!.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const [
+      totalUsers,
+      totalAdmins,
+      recentUsers,
+      usersWithBookings,
+      usersWithPackages,
+      usersWithPayments
+    ] = await Promise.all([
+      prisma.user.count(),
+      prisma.user.count({ where: { role: 'ADMIN' } }),
+      prisma.user.count({
+        where: {
+          createdAt: {
+            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+          }
+        }
+      }),
+      prisma.user.count({
+        where: { bookings: { some: {} } }
+      }),
+      prisma.user.count({
+        where: { userPackages: { some: {} } }
+      }),
+      prisma.user.count({
+        where: { payments: { some: {} } }
+      })
+    ]);
+
+    res.json({
+      totalUsers,
+      totalAdmins,
+      recentUsers,
+      usersWithBookings,
+      usersWithPackages,
+      usersWithPayments,
+      regularUsers: totalUsers - totalAdmins
+    });
+  } catch (error) {
+    console.error('Get user stats error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Get single user by ID (admin only)
 router.get('/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -293,125 +376,6 @@ router.delete('/:id', authenticateToken, async (req: AuthenticatedRequest, res: 
   }
 });
 
-// Get instructors only (admin only) - moved before parameterized routes
-router.get('/instructors', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
-  try {
-    // Check if user is admin
-    if (req.user!.role !== 'ADMIN') {
-      return res.status(403).json({ error: 'Admin access required' });
-    }
-
-    const instructors = await prisma.user.findMany({
-      where: { role: 'INSTRUCTOR' },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true
-      },
-      orderBy: { createdAt: 'desc' }
-    });
-
-    res.json({
-      instructors,
-      count: instructors.length
-    });
-  } catch (error) {
-    console.error('Get instructors error:', error);
-    res.status(500).json({ error: 'Failed to get instructors' });
-  }
-});
-
-// Get single user by ID (admin only)
-router.get('/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
-  try {
-    // Check if user is admin
-    if (req.user!.role !== 'ADMIN') {
-      return res.status(403).json({ error: 'Admin access required' });
-    }
-
-    const { id } = req.params;
-    
-    const user = await prisma.user.findUnique({
-      where: { id }
-    });
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    res.json(user);
-  } catch (error) {
-    console.error('Get user error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// Get user statistics (admin only)
-router.get('/stats/overview', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
-  try {
-    // Check if user is admin
-    if (req.user!.role !== 'ADMIN') {
-      return res.status(403).json({ error: 'Admin access required' });
-    }
-
-    const [
-      totalUsers,
-      totalAdmins,
-      recentUsers,
-      usersWithBookings,
-      usersWithPackages,
-      usersWithPayments
-    ] = await Promise.all([
-      prisma.user.count(),
-      prisma.user.count({ where: { role: 'ADMIN' } }),
-      prisma.user.count({
-        where: {
-          createdAt: {
-            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
-          }
-        }
-      }),
-      prisma.user.count({
-        where: {
-          bookings: {
-            some: {}
-          }
-        }
-      }),
-      prisma.user.count({
-        where: {
-          userPackages: {
-            some: {}
-          }
-        }
-      }),
-      prisma.user.count({
-        where: {
-          payments: {
-            some: {}
-          }
-        }
-      })
-    ]);
-
-    res.json({
-      totalUsers,
-      totalAdmins,
-      recentUsers,
-      usersWithBookings,
-      usersWithPackages,
-      usersWithPayments,
-      regularUsers: totalUsers - totalAdmins
-    });
-  } catch (error) {
-    console.error('Get user stats error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
 
 // Create instructor (admin only)
 router.post('/instructor', 

@@ -44,25 +44,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Restore session from localStorage on mount
+  // Restore session from localStorage on mount, refreshing via Supabase if needed
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedRefreshToken = localStorage.getItem('refreshToken');
-    const storedUser = localStorage.getItem('user');
+    const restoreSession = async () => {
+      const storedToken = localStorage.getItem('token');
+      const storedRefreshToken = localStorage.getItem('refreshToken');
+      const storedUser = localStorage.getItem('user');
 
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-
-      // Sync Supabase session if tokens exist
-      if (storedRefreshToken) {
-        supabase.auth.setSession({
+      if (storedToken && storedRefreshToken && storedUser) {
+        // Attempt to refresh the session so we always have a valid token
+        const { data, error } = await supabase.auth.setSession({
           access_token: storedToken,
           refresh_token: storedRefreshToken,
         });
+
+        if (!error && data.session) {
+          const freshToken = data.session.access_token;
+          const freshRefresh = data.session.refresh_token;
+          localStorage.setItem('token', freshToken);
+          localStorage.setItem('refreshToken', freshRefresh);
+          setToken(freshToken);
+          setUser(JSON.parse(storedUser));
+        } else {
+          // Token is invalid/expired and can't be refreshed — clear everything
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+        }
       }
-    }
-    setLoading(false);
+      setLoading(false);
+    };
+
+    restoreSession();
   }, []);
 
   const persistSession = (data: { token: string; refreshToken: string; user: User }) => {

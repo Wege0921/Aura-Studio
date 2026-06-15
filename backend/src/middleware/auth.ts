@@ -27,12 +27,28 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
     }
 
     // Look up app profile in Prisma
+    const select = { id: true, email: true, role: true };
     let user = await prisma.user.findUnique({
       where: { id: authData.user.id },
-      select: { id: true, email: true, role: true }
+      select,
     });
 
-    // If no profile exists yet, create one from Supabase metadata
+    // Fall back to email lookup (handles seeded profiles with hardcoded ids)
+    if (!user) {
+      const email = authData.user.email || '';
+      if (email) {
+        const byEmail = await prisma.user.findUnique({ where: { email }, select });
+        if (byEmail) {
+          user = await prisma.user.update({
+            where: { email },
+            data: { id: authData.user.id },
+            select,
+          });
+        }
+      }
+    }
+
+    // If still not found, create a new profile from Supabase metadata
     if (!user) {
       const metadata = authData.user.user_metadata || {};
       user = await prisma.user.create({
@@ -43,7 +59,7 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
           phone: metadata.phone || null,
           role: metadata.role || 'USER',
         },
-        select: { id: true, email: true, role: true }
+        select,
       });
     }
 
