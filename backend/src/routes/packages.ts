@@ -14,11 +14,16 @@ interface AuthenticatedRequest extends Request {
 
 const router = express.Router();
 
-// Get all available packages (public)
+// Get all available packages (public) — optionally filter by classType
 router.get('/available', async (req: Request, res: Response) => {
   try {
+    const { classType } = req.query;
+    const where: any = { isActive: true };
+    if (classType) {
+      where.classType = classType;
+    }
     const packages = await prisma.package.findMany({
-      where: { isActive: true },
+      where,
       orderBy: { price: 'asc' },
     });
 
@@ -103,6 +108,7 @@ router.post('/', authenticateToken, requireAdmin, [
   body('sessionsCount').isInt({ min: 1 }).withMessage('Sessions count must be at least 1'),
   body('price').isFloat({ min: 0 }).withMessage('Price must be positive'),
   body('validityDays').optional().isInt({ min: 1 }).withMessage('Validity days must be positive'),
+  body('classType').optional().isString(),
 ], async (req: AuthenticatedRequest, res: Response) => {
   try {
     const errors = validationResult(req);
@@ -116,6 +122,7 @@ router.post('/', authenticateToken, requireAdmin, [
       sessionsCount,
       price,
       validityDays,
+      classType,
     } = req.body;
 
     const newPackage = await prisma.package.create({
@@ -125,6 +132,7 @@ router.post('/', authenticateToken, requireAdmin, [
         sessionsCount,
         price,
         validityDays,
+        classType: classType || 'ALL',
       },
     });
 
@@ -144,6 +152,7 @@ router.put('/:id', authenticateToken, requireAdmin, [
   body('sessionsCount').optional().isInt({ min: 1 }),
   body('price').optional().isFloat({ min: 0 }),
   body('validityDays').optional().isInt({ min: 1 }),
+  body('classType').optional().isString(),
 ], async (req: AuthenticatedRequest, res: Response) => {
   try {
     const errors = validationResult(req);

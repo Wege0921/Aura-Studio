@@ -8,6 +8,7 @@ interface Package {
   sessionsCount: number;
   price: number;
   validityDays?: number;
+  classType?: string;
   isActive: boolean;
 }
 
@@ -64,7 +65,14 @@ const PackageCard: React.FC<PackageCardProps> = ({
     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{pkg.name}</h3>
+          <div className="flex items-center gap-2 mb-2">
+            <h3 className="text-lg font-semibold text-gray-900">{pkg.name}</h3>
+            {pkg.classType && pkg.classType !== 'ALL' && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-aura-sand/20 text-aura-bark">
+                {pkg.classType}
+              </span>
+            )}
+          </div>
           {pkg.description && (
             <p className="text-gray-600 text-sm mb-2">{pkg.description}</p>
           )}

@@ -26,9 +26,13 @@ const LandingPage: React.FC = () => {
     return () => io.disconnect();
   }, []);
 
-  const handleBook = () => {
+  const handleBook = (classType?: string) => {
     if (user) {
-      navigate('/dashboard/classes');
+      if (classType) {
+        navigate(`/dashboard/classes?classType=${classType}`);
+      } else {
+        navigate('/dashboard/classes');
+      }
     } else {
       navigate('/login');
     }
@@ -56,13 +60,13 @@ const LandingPage: React.FC = () => {
         </button>
         <nav className={`lp-links ${menuOpen ? 'lp-open' : ''}`}>
           <button onClick={() => scrollTo('top')}>Home</button>
-          <button onClick={() => scrollTo('offerings')}>Pilates</button>
-          <button onClick={() => scrollTo('offerings')}>Prenatal</button>
-          <button onClick={() => scrollTo('offerings')}>Postpartum</button>
+          <button onClick={() => scrollTo('pilates')}>Pilates</button>
+          <button onClick={() => scrollTo('prenatal')}>Prenatal</button>
+          <button onClick={() => scrollTo('postpartum')}>Postpartum</button>
           <button onClick={() => scrollTo('approach')}>About</button>
           <button onClick={() => scrollTo('footer')}>Contact</button>
         </nav>
-        <button className="lp-btn lp-btn-light" onClick={handleBook}>
+        <button className="lp-btn lp-btn-light" onClick={() => handleBook()}>
           Book a Class
         </button>
         <button
@@ -80,7 +84,7 @@ const LandingPage: React.FC = () => {
           <p className="lp-eyebrow">Move with intention</p>
           <h1>Aura Studio</h1>
           <p className="lp-subhead">Pilates for every stage of life</p>
-          <button className="lp-btn lp-btn-light" onClick={handleBook}>
+          <button className="lp-btn lp-btn-light" onClick={() => handleBook()}>
             Book a Class
           </button>
         </div>
@@ -122,8 +126,8 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ---------- OFFERINGS ---------- */}
-      <section className="lp-offerings" id="offerings">
+      {/* ---------- PILATES ---------- */}
+      <section className="lp-offerings" id="pilates">
         <p className="lp-eyebrow">Our offerings</p>
         <div className="lp-divider" />
         <div className="lp-cards">
@@ -143,12 +147,12 @@ const LandingPage: React.FC = () => {
             </div>
             <h3>Pilates</h3>
             <p>Strengthen, lengthen, and connect through mindful movement.</p>
-            <button className="lp-learn" onClick={handleBook}>
-              Learn more &rarr;
+            <button className="lp-learn" onClick={() => handleBook('PILATES')}>
+              Book Pilates &rarr;
             </button>
           </div>
 
-          <div className="lp-card lp-reveal">
+          <div className="lp-card lp-reveal" id="prenatal">
             <div className="lp-card-image">
               <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -165,12 +169,12 @@ const LandingPage: React.FC = () => {
             </div>
             <h3>Prenatal</h3>
             <p>Support your body and mind through every step of your pregnancy.</p>
-            <button className="lp-learn" onClick={handleBook}>
-              Learn more &rarr;
+            <button className="lp-learn" onClick={() => handleBook('PRENATAL')}>
+              Book Prenatal &rarr;
             </button>
           </div>
 
-          <div className="lp-card lp-reveal">
+          <div className="lp-card lp-reveal" id="postpartum">
             <div className="lp-card-image">
               <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -186,8 +190,8 @@ const LandingPage: React.FC = () => {
             </div>
             <h3>Postpartum</h3>
             <p>Rebuild, restore and feel strong in your body again.</p>
-            <button className="lp-learn" onClick={handleBook}>
-              Learn more &rarr;
+            <button className="lp-learn" onClick={() => handleBook('POSTPARTUM')}>
+              Book Postpartum &rarr;
             </button>
           </div>
         </div>
@@ -209,7 +213,7 @@ const LandingPage: React.FC = () => {
             way to reconnect with yourself and create a stronger foundation for
             life.
           </p>
-          <button className="lp-btn lp-btn-light" onClick={handleBook}>
+          <button className="lp-btn lp-btn-light" onClick={() => handleBook()}>
             About Aura
           </button>
         </div>

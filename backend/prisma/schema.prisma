@@ -82,6 +82,7 @@ model Package {
   sessionsCount Int
   price         Float
   validityDays  Int?
+  classType     String   @default("ALL")
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

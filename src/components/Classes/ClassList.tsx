@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import ClassCard from './ClassCard';
 import BookingModal from '../Booking/BookingModal';
 
@@ -22,6 +23,9 @@ interface ClassListProps {
 }
 
 const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
+  const [searchParams] = useSearchParams();
+  const urlClassType = searchParams.get('classType') || '';
+
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -31,7 +35,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [filters, setFilters] = useState({
     date: '',
-    classType: '',
+    classType: urlClassType,
     instructor: '',
   });
   const [activePackages, setActivePackages] = useState<{ id: string; name: string; remainingSessions: number }[]>([]);
@@ -263,6 +267,8 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
               <option value="">All Types</option>
               <option value="YOGA">Yoga</option>
               <option value="PILATES">Pilates</option>
+              <option value="PRENATAL">Prenatal</option>
+              <option value="POSTPARTUM">Postpartum</option>
               <option value="MEDITATION">Meditation</option>
             </select>
           </div>

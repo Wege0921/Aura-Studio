@@ -8,6 +8,7 @@ interface Package {
   sessionsCount: number;
   price: number;
   validityDays?: number;
+  classType?: string;
   isActive: boolean;
 }
 
@@ -23,6 +24,15 @@ interface PackageListProps {
   showUserPackages?: boolean;
 }
 
+const CATEGORY_LABELS: Record<string, string> = {
+  PILATES: 'Pilates',
+  PRENATAL: 'Prenatal',
+  POSTPARTUM: 'Postpartum',
+  ALL: 'General',
+  YOGA: 'Yoga',
+  MEDITATION: 'Meditation',
+};
+
 const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) => {
   const [packages, setPackages] = useState<Package[]>([]);
   const [userPackages, setUserPackages] = useState<UserPackage[]>([]);
@@ -30,6 +40,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
   const [purchasing, setPurchasing] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
 
   const fetchData = useCallback(async () => {
     try {
@@ -103,13 +114,23 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
     }
   };
 
-  // Combine available packages with user packages
-  const packagesWithUserPackages = packages.map(pkg => {
+  // Filter by selected category
+  const filteredPackages = selectedCategory === 'ALL'
+    ? packages
+    : packages.filter(pkg => pkg.classType === selectedCategory || pkg.classType === 'ALL');
+
+  // Group packages by classType
+  const groupedPackages = filteredPackages.reduce<Record<string, Package[]>>((acc, pkg) => {
+    const type = pkg.classType || 'ALL';
+    if (!acc[type]) acc[type] = [];
+    acc[type].push(pkg);
+    return acc;
+  }, {});
+
+  // Combine available packages with user packages for rendering
+  const packagesWithUserPackages = (pkgs: Package[]) => pkgs.map(pkg => {
     const userPackage = userPackages.find(up => up.package.id === pkg.id);
-    return {
-      package: pkg,
-      userPackage,
-    };
+    return { package: pkg, userPackage };
   });
 
   if (loading) {
@@ -178,23 +199,53 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
         </div>
       )}
 
+      {/* Category Filter */}
+      {!showUserPackages && (
+        <div className="flex flex-wrap gap-2 justify-center">
+          {['ALL', 'PILATES', 'PRENATAL', 'POSTPARTUM', 'YOGA', 'MEDITATION'].map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedCategory === cat
+                  ? 'bg-aura-bark text-aura-ivory'
+                  : 'bg-aura-ivory text-aura-umber hover:bg-aura-sand/20'
+              }`}
+            >
+              {CATEGORY_LABELS[cat] || cat}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Packages Grid */}
-      {packagesWithUserPackages.length === 0 ? (
+      {filteredPackages.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-500">
             {showUserPackages ? 'No packages found.' : 'No packages available at the moment.'}
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {packagesWithUserPackages.map(({ package: pkg, userPackage }) => (
-            <PackageCard
-              key={pkg.id}
-              package={pkg}
-              userPackage={userPackage}
-              onPurchase={handlePurchase}
-              loading={purchasing === pkg.id}
-            />
+        <div className="space-y-8">
+          {Object.entries(groupedPackages).map(([classType, pkgs]) => (
+            <div key={classType}>
+              {selectedCategory === 'ALL' && (
+                <h3 className="text-lg font-semibold text-aura-bark mb-4 font-serif">
+                  {CATEGORY_LABELS[classType] || classType}
+                </h3>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {packagesWithUserPackages(pkgs).map(({ package: pkg, userPackage }) => (
+                  <PackageCard
+                    key={pkg.id}
+                    package={pkg}
+                    userPackage={userPackage}
+                    onPurchase={handlePurchase}
+                    loading={purchasing === pkg.id}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       )}
