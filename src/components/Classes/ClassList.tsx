@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import ClassCard from './ClassCard';
 import BookingModal from '../Booking/BookingModal';
 
@@ -23,6 +23,7 @@ interface ClassListProps {
 }
 
 const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const urlClassType = searchParams.get('classType') || '';
 
@@ -145,6 +146,11 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
   };
 
   const handleBookClick = (classId: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login?returnTo=/classes');
+      return;
+    }
     const classItem = classes.find(c => c.id === classId);
     if (classItem && !classItem.isFullyBooked) {
       setSelectedClass(classItem);

@@ -7,7 +7,7 @@ const router = express.Router();
 // Get all classes with optional filtering
 router.get('/', [
   query('date').optional().isISO8601(),
-  query('classType').optional().isIn(['YOGA', 'PILATES', 'MEDITATION']),
+  query('classType').optional().isIn(['YOGA', 'PILATES', 'PRENATAL', 'POSTPARTUM', 'MEDITATION']),
   query('instructor').optional().isString(),
 ], async (req: Request, res: Response) => {
   try {

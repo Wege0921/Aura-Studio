@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface LoginFormData {
@@ -15,7 +15,10 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login } = useAuth();
+
+  const returnTo = searchParams.get('returnTo') || '/dashboard';
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -31,7 +34,7 @@ const Login: React.FC = () => {
 
     try {
       await login(formData.email, formData.password);
-      navigate('/dashboard');
+      navigate(returnTo);
     } catch (err: any) {
       setError(err.message || 'Login failed');
     } finally {

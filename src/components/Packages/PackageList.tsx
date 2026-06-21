@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PackageCard from './PackageCard';
 
 interface Package {
@@ -34,6 +35,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) => {
+  const navigate = useNavigate();
   const [packages, setPackages] = useState<Package[]>([]);
   const [userPackages, setUserPackages] = useState<UserPackage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,15 +78,15 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
   }, [fetchData]);
 
   const handlePurchase = async (packageId: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login?returnTo=/packages');
+      return;
+    }
+
     try {
       setPurchasing(packageId);
       setError('');
-      
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Please log in to purchase packages');
-        return;
-      }
 
       const response = await fetch('/api/packages/purchase', {
         method: 'POST',

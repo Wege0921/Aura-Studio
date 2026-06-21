@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
 import './LandingPage.css';
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
 
@@ -27,14 +25,10 @@ const LandingPage: React.FC = () => {
   }, []);
 
   const handleBook = (classType?: string) => {
-    if (user) {
-      if (classType) {
-        navigate(`/dashboard/classes?classType=${classType}`);
-      } else {
-        navigate('/dashboard/classes');
-      }
+    if (classType) {
+      navigate(`/classes?classType=${classType}`);
     } else {
-      navigate('/login');
+      navigate('/classes');
     }
   };
 
