@@ -82,26 +82,26 @@ const BookingHistory: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'CONFIRMED':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-900/40 text-green-200';
       case 'CANCELLED':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-900/40 text-red-200';
       case 'COMPLETED':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-aura-umber/40 text-aura-sand';
       default:
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-900/40 text-amber-200';
     }
   };
 
   const getClassTypeColor = (classType: string) => {
     switch (classType) {
       case 'PILATES':
-        return 'bg-pink-100 text-pink-800';
+        return 'bg-aura-clay/20 text-aura-cream';
       case 'PRENATAL':
-        return 'bg-amber-100 text-amber-800';
+        return 'bg-aura-sand/15 text-aura-cream';
       case 'POSTPARTUM':
-        return 'bg-rose-100 text-rose-800';
+        return 'bg-aura-umber/20 text-aura-cream';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-aura-sand/10 text-aura-sand';
     }
   };
 
@@ -131,12 +131,12 @@ const BookingHistory: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">My Bookings</h2>
+        <h2 className="text-2xl font-bold text-aura-cream">My Bookings</h2>
         <div className="mt-4 sm:mt-0">
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="block w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+            className="block w-full sm:w-auto px-3 py-2 border border-aura-sand/30 rounded-md bg-aura-bark text-aura-cream focus:outline-none focus:ring-aura-sand focus:border-aura-sand"
           >
             <option value="all">All Bookings</option>
             <option value="CONFIRMED">Confirmed</option>
@@ -148,7 +148,7 @@ const BookingHistory: React.FC = () => {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
           {error}
         </div>
       )}
@@ -156,18 +156,18 @@ const BookingHistory: React.FC = () => {
       {/* Bookings List */}
       {bookings.length === 0 ? (
         <div className="text-center py-12">
-          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="mx-auto h-12 w-12 text-aura-sand/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No bookings found</h3>
-          <p className="mt-1 text-sm text-gray-500">
+          <h3 className="mt-2 text-sm font-medium text-aura-cream">No bookings found</h3>
+          <p className="mt-1 text-sm text-aura-sand">
             {filter === 'all' ? 'You haven\'t made any bookings yet.' : `No ${filter.toLowerCase()} bookings found.`}
           </p>
         </div>
       ) : (
         <div className="space-y-4">
           {bookings.map((booking) => (
-            <div key={booking.id} className="bg-white shadow rounded-lg p-4 sm:p-6">
+            <div key={booking.id} className="bg-aura-ink shadow-lg shadow-black/20 rounded-xl border border-aura-sand/10 p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-3 sm:mb-0">
@@ -179,9 +179,9 @@ const BookingHistory: React.FC = () => {
                     </span>
                   </div>
                   
-                  <h3 className="text-lg font-medium text-gray-900">{booking.class.name}</h3>
+                  <h3 className="text-lg font-medium text-aura-cream">{booking.class.name}</h3>
                   
-                  <div className="mt-2 space-y-1 text-sm text-gray-600">
+                  <div className="mt-2 space-y-1 text-sm text-aura-sand">
                     <div className="flex items-center">
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -216,7 +216,7 @@ const BookingHistory: React.FC = () => {
                   {isCancellable(booking) && (
                     <button
                       onClick={() => handleCancelBooking(booking.id)}
-                      className="w-full sm:w-auto bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                      className="w-full sm:w-auto bg-red-900/60 text-red-200 px-4 py-2 rounded-md text-sm font-medium hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
                     >
                       Cancel Booking
                     </button>

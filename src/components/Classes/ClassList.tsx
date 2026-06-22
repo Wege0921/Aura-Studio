@@ -38,6 +38,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
     date: '',
     classType: urlClassType,
     instructor: '',
+    packageType: '',
   });
   const [activePackages, setActivePackages] = useState<{ id: string; name: string; remainingSessions: number }[]>([]);
   const [waitlistedClassIds, setWaitlistedClassIds] = useState<string[]>([]);
@@ -139,9 +140,31 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
   };
 
   const handleFilterChange = (filterName: string, value: string) => {
+    if (filterName === 'classType') {
+      const packageType = value ? `${value}|dropin` : '';
+      setFilters(prev => ({
+        ...prev,
+        classType: value,
+        packageType,
+      }));
+    } else {
+      setFilters(prev => ({
+        ...prev,
+        [filterName]: value,
+      }));
+    }
+  };
+
+  const handlePackageFilter = (value: string) => {
+    if (!value) {
+      setFilters(prev => ({ ...prev, packageType: '', classType: '' }));
+      return;
+    }
+    const [classType] = value.split('|');
     setFilters(prev => ({
       ...prev,
-      [filterName]: value,
+      packageType: value,
+      classType,
     }));
   };
 
@@ -246,7 +269,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
       {/* Filters */}
       <div className="bg-aura-ink p-6 rounded-xl shadow-lg shadow-black/20 border border-aura-sand/10">
         <h2 className="text-lg font-semibold text-aura-cream mb-4">Filter Classes</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label htmlFor="date" className="block text-sm font-medium text-aura-cream mb-1">
               Date
@@ -279,22 +302,72 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
           </div>
 
           <div>
+            <label htmlFor="packageType" className="block text-sm font-medium text-aura-cream mb-1">
+              Package
+            </label>
+            <select
+              id="packageType"
+              value={filters.packageType || ''}
+              onChange={(e) => handlePackageFilter(e.target.value)}
+              className="w-full px-3 py-2 border border-aura-sand/30 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+            >
+              <option value="">All Packages</option>
+              {(filters.classType === '' || filters.classType === 'PILATES') && (
+                <optgroup label="Pilates">
+                  <option value="PILATES|dropin">Drop-in</option>
+                  <option value="PILATES|4pack">4 Class Pack</option>
+                  <option value="PILATES|8pack">8 Class Pack</option>
+                  <option value="PILATES|unlimited1">Unlimited Monthly</option>
+                  <option value="PILATES|unlimited3">Unlimited 3 Month</option>
+                  <option value="PILATES|unlimited6">Unlimited 6 Month</option>
+                  <option value="PILATES|unlimited12">Unlimited 1 Year</option>
+                </optgroup>
+              )}
+              {(filters.classType === '' || filters.classType === 'PRENATAL') && (
+                <optgroup label="Prenatal">
+                  <option value="PRENATAL|dropin">Drop-in</option>
+                  <option value="PRENATAL|4pack">4 Class Pack</option>
+                  <option value="PRENATAL|8pack">8 Class Pack</option>
+                  <option value="PRENATAL|unlimited1">Unlimited Monthly</option>
+                  <option value="PRENATAL|unlimited3">Unlimited 3 Month</option>
+                  <option value="PRENATAL|unlimited6">Unlimited 6 Month</option>
+                  <option value="PRENATAL|unlimited12">Unlimited 1 Year</option>
+                </optgroup>
+              )}
+              {(filters.classType === '' || filters.classType === 'POSTPARTUM') && (
+                <optgroup label="Postpartum">
+                  <option value="POSTPARTUM|dropin">Drop-in</option>
+                  <option value="POSTPARTUM|4pack">4 Class Pack</option>
+                  <option value="POSTPARTUM|8pack">8 Class Pack</option>
+                  <option value="POSTPARTUM|unlimited1">Unlimited Monthly</option>
+                  <option value="POSTPARTUM|unlimited3">Unlimited 3 Month</option>
+                  <option value="POSTPARTUM|unlimited6">Unlimited 6 Month</option>
+                  <option value="POSTPARTUM|unlimited12">Unlimited 1 Year</option>
+                </optgroup>
+              )}
+            </select>
+          </div>
+
+          <div>
             <label htmlFor="instructor" className="block text-sm font-medium text-aura-cream mb-1">
               Instructor
             </label>
-            <input
-              type="text"
+            <select
               id="instructor"
               value={filters.instructor}
               onChange={(e) => handleFilterChange('instructor', e.target.value)}
-              placeholder="Search by instructor"
               className="w-full px-3 py-2 border border-aura-sand/30 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
-            />
+            >
+              <option value="">All Instructors</option>
+              {Array.from(new Set(classes.map(c => c.instructor).filter(Boolean))).sort().map(name => (
+                <option key={name} value={name}>{name}</option>
+              ))}
+            </select>
           </div>
         </div>
 
         <button
-          onClick={() => setFilters({ date: '', classType: '', instructor: '' })}
+          onClick={() => setFilters({ date: '', classType: '', instructor: '', packageType: '' })}
           className="mt-4 text-sm text-aura-cream hover:text-white"
         >
           Clear all filters

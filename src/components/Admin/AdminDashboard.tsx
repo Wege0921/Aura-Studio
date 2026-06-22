@@ -91,16 +91,16 @@ const AdminDashboard: React.FC = () => {
     switch (status) {
       case 'CONFIRMED':
       case 'VERIFIED':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-900/40 text-green-200';
       case 'CANCELLED':
       case 'REJECTED':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-900/40 text-red-200';
       case 'PENDING':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-900/40 text-amber-200';
       case 'COMPLETED':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-aura-umber/40 text-aura-sand';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-aura-sand/10 text-aura-sand';
     }
   };
 
@@ -116,13 +116,13 @@ const AdminDashboard: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p className="text-gray-600">Manage your pilates studio operations</p>
+        <h1 className="text-3xl font-bold text-aura-cream">Admin Dashboard</h1>
+        <p className="text-aura-sand">Manage your pilates studio operations</p>
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
           {error}
         </div>
       )}
@@ -130,7 +130,7 @@ const AdminDashboard: React.FC = () => {
       {/* Stats Grid */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-aura-ink p-6 rounded-lg shadow">
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-purple-100 rounded-lg p-3">
                 <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -138,13 +138,13 @@ const AdminDashboard: React.FC = () => {
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Users</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalUsers}</p>
+                <p className="text-sm font-medium text-aura-sand">Total Users</p>
+                <p className="text-2xl font-bold text-aura-cream">{stats.totalUsers}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-aura-ink p-6 rounded-lg shadow">
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-green-100 rounded-lg p-3">
                 <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,27 +152,27 @@ const AdminDashboard: React.FC = () => {
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Classes</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalClasses}</p>
+                <p className="text-sm font-medium text-aura-sand">Total Classes</p>
+                <p className="text-2xl font-bold text-aura-cream">{stats.totalClasses}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-aura-ink p-6 rounded-lg shadow">
             <div className="flex items-center">
-              <div className="flex-shrink-0 bg-blue-100 rounded-lg p-3">
+              <div className="flex-shrink-0 bg-blue-900/30 rounded-lg p-3">
                 <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Bookings</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalBookings}</p>
+                <p className="text-sm font-medium text-aura-sand">Total Bookings</p>
+                <p className="text-2xl font-bold text-aura-cream">{stats.totalBookings}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-aura-ink p-6 rounded-lg shadow">
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-yellow-100 rounded-lg p-3">
                 <svg className="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,13 +180,13 @@ const AdminDashboard: React.FC = () => {
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                <p className="text-2xl font-bold text-gray-900">ETB {stats.totalRevenue.toLocaleString()}</p>
+                <p className="text-sm font-medium text-aura-sand">Total Revenue</p>
+                <p className="text-2xl font-bold text-aura-cream">ETB {stats.totalRevenue.toLocaleString()}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-aura-ink p-6 rounded-lg shadow">
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-pink-100 rounded-lg p-3">
                 <svg className="h-6 w-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -194,22 +194,22 @@ const AdminDashboard: React.FC = () => {
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Active Packages</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.activePackages}</p>
+                <p className="text-sm font-medium text-aura-sand">Active Packages</p>
+                <p className="text-2xl font-bold text-aura-cream">{stats.activePackages}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-aura-ink p-6 rounded-lg shadow">
             <div className="flex items-center">
-              <div className="flex-shrink-0 bg-red-100 rounded-lg p-3">
+              <div className="flex-shrink-0 bg-red-900/30 rounded-lg p-3">
                 <svg className="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Pending Payments</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.pendingPayments}</p>
+                <p className="text-sm font-medium text-aura-sand">Pending Payments</p>
+                <p className="text-2xl font-bold text-aura-cream">{stats.pendingPayments}</p>
               </div>
             </div>
           </div>
@@ -219,21 +219,21 @@ const AdminDashboard: React.FC = () => {
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Bookings */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">Recent Bookings</h2>
+        <div className="bg-aura-ink rounded-lg shadow">
+          <div className="px-6 py-4 border-b border-aura-sand/10">
+            <h2 className="text-lg font-medium text-aura-cream">Recent Bookings</h2>
           </div>
           <div className="p-6">
             {recentBookings.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">No recent bookings</p>
+              <p className="text-aura-sand/70 text-center py-4">No recent bookings</p>
             ) : (
               <div className="space-y-4">
                 {recentBookings.map((booking) => (
                   <div key={booking.id} className="flex items-center justify-between">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">{booking.user.name}</p>
-                      <p className="text-xs text-gray-500">{booking.class.name}</p>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-sm font-medium text-aura-cream">{booking.user.name}</p>
+                      <p className="text-xs text-aura-sand/70">{booking.class.name}</p>
+                      <p className="text-xs text-aura-sand/50">
                         {format(new Date(booking.class.date), 'MMM dd')} at {booking.class.time}
                       </p>
                     </div>
@@ -248,13 +248,13 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Navigation Links */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">Navigation</h2>
+        <div className="bg-aura-ink rounded-lg shadow">
+          <div className="px-6 py-4 border-b border-aura-sand/10">
+            <h2 className="text-lg font-medium text-aura-cream">Navigation</h2>
           </div>
           <div className="p-6">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Management</h2>
+            <div className="bg-aura-ink rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold text-aura-cream mb-4">Management</h2>
               <div className="space-y-3">
                 <a href="/admin/classes" className="block w-full text-left px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
                   Manage Classes
@@ -273,8 +273,8 @@ const AdminDashboard: React.FC = () => {
                 </a>
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Tools</h2>
+            <div className="bg-aura-ink rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold text-aura-cream mb-4">Tools</h2>
               <div className="space-y-3">
                 <a href="/admin/marketing" className="block w-full text-left px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
                   Marketing Tools
@@ -285,26 +285,26 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Recent Payments */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">Recent Payments</h2>
+        <div className="bg-aura-ink rounded-lg shadow">
+          <div className="px-6 py-4 border-b border-aura-sand/10">
+            <h2 className="text-lg font-medium text-aura-cream">Recent Payments</h2>
           </div>
           <div className="p-6">
             {recentPayments.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">No recent payments</p>
+              <p className="text-aura-sand/70 text-center py-4">No recent payments</p>
             ) : (
               <div className="space-y-4">
                 {recentPayments.map((payment) => (
                   <div key={payment.id} className="flex items-center justify-between">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">{payment.user.name}</p>
-                      <p className="text-xs text-gray-500">{payment.paymentMethod}</p>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-sm font-medium text-aura-cream">{payment.user.name}</p>
+                      <p className="text-xs text-aura-sand/70">{payment.paymentMethod}</p>
+                      <p className="text-xs text-aura-sand/50">
                         {format(new Date(payment.createdAt), 'MMM dd, yyyy')}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">ETB {payment.amount.toLocaleString()}</p>
+                      <p className="text-sm font-medium text-aura-cream">ETB {payment.amount.toLocaleString()}</p>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(payment.status)}`}>
                         {payment.status}
                       </span>

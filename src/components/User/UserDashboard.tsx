@@ -114,7 +114,7 @@ const UserDashboard: React.FC = () => {
 
   if (error) {
     return (
-      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+      <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
         {error}
       </div>
     );
@@ -122,30 +122,30 @@ const UserDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow p-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+      <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-sand/10 p-6">
+        <h1 className="text-3xl font-bold text-aura-cream mb-2">
           Welcome back, {user?.name}!
         </h1>
-        <p className="text-gray-600 mb-6">
+        <p className="text-aura-sand mb-6">
           Here's your personal pilates dashboard. View your upcoming classes, manage bookings, and track your progress.
         </p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Upcoming Classes</h2>
+        <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-sand/10 p-6">
+          <h2 className="text-xl font-semibold text-aura-cream mb-4">Upcoming Classes</h2>
           <div className="space-y-3">
             {upcomingBookings.length === 0 ? (
-              <p className="text-gray-500 text-sm">No upcoming classes booked</p>
+              <p className="text-aura-sand/70 text-sm">No upcoming classes booked</p>
             ) : (
               upcomingBookings.map((booking) => (
-                <div key={booking.id} className="border-l-4 border-purple-200 pl-4">
+                <div key={booking.id} className="border-l-4 border-aura-sand/20 pl-4">
                   <div className="text-sm">
-                    <p className="font-medium text-purple-900">{booking.class.name}</p>
-                    <p className="text-gray-600">
+                    <p className="font-medium text-aura-cream">{booking.class.name}</p>
+                    <p className="text-aura-sand">
                       {format(new Date(booking.class.date), 'MMM dd')} at {booking.class.time}
                     </p>
-                    <p className="text-xs text-gray-500">with {booking.class.instructor}</p>
+                    <p className="text-xs text-aura-sand/70">with {booking.class.instructor}</p>
                   </div>
                 </div>
               ))
@@ -153,11 +153,11 @@ const UserDashboard: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Packages</h2>
+        <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-sand/10 p-6">
+          <h2 className="text-xl font-semibold text-aura-cream mb-4">Your Packages</h2>
           <div className="space-y-3">
             {userPackages.length === 0 ? (
-              <p className="text-gray-500 text-sm">No active packages</p>
+              <p className="text-aura-sand/70 text-sm">No active packages</p>
             ) : (
               userPackages.map((userPackage) => {
                 const status = getPackageStatus(userPackage);
@@ -165,13 +165,13 @@ const UserDashboard: React.FC = () => {
                   <div key={userPackage.id} className={`border-l-4 ${status.border} pl-4`}>
                     <div className="text-sm">
                       <p className={`font-medium ${status.color}`}>{userPackage.package.name}</p>
-                      <p className="text-gray-600">
+                      <p className="text-aura-sand">
                         {userPackage.remainingSessions !== undefined 
                           ? `${userPackage.remainingSessions} sessions remaining` 
                           : 'Unlimited sessions'
                         }
                       </p>
-                      <p className="text-xs text-gray-500">{status.text}</p>
+                      <p className="text-xs text-aura-sand/70">{status.text}</p>
                     </div>
                   </div>
                 );
@@ -180,24 +180,24 @@ const UserDashboard: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+        <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-sand/10 p-6">
+          <h2 className="text-xl font-semibold text-aura-cream mb-4">Quick Actions</h2>
           <div className="space-y-3">
             <button 
               onClick={handleBookClass}
-              className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition-colors"
+              className="w-full bg-aura-clay text-aura-ivory py-2 px-4 rounded-md hover:bg-aura-sand transition-colors"
             >
               Book a Class
             </button>
             <button 
               onClick={handleBuyPackage}
-              className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors"
+              className="w-full bg-aura-umber text-aura-ivory py-2 px-4 rounded-md hover:bg-aura-clay transition-colors"
             >
               Buy a Package
             </button>
             <button 
               onClick={handleViewSchedule}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+              className="w-full bg-aura-bark text-aura-cream py-2 px-4 rounded-md hover:bg-aura-umber transition-colors border border-aura-sand/20"
             >
               View Schedule
             </button>
