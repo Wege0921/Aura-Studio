@@ -225,18 +225,18 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
     <div className="space-y-6">
       {/* Success Message */}
       {successMessage && (
-        <div className="bg-green-900/30 border border-green-700/40 text-green-300 px-4 py-3 rounded backdrop-blur-sm">
+        <div className="bg-green-900/60 border border-green-600/40 text-green-200 px-4 py-3 rounded">
           {successMessage}
         </div>
       )}
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-900/30 border border-red-700/40 text-red-300 px-4 py-3 rounded backdrop-blur-sm">
+        <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
           {error}
           <button
             onClick={() => setError('')}
-            className="ml-4 text-red-300 hover:text-red-200"
+            className="ml-4 text-red-200 hover:text-white"
           >
             ×
           </button>
@@ -244,11 +244,11 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
       )}
 
       {/* Filters */}
-      <div className="bg-[#2c2014]/60 backdrop-blur-sm p-6 rounded-xl shadow-lg shadow-black/20 border border-aura-sand/10">
+      <div className="bg-aura-ink p-6 rounded-xl shadow-lg shadow-black/20 border border-aura-sand/10">
         <h2 className="text-lg font-semibold text-aura-cream mb-4">Filter Classes</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label htmlFor="date" className="block text-sm font-medium text-aura-sand mb-1">
+            <label htmlFor="date" className="block text-sm font-medium text-aura-cream mb-1">
               Date
             </label>
             <input
@@ -256,19 +256,19 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
               id="date"
               value={filters.date}
               onChange={(e) => handleFilterChange('date', e.target.value)}
-              className="w-full px-3 py-2 border border-aura-sand/20 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-ink/40 text-aura-cream placeholder:text-aura-sand/50"
+              className="w-full px-3 py-2 border border-aura-sand/30 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
             />
           </div>
 
           <div>
-            <label htmlFor="classType" className="block text-sm font-medium text-aura-sand mb-1">
+            <label htmlFor="classType" className="block text-sm font-medium text-aura-cream mb-1">
               Class Type
             </label>
             <select
               id="classType"
               value={filters.classType}
               onChange={(e) => handleFilterChange('classType', e.target.value)}
-              className="w-full px-3 py-2 border border-aura-sand/20 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-ink/40 text-aura-cream placeholder:text-aura-sand/50"
+              className="w-full px-3 py-2 border border-aura-sand/30 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
             >
               <option value="">All Types</option>
               <option value="YOGA">Yoga</option>
@@ -280,7 +280,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
           </div>
 
           <div>
-            <label htmlFor="instructor" className="block text-sm font-medium text-aura-sand mb-1">
+            <label htmlFor="instructor" className="block text-sm font-medium text-aura-cream mb-1">
               Instructor
             </label>
             <input
@@ -289,14 +289,14 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
               value={filters.instructor}
               onChange={(e) => handleFilterChange('instructor', e.target.value)}
               placeholder="Search by instructor"
-              className="w-full px-3 py-2 border border-aura-sand/20 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-ink/40 text-aura-cream placeholder:text-aura-sand/50"
+              className="w-full px-3 py-2 border border-aura-sand/30 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
             />
           </div>
         </div>
 
         <button
           onClick={() => setFilters({ date: '', classType: '', instructor: '' })}
-          className="mt-4 text-sm text-aura-sand hover:text-aura-cream"
+          className="mt-4 text-sm text-aura-cream hover:text-white"
         >
           Clear all filters
         </button>
@@ -305,7 +305,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
       {/* Classes Grid */}
       {classes.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-aura-sand/70">No classes found matching your criteria.</p>
+          <p className="text-aura-cream">No classes found matching your criteria.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

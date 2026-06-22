@@ -27,7 +27,7 @@ import './App.css';
 
 function PublicLayout({ children, fullWidth = false }: { children: React.ReactNode; fullWidth?: boolean }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-aura-ink via-[#2c2014] to-aura-bark">
+    <div className="min-h-screen bg-aura-bark">
       <PublicHeader />
       {fullWidth ? (
         children
@@ -195,7 +195,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-aura-paper">
+        <div className="min-h-screen bg-aura-bark">
           <NetworkStatusBar />
           <OfflineIndicator />
           <PWAInstallBanner />

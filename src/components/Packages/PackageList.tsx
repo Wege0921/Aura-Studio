@@ -147,17 +147,17 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
     <div className="space-y-6">
       {/* Messages */}
       {successMessage && (
-        <div className="bg-green-900/30 border border-green-700/40 text-green-300 px-4 py-3 rounded backdrop-blur-sm">
+        <div className="bg-green-900/60 border border-green-600/40 text-green-200 px-4 py-3 rounded">
           {successMessage}
         </div>
       )}
 
       {error && (
-        <div className="bg-red-900/30 border border-red-700/40 text-red-300 px-4 py-3 rounded backdrop-blur-sm">
+        <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
           {error}
           <button
             onClick={() => setError('')}
-            className="ml-4 text-red-300 hover:text-red-200"
+            className="ml-4 text-red-200 hover:text-white"
           >
             ×
           </button>
@@ -179,13 +179,13 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
 
       {/* User Packages Summary (when not showing only user packages) */}
       {!showUserPackages && userPackages.length > 0 && (
-        <div className="bg-[#2c2014]/60 backdrop-blur-sm border border-aura-sand/10 rounded-xl p-6 shadow-lg shadow-black/20">
+        <div className="bg-aura-ink border border-aura-sand/10 rounded-xl p-6 shadow-lg shadow-black/20">
           <h3 className="text-lg font-semibold text-aura-cream mb-4">Your Active Packages</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {userPackages
               .filter(up => up.remainingSessions > 0 && (!up.expiresAt || new Date(up.expiresAt) >= new Date()))
               .map(userPackage => (
-                <div key={userPackage.id} className="bg-aura-ink/40 rounded-lg p-4 shadow-sm border border-aura-sand/10">
+                <div key={userPackage.id} className="bg-aura-bark rounded-lg p-4 shadow-sm border border-aura-sand/10">
                   <h4 className="font-medium text-aura-cream">{userPackage.package.name}</h4>
                   <p className="text-sm text-aura-sand mt-1">
                     {userPackage.remainingSessions} sessions remaining
@@ -211,7 +211,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 selectedCategory === cat
                   ? 'bg-aura-bark text-aura-ivory'
-                  : 'bg-[#2c2014]/60 text-aura-sand hover:bg-aura-sand/20 border border-aura-sand/10'
+                  : 'bg-aura-ink text-aura-sand hover:bg-aura-bark border border-aura-sand/10'
               }`}
             >
               {CATEGORY_LABELS[cat] || cat}
@@ -223,7 +223,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
       {/* Packages Grid */}
       {filteredPackages.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-aura-sand/70">
+          <p className="text-aura-cream">
             {showUserPackages ? 'No packages found.' : 'No packages available at the moment.'}
           </p>
         </div>
