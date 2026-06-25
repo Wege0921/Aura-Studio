@@ -80,17 +80,7 @@ const LandingPage: React.FC = () => {
         <div className="lp-cards">
           <div className="lp-card lp-reveal">
             <div className="lp-card-image">
-              <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="lp-p1" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#3a2c1d" />
-                    <stop offset="100%" stopColor="#6e5436" />
-                  </linearGradient>
-                </defs>
-                <rect width="400" height="420" fill="url(#lp-p1)" />
-                <circle cx="290" cy="120" r="120" fill="#a4815c" opacity="0.5" />
-                <path d="M0 420 L0 300 Q150 250 400 340 L400 420 Z" fill="#241a10" opacity="0.55" />
-              </svg>
+              <img src="/images/Pilates.JPG" alt="Pilates" />
             </div>
             <h3>Pilates</h3>
             <p>Strengthen, lengthen, and connect through mindful movement.</p>
@@ -101,18 +91,7 @@ const LandingPage: React.FC = () => {
 
           <div className="lp-card lp-reveal" id="prenatal">
             <div className="lp-card-image">
-              <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="lp-p2" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#46341f" />
-                    <stop offset="100%" stopColor="#211609" />
-                  </linearGradient>
-                </defs>
-                <rect width="400" height="420" fill="url(#lp-p2)" />
-                <line x1="40" y1="0" x2="220" y2="420" stroke="#cdab85" strokeWidth="3" opacity="0.35" />
-                <line x1="90" y1="0" x2="270" y2="420" stroke="#cdab85" strokeWidth="2" opacity="0.2" />
-                <line x1="320" y1="0" x2="140" y2="420" stroke="#1a1106" strokeWidth="6" opacity="0.4" />
-              </svg>
+              <img src="/images/Prenatal.JPG" alt="Prenatal" />
             </div>
             <h3>Prenatal</h3>
             <p>Support your body and mind through every step of your pregnancy.</p>
@@ -123,17 +102,7 @@ const LandingPage: React.FC = () => {
 
           <div className="lp-card lp-reveal" id="postpartum">
             <div className="lp-card-image">
-              <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="lp-p3" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#5c4530" />
-                    <stop offset="100%" stopColor="#2c2014" />
-                  </linearGradient>
-                </defs>
-                <rect width="400" height="420" fill="url(#lp-p3)" />
-                <circle cx="120" cy="320" r="160" fill="#cdab85" opacity="0.28" />
-                <rect x="0" y="0" width="400" height="420" fill="#1a1106" opacity="0.15" />
-              </svg>
+              <img src="/images/Postpartum.JPG" alt="Postpartum" />
             </div>
             <h3>Postpartum</h3>
             <p>Rebuild, restore and feel strong in your body again.</p>
@@ -160,7 +129,7 @@ const LandingPage: React.FC = () => {
             way to reconnect with yourself and create a stronger foundation for
             life.
           </p>
-          <button className="lp-btn lp-btn-light" onClick={() => handleBook()}>
+          <button className="lp-btn lp-btn-light" onClick={() => scrollTo('approach')}>
             About Aura
           </button>
         </div>

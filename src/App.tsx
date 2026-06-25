@@ -15,6 +15,7 @@ import PackageList from './components/Packages/PackageList';
 import OfflineIndicator from './components/OfflineIndicator';
 import PWAInstallBanner from './components/PWAInstallBanner';
 import NetworkStatusBar from './components/NetworkStatusBar';
+import MobileBottomTabs from './components/Layout/MobileBottomTabs';
 import ClassManagement from './components/Admin/ClassManagement';
 import UserManagement from './components/Admin/UserManagement';
 import BookingManagement from './components/Admin/BookingManagement';
@@ -220,6 +221,7 @@ function App() {
           <OfflineIndicator />
           <PWAInstallBanner />
           <AppRoutes />
+          <MobileBottomTabs />
         </div>
       </Router>
     </AuthProvider>

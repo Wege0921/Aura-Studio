@@ -117,9 +117,6 @@ const PublicHeader: React.FC = () => {
           <span></span>
         </button>
         <button onClick={() => handleNav('top')}>Home</button>
-        <button onClick={() => handleNav('pilates')}>Pilates</button>
-        <button onClick={() => handleNav('prenatal')}>Prenatal</button>
-        <button onClick={() => handleNav('postpartum')}>Postpartum</button>
         <button onClick={handleClasses}>Classes</button>
         <button onClick={handlePackages}>Packages</button>
         <button onClick={() => handleNav('approach')}>About</button>
@@ -153,9 +150,6 @@ const PublicHeader: React.FC = () => {
         </button>
         <nav className="ph-links">
           <button onClick={() => handleNav('top')}>Home</button>
-          <button onClick={() => handleNav('pilates')}>Pilates</button>
-          <button onClick={() => handleNav('prenatal')}>Prenatal</button>
-          <button onClick={() => handleNav('postpartum')}>Postpartum</button>
           <button onClick={handleClasses}>Classes</button>
           <button onClick={handlePackages}>Packages</button>
           <button onClick={() => handleNav('approach')}>About</button>

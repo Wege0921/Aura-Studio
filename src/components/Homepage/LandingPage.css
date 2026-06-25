@@ -345,11 +345,13 @@
   overflow: hidden;
   margin-bottom: 1.6rem;
 }
-.landing-page .lp-card-image svg {
+.landing-page .lp-card-image svg,
+.landing-page .lp-card-image img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  object-fit: cover;
 }
 .landing-page .lp-card h3 {
   font-size: 1rem;
@@ -514,24 +516,78 @@
 
   .landing-page .lp-hero {
     grid-template-columns: 1fr;
-    min-height: auto;
-    padding-top: 6rem;
+    min-height: 50vh;
+    padding-top: 0;
   }
   .landing-page .lp-hero-content {
-    padding: 2.5rem 1.8rem 3rem;
+    padding: 6rem 1.8rem 3rem;
     order: 1;
+    position: relative;
+    z-index: 2;
+    align-self: end;
+    text-align: left;
   }
   .landing-page .lp-hero-content h1 { font-size: 3.1rem; }
-  .landing-page .lp-hero-art { order: 2; height: 280px; }
-  .landing-page .lp-hero-art .lp-hero-img { object-position: center; }
+  .landing-page .lp-hero-art {
+    order: 0;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .landing-page .lp-hero-art::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(36, 26, 19, 0.55);
+    z-index: 1;
+  }
+  .landing-page .lp-hero-art .lp-hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 85% center;
+    display: block;
+  }
 
-  .landing-page .lp-offerings { padding: 4.5rem 1.6rem 4.5rem; }
-  .landing-page .lp-cards { grid-template-columns: 1fr; gap: 2.6rem; }
+  .landing-page .lp-offerings { padding: 3rem 1rem 3.5rem; }
+  .landing-page .lp-cards { grid-template-columns: repeat(3, 1fr); gap: 0.8rem; }
+  .landing-page .lp-card-image { aspect-ratio: 1/1; margin-bottom: 0.8rem; }
+  .landing-page .lp-card h3 { font-size: 0.75rem; margin-bottom: 0.4rem; }
+  .landing-page .lp-card p { font-size: 0.72rem; line-height: 1.5; margin-bottom: 0.7rem; }
+  .landing-page .lp-card .lp-learn { font-size: 0.6rem; }
 
-  .landing-page .lp-approach { grid-template-columns: 1fr; }
-  .landing-page .lp-approach-text { padding: 3.6rem 1.8rem; }
+  .landing-page .lp-approach {
+    grid-template-columns: 1fr;
+    min-height: 60vh;
+    position: relative;
+  }
+  .landing-page .lp-approach-text {
+    padding: 3.6rem 1.8rem;
+    position: relative;
+    z-index: 2;
+    align-self: end;
+    text-align: center;
+  }
   .landing-page .lp-approach-text h2 { font-size: 2.1rem; }
-  .landing-page .lp-approach-art { min-height: 320px; order: -1; }
+  .landing-page .lp-approach-art {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .landing-page .lp-approach-art::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(36, 26, 19, 0.55);
+    z-index: 1;
+  }
+  .landing-page .lp-approach-art .lp-approach-img {
+    object-position: 85% center;
+  }
 
   .landing-page .lp-footer-top {
     grid-template-columns: 1fr 1fr;

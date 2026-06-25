@@ -1,0 +1,50 @@
+.mobile-bottom-tabs {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 400;
+  background: #241a13;
+  border-top: 1px solid rgba(242, 235, 224, 0.12);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.mbt-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  flex: 1;
+  padding: 8px 0 10px;
+  background: none;
+  border: none;
+  color: rgba(242, 235, 224, 0.55);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.mbt-tab:hover,
+.mbt-tab.mbt-active {
+  color: #f2ebe0;
+}
+
+.mbt-icon {
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.8;
+}
+
+.mbt-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  font-family: 'Jost', sans-serif;
+}
+
+/* Show only on mobile */
+@media (max-width: 920px) {
+  .mobile-bottom-tabs {
+    display: flex;
+  }
+}
