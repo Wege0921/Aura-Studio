@@ -1,38 +1,56 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import React, { useEffect, lazy, Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navigation from './components/Layout/Navigation';
 import PublicHeader from './components/Layout/PublicHeader';
-import Homepage from './components/Homepage/LandingPage';
-import Login from './components/Auth/Login';
-import Register from './components/Auth/Register';
-import ForgotPassword from './components/Auth/ForgotPassword';
-import ResetPassword from './components/Auth/ResetPassword';
-import DashboardLayout from './components/DashboardLayout';
-// import ClassList from './components/Classes/ClassList';
-import PackageList from './components/Packages/PackageList';
 import OfflineIndicator from './components/OfflineIndicator';
 import PWAInstallBanner from './components/PWAInstallBanner';
 import NetworkStatusBar from './components/NetworkStatusBar';
 import MobileBottomTabs from './components/Layout/MobileBottomTabs';
-import ClassManagement from './components/Admin/ClassManagement';
-import UserManagement from './components/Admin/UserManagement';
-import BookingManagement from './components/Admin/BookingManagement';
-import PackageManagement from './components/Admin/PackageManagement';
-import PaymentManagement from './components/Admin/PaymentManagement';
-import AdminDashboard from './components/Admin/AdminDashboard';
-import Analytics from './components/Admin/Analytics';
-import MarketingDashboard from './components/Admin/MarketingDashboard';
-// import ClassDetail from './components/Classes/ClassDetail';
-import ContactPage from './components/Homepage/ContactPage';
-import NotificationSettings from './components/Notifications/NotificationSettings';
 import { register } from './utils/serviceWorkerRegistration';
 import './App.css';
 
+// Lazy-loaded routes — split into separate JS chunks
+const Homepage = lazy(() => import('./components/Homepage/LandingPage'));
+const Login = lazy(() => import('./components/Auth/Login'));
+const Register = lazy(() => import('./components/Auth/Register'));
+const ForgotPassword = lazy(() => import('./components/Auth/ForgotPassword'));
+const ResetPassword = lazy(() => import('./components/Auth/ResetPassword'));
+const DashboardLayout = lazy(() => import('./components/DashboardLayout'));
+const PackageList = lazy(() => import('./components/Packages/PackageList'));
+const ContactPage = lazy(() => import('./components/Homepage/ContactPage'));
+const NotificationSettings = lazy(() => import('./components/Notifications/NotificationSettings'));
+const ClassManagement = lazy(() => import('./components/Admin/ClassManagement'));
+const UserManagement = lazy(() => import('./components/Admin/UserManagement'));
+const BookingManagement = lazy(() => import('./components/Admin/BookingManagement'));
+const PackageManagement = lazy(() => import('./components/Admin/PackageManagement'));
+const Analytics = lazy(() => import('./components/Admin/Analytics'));
+const MarketingDashboard = lazy(() => import('./components/Admin/MarketingDashboard'));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 2,      // cache for 2 minutes
+      gcTime: 1000 * 60 * 10,         // garbage collect after 10 minutes
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+function PageLoader() {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-aura-bark">
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-sand"></div>
+    </div>
+  );
+}
+
 function PublicLayout({ children, fullWidth = false }: { children: React.ReactNode; fullWidth?: boolean }) {
   return (
-    <div className="min-h-screen bg-aura-bark">
+    <div className="min-h-screen bg-aura-bark pb-24 md:pb-0">
       <PublicHeader />
       {fullWidth ? (
         children
@@ -47,6 +65,7 @@ function PublicLayout({ children, fullWidth = false }: { children: React.ReactNo
 
 function AppRoutes() {
   return (
+    <Suspense fallback={<PageLoader />}>
     <Routes>
       <Route path="/" element={<PublicLayout fullWidth><Homepage /></PublicLayout>} />
       <Route path="/login" element={<Login />} />
@@ -197,6 +216,7 @@ function AppRoutes() {
         }
       />
     </Routes>
+    </Suspense>
   );
 }
 
@@ -217,6 +237,7 @@ function App() {
   }, []);
 
   return (
+    <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <Router>
         <div className="min-h-screen bg-aura-bark">
@@ -228,6 +249,7 @@ function App() {
         </div>
       </Router>
     </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

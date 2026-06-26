@@ -27,8 +27,8 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ tabs, activeTab, onTa
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={`
-                flex flex-col items-center justify-center flex-shrink-0 h-full
-                min-w-[64px] min-h-[44px] px-2
+                flex flex-col items-center justify-center flex-1 h-full
+                min-h-[44px] px-2
                 transition-colors duration-200 font-sans
                 ${isActive
                   ? 'text-aura-ivory'

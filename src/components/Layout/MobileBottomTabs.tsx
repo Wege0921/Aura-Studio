@@ -22,6 +22,11 @@ const MobileBottomTabs: React.FC = () => {
   const location = useLocation();
   const { user } = useAuth();
 
+  // Don't show public bottom tabs inside the dashboard (it has its own nav)
+  if (location.pathname.startsWith('/dashboard')) {
+    return null;
+  }
+
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/' || location.pathname === '/home';
     return location.pathname.startsWith(path);

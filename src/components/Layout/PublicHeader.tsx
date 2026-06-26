@@ -7,6 +7,7 @@ const PublicHeader: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
   const [menuOpen, setMenuOpen] = useState(false);
 
   const isLandingPage = location.pathname === '/' || location.pathname === '/home';
@@ -125,6 +126,9 @@ const PublicHeader: React.FC = () => {
         <button onClick={handleContact}>Contact</button>
         {user ? (
           <>
+            {isAdmin && (
+              <button onClick={handleDashboard}>Admin</button>
+            )}
             <button onClick={handleDashboard}>Dashboard</button>
             <button onClick={handleLogout}>Logout</button>
           </>
@@ -159,9 +163,11 @@ const PublicHeader: React.FC = () => {
         </nav>
         {user ? (
           <div className="ph-auth-btns">
-            <button className="ph-btn ph-btn-light" onClick={handleDashboard}>
-              Dashboard
-            </button>
+            {isAdmin && (
+              <button className="ph-btn ph-btn-light" onClick={handleDashboard}>
+                Admin
+              </button>
+            )}
             <button className="ph-btn ph-btn-outline" onClick={handleLogout}>
               Logout
             </button>

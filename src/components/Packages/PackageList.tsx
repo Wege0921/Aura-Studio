@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSEO } from '../../hooks/useSEO';
 import PackageCard from './PackageCard';
 import PurchaseModal from './PurchaseModal';
+import { api } from '../../lib/api';
 
 interface Package {
   id: string;
@@ -36,12 +38,9 @@ const CATEGORY_LABELS: Record<string, string> = {
 const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) => {
   useSEO({ title: 'Packages — AURA Yoga' });
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
-  const [packages, setPackages] = useState<Package[]>([]);
-  const [userPackages, setUserPackages] = useState<UserPackage[]>([]);
-  const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState<string | null>(null);
-  const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [classTypeFilter, setClassTypeFilter] = useState<string>('');
   const [sessionsFilter, setSessionsFilter] = useState<string>('');
@@ -51,38 +50,23 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
   const ITEMS_PER_PAGE = 9;
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
-  const [purchaseLoading, setPurchaseLoading] = useState(false);
 
-  const fetchData = useCallback(async () => {
-    try {
-      setLoading(true);
+  const token = localStorage.getItem('token');
 
-      const packagesResponse = await fetch('/api/packages/available');
-      if (packagesResponse.ok) {
-        const packagesData = await packagesResponse.json();
-        setPackages(Array.isArray(packagesData) ? packagesData : []);
-      } else {
-        setError(`Failed to load packages (${packagesResponse.status}). Please try again.`);
-      }
+  const { data: packagesData, isLoading: loading, error: packagesError } = useQuery<Package[]>({
+    queryKey: ['packages-available'],
+    queryFn: () => api.get<Package[]>('/api/packages/available'),
+  });
+  const packages: Package[] = packagesData ?? [];
 
-      const token = localStorage.getItem('token');
-      if (token && !showUserPackages) {
-        const userPackagesResponse = await fetch('/api/packages/my-packages', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        if (userPackagesResponse.ok) {
-          const userPackagesData = await userPackagesResponse.json();
-          setUserPackages(userPackagesData);
-        }
-      }
-    } catch (err) {
-      setError('Failed to load packages. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }, [showUserPackages]);
+  const { data: userPackagesData } = useQuery<UserPackage[]>({
+    queryKey: ['my-packages'],
+    queryFn: () => api.get<UserPackage[]>('/api/packages/my-packages'),
+    enabled: !!token && !showUserPackages,
+  });
+  const userPackages: UserPackage[] = userPackagesData ?? [];
+
+  const error = packagesError ? (packagesError as Error).message : '';
 
   // Sync URL classType param with filter state
   useEffect(() => {
@@ -91,10 +75,6 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
       setClassTypeFilter(urlType.toUpperCase());
     }
   }, [searchParams]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
   const handlePurchase = (packageId: string) => {
     const token = localStorage.getItem('token');
@@ -107,46 +87,29 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
     if (pkg) {
       setSelectedPackage(pkg);
       setShowPurchaseModal(true);
-      setError('');
     }
   };
 
+  const [purchaseError, setPurchaseError] = useState('');
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
+
   const handleConfirmPurchase = async (paymentMethod: string, receiptFile?: File) => {
     if (!selectedPackage) return;
-
     try {
       setPurchaseLoading(true);
       setPurchasing(selectedPackage.id);
-      const token = localStorage.getItem('token');
-
       const formData = new FormData();
       formData.append('packageId', selectedPackage.id);
       formData.append('paymentMethod', paymentMethod);
-      if (receiptFile) {
-        formData.append('paymentReceipt', receiptFile);
-      }
-
-      const response = await fetch('/api/packages/purchase', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccessMessage(data.message || 'Purchase request submitted successfully!');
-        setShowPurchaseModal(false);
-        setSelectedPackage(null);
-        fetchData();
-        setTimeout(() => setSuccessMessage(''), 5000);
-      } else {
-        setError(data.error || 'Purchase failed');
-      }
+      if (receiptFile) formData.append('paymentReceipt', receiptFile);
+      const data = await api.postForm<{ message?: string; error?: string }>('/api/packages/purchase', formData);
+      setSuccessMessage(data.message || 'Purchase request submitted successfully!');
+      setShowPurchaseModal(false);
+      setSelectedPackage(null);
+      queryClient.invalidateQueries({ queryKey: ['my-packages'] });
+      setTimeout(() => setSuccessMessage(''), 5000);
     } catch (err) {
-      setError('Network error. Please try again.');
+      setPurchaseError((err as Error).message || 'Purchase failed');
     } finally {
       setPurchaseLoading(false);
       setPurchasing(null);
@@ -207,15 +170,9 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
         </div>
       )}
 
-      {error && (
+      {(error || purchaseError) && (
         <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
-          {error}
-          <button
-            onClick={() => setError('')}
-            className="ml-4 text-red-200 hover:text-white"
-          >
-            ×
-          </button>
+          {error || purchaseError}
         </div>
       )}
 
@@ -384,7 +341,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
 
           {/* Pagination */}
           {filteredPackages.length > ITEMS_PER_PAGE && (
-            <div className="bg-aura-ink px-4 py-3 mt-6 flex items-center justify-between border border-aura-sand/10 rounded-lg">
+            <div className="bg-aura-ink px-4 py-3 mt-6 mb-20 flex items-center justify-between border border-aura-sand/10 rounded-lg">
               <div className="flex-1 flex justify-between sm:hidden">
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}

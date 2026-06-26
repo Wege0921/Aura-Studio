@@ -1,22 +1,6 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Navigate, useLocation } from 'react-router-dom';
-import UserDashboard from './User/UserDashboard';
-import ProfilePage from './User/ProfilePage';
-// import MyWaitlist from './User/MyWaitlist';
-// import CalendarView from './Classes/CalendarView';
-// import ClassList from './Classes/ClassList';
-import PackageList from './Packages/PackageList';
-// import BookingHistory from './Booking/BookingHistory';
-import PaymentHistory from './Payment/PaymentHistory';
-import AdminDashboardPage from './Admin/AdminDashboardPage';
-import ClassManagement from './Admin/ClassManagement';
-import UserManagement from './Admin/UserManagement';
-import BookingManagement from './Admin/BookingManagement';
-import PackageManagement from './Admin/PackageManagement';
-import PaymentManagement from './Admin/PaymentManagement';
-import InstructorManagement from './Admin/InstructorManagement';
-import Analytics from './Admin/Analytics';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import MobileBottomNav from './Layout/MobileBottomNav';
 import DesktopSidebar from './Layout/DesktopSidebar';
 import TabletSidebar from './Layout/TabletSidebar';
@@ -35,6 +19,20 @@ import {
   // CalendarIcon,
 } from './Layout/TabIcons';
 
+// Lazy-loaded — each loads only when its tab is first opened
+const UserDashboard = lazy(() => import('./User/UserDashboard'));
+const ProfilePage = lazy(() => import('./User/ProfilePage'));
+const PackageList = lazy(() => import('./Packages/PackageList'));
+const PaymentHistory = lazy(() => import('./Payment/PaymentHistory'));
+const AdminDashboardPage = lazy(() => import('./Admin/AdminDashboardPage'));
+const ClassManagement = lazy(() => import('./Admin/ClassManagement'));
+const UserManagement = lazy(() => import('./Admin/UserManagement'));
+const BookingManagement = lazy(() => import('./Admin/BookingManagement'));
+const PackageManagement = lazy(() => import('./Admin/PackageManagement'));
+const PaymentManagement = lazy(() => import('./Admin/PaymentManagement'));
+const InstructorManagement = lazy(() => import('./Admin/InstructorManagement'));
+const Analytics = lazy(() => import('./Admin/Analytics'));
+
 type TabType = 'home' | /* 'classes' | */ 'packages' | /* 'bookings' | */ 'payments' | /* 'waitlist' | */ 'profile' | /* 'calendar' | */ 'admin-dashboard' | 'admin-classes' | 'admin-users' | 'admin-bookings' | 'admin-packages' | 'admin-payments' | 'admin-instructors' | 'admin-analytics';
 
 interface TabDef {
@@ -46,10 +44,17 @@ interface TabDef {
 const DashboardLayout: React.FC = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showMobileDrawer, setShowMobileDrawer] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [viewMode, setViewMode] = useState<'admin' | 'user'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('aura-view-mode') as 'admin' | 'user') || 'admin';
+    }
+    return 'admin';
+  });
 
   useEffect(() => {
     const handleClickOutside = () => setShowMobileMenu(false);
@@ -68,9 +73,9 @@ const DashboardLayout: React.FC = () => {
     if (tab && tabMap[tab]) {
       setActiveTab(tabMap[tab]);
     } else if (isAdmin) {
-      setActiveTab('admin-dashboard');
+      setActiveTab(viewMode === 'admin' ? 'admin-dashboard' : 'home');
     }
-  }, [location.pathname, user]);
+  }, [location.pathname, user, viewMode]);
 
   const isAdmin = user?.role === 'ADMIN';
 
@@ -96,11 +101,31 @@ const DashboardLayout: React.FC = () => {
     { id: 'admin-analytics', label: 'Analytics', icon: <AnalyticsIcon className="w-5 h-5" /> },
   ], []);
 
+  // Admin on dashboard should always be in admin mode
+  useEffect(() => {
+    if (isAdmin && viewMode !== 'admin') {
+      setViewMode('admin');
+      localStorage.setItem('aura-view-mode', 'admin');
+      setActiveTab('admin-dashboard');
+    }
+  }, [isAdmin, viewMode]);
+
   if (!user) {
     return <Navigate to="/login" />;
   }
 
-  const tabs = isAdmin ? adminTabs : userTabs;
+  const tabs = isAdmin && viewMode === 'admin' ? adminTabs : userTabs;
+
+  const toggleViewMode = () => {
+    const next = viewMode === 'admin' ? 'user' : 'admin';
+    setViewMode(next);
+    localStorage.setItem('aura-view-mode', next);
+    if (next === 'user') {
+      navigate('/');
+    } else {
+      navigate('/dashboard');
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -162,6 +187,8 @@ const DashboardLayout: React.FC = () => {
         userName={user.name}
         onLogout={handleLogout}
         isAdmin={isAdmin}
+        viewMode={viewMode}
+        onToggleViewMode={toggleViewMode}
       />
 
       {/* Tablet Sidebar (md - lg) */}
@@ -172,6 +199,8 @@ const DashboardLayout: React.FC = () => {
         userName={user.name}
         onLogout={handleLogout}
         isAdmin={isAdmin}
+        viewMode={viewMode}
+        onToggleViewMode={toggleViewMode}
       />
 
       {/* Main Content */}
@@ -180,6 +209,14 @@ const DashboardLayout: React.FC = () => {
         <header className="md:hidden bg-aura-bark border-b border-aura-sand/10 sticky top-0 z-40">
           <div className="flex items-center justify-between h-14 px-4">
             <div className="flex items-center gap-3">
+              {isAdmin && (
+                <button
+                  onClick={toggleViewMode}
+                  className="text-[10px] font-medium px-2 py-1 rounded bg-aura-sand/10 text-aura-sand border border-aura-sand/20"
+                >
+                  {viewMode === 'admin' ? 'Admin' : 'User'}
+                </button>
+              )}
               <button
                 onClick={() => setShowMobileDrawer(true)}
                 className="p-2 -ml-2 text-aura-sand hover:text-aura-ivory hover:bg-aura-sand/10 rounded-lg transition-colors"
@@ -204,22 +241,22 @@ const DashboardLayout: React.FC = () => {
                 <div className="absolute right-0 mt-2 w-40 bg-aura-ink border border-aura-sand/20 rounded-lg shadow-lg z-50 py-1">
                   {isAdmin && (
                     <button
-                      onClick={() => { handleTabChange(activeTab === 'home' ? 'admin-dashboard' : 'home'); setShowMobileMenu(false); }}
+                      onClick={() => { toggleViewMode(); setShowMobileMenu(false); }}
                       className="flex items-center w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30"
                     >
-                      {activeTab === 'home' ? (
+                      {viewMode === 'user' ? (
                         <>
                           <svg className="w-4 h-4 mr-2 text-aura-sand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                           </svg>
-                          Admin Dashboard
+                          Switch to Admin
                         </>
                       ) : (
                         <>
                           <svg className="w-4 h-4 mr-2 text-aura-sand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                           </svg>
-                          Home
+                          Switch to User
                         </>
                       )}
                     </button>
@@ -294,13 +331,19 @@ const DashboardLayout: React.FC = () => {
 
         {/* Content */}
         <div ref={contentRef} className="flex-1 pb-20 md:pb-0 overflow-y-auto">
-          {renderContent()}
+          <Suspense fallback={
+            <div className="flex items-center justify-center py-20">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-sand"></div>
+            </div>
+          }>
+            {renderContent()}
+          </Suspense>
         </div>
       </div>
 
-      {/* Mobile Bottom Tab Bar */}
+      {/* Mobile Bottom Tab Bar — sidebar-only items excluded on mobile */}
       <MobileBottomNav
-        tabs={tabs}
+        tabs={tabs.filter((t) => !['admin-classes', 'admin-instructors', 'admin-analytics'].includes(t.id))}
         activeTab={activeTab}
         onTabChange={handleTabChange}
       />

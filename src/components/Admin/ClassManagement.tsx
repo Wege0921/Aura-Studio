@@ -275,12 +275,14 @@ const ClassManagement: React.FC = () => {
           <h1 className="text-3xl font-bold text-aura-cream">Class Management</h1>
           <p className="text-aura-sand/70">Create and manage pilates classes</p>
         </div>
+        {/* Class creation disabled — classes hidden for now
         <button
           onClick={() => setShowForm(true)}
           className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
         >
           Create New Class
         </button>
+        */}
       </div>
 
       {/* Messages */}
