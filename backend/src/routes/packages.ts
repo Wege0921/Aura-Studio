@@ -4,6 +4,7 @@ import multer from 'multer';
 import path from 'path';
 import { prisma } from '../lib/prisma';
 import { authenticateToken, requireAdmin } from '../middleware/auth';
+import { telegramService } from '../services/telegramService';
 
 // Extend Request interface to include user property
 interface AuthenticatedRequest extends Request {
@@ -130,7 +131,63 @@ router.post('/purchase', authenticateToken, upload.single('paymentReceipt'), [
         packageId,
         receiptUrl,
       },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        package: true,
+      },
     });
+
+    // Send Telegram notification to admin
+    try {
+      if (paymentMethod !== 'CASH' && receiptUrl) {
+        const fullReceiptUrl = `${process.env.SERVER_URL || 'http://localhost:5000'}${receiptUrl}`;
+        await telegramService.sendPackagePurchaseNotification({
+          userName: payment.user.name || 'Unknown User',
+          userEmail: payment.user.email,
+          packageName: payment.package?.name || packageInfo.name,
+          sessionsCount: payment.package?.sessionsCount || packageInfo.sessionsCount,
+          amount: payment.amount,
+          paymentMethod: paymentMethod,
+          receiptUrl: fullReceiptUrl,
+        });
+
+        // Also try sending the actual file directly (fallback if URL is not accessible)
+        const fs = require('fs');
+        const receiptPath = path.join(process.cwd(), receiptUrl);
+        if (fs.existsSync(receiptPath)) {
+          const fileExtension = path.extname(receiptPath).toLowerCase();
+          const isImage = ['.jpg', '.jpeg', '.png', '.gif'].includes(fileExtension);
+          if (isImage) {
+            const photoSent = await telegramService.sendPhotoFile(receiptPath, `💳 Payment receipt for ${payment.user.name || 'Unknown User'} - ${payment.package?.name || packageInfo.name}`);
+            if (!photoSent) {
+              console.log('Photo upload failed, sending as document instead');
+              await telegramService.sendDocumentWithCaption(receiptPath, `💳 Payment receipt for ${payment.user.name || 'Unknown User'} - ${payment.package?.name || packageInfo.name}`);
+            }
+          } else {
+            await telegramService.sendDocumentWithCaption(receiptPath, `💳 Payment receipt for ${payment.user.name || 'Unknown User'} - ${payment.package?.name || packageInfo.name}`);
+          }
+        }
+      } else {
+        // Cash payment — no receipt, just text notification
+        await telegramService.sendPackagePurchaseNotification({
+          userName: payment.user.name || 'Unknown User',
+          userEmail: payment.user.email,
+          packageName: payment.package?.name || packageInfo.name,
+          sessionsCount: payment.package?.sessionsCount || packageInfo.sessionsCount,
+          amount: payment.amount,
+          paymentMethod: paymentMethod,
+        });
+      }
+    } catch (telegramError) {
+      console.error('Telegram notification failed:', telegramError);
+      // Continue with response even if Telegram fails
+    }
 
     res.status(201).json({
       message: 'Purchase request submitted. Waiting for admin verification.',

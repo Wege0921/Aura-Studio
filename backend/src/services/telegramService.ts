@@ -224,6 +224,38 @@ ${statusEmoji} <b>New Booking Confirmed!</b>
     return await this.sendTextMessage(message);
   }
 
+  async sendPackagePurchaseNotification(data: {
+    userName: string;
+    userEmail: string;
+    packageName: string;
+    sessionsCount: number;
+    amount: number;
+    paymentMethod: string;
+    receiptUrl?: string;
+  }): Promise<boolean> {
+    const message = `
+📦 <b>New Package Purchase!</b>
+
+📝 <b>Purchase Details:</b>
+👤 User: ${data.userName} (${data.userEmail})
+📦 Package: ${data.packageName}
+🔢 Sessions: ${data.sessionsCount}
+💰 Amount: ETB ${data.amount.toLocaleString()}
+💳 Payment Method: ${data.paymentMethod.replace('_', ' ')}
+
+⚠️ <b>Action Required:</b> Please verify and approve this payment in the admin dashboard.
+    `.trim();
+
+    const textSent = await this.sendTextMessage(message);
+
+    if (data.receiptUrl) {
+      const photoSent = await this.sendPhotoWithCaption(data.receiptUrl, '💳 Payment Receipt');
+      return textSent && photoSent;
+    }
+
+    return textSent;
+  }
+
   async sendBookingCancellationNotification(bookingData: {
     userName: string;
     userEmail: string;
