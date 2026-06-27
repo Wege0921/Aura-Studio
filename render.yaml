@@ -1,0 +1,25 @@
+services:
+  # Backend API
+  - type: web
+    name: aura-studio-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: master
+    buildCommand: cd backend && npm install && npx prisma generate && npm run build
+    startCommand: cd backend && npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+
+  # React Frontend (Static Site)
+  - type: static
+    name: aura-studio-web
+    buildCommand: npm install && npm run build
+    publishDir: build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://api.aurastudio.et
