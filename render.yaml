@@ -16,10 +16,13 @@ services:
         value: 10000
 
   # React Frontend (Static Site)
-  - type: static
+  - type: web
     name: aura-studio-web
+    runtime: static
+    plan: free
+    branch: master
     buildCommand: npm install && npm run build
-    publishDir: build
+    staticPublishPath: ./build
     envVars:
       - key: REACT_APP_API_URL
         value: https://api.aurastudio.et
