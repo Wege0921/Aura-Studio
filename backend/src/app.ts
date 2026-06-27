@@ -94,9 +94,24 @@ app.get('/health', async (req, res) => {
   }
 });
 
-// 404 handler
-app.use((_req, res) => {
-  res.status(404).json({ error: 'Not found' });
-});
+// Serve React build static files in production
+if (process.env.NODE_ENV === 'production') {
+  const buildPath = path.join(__dirname, '../../build');
+  app.use(express.static(buildPath));
+
+  // SPA catch-all: serve index.html for non-API routes
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
+      res.sendFile(path.join(buildPath, 'index.html'));
+    } else {
+      res.status(404).json({ error: 'Not found' });
+    }
+  });
+} else {
+  // 404 handler for dev
+  app.use((_req, res) => {
+    res.status(404).json({ error: 'Not found' });
+  });
+}
 
 export default app;
