@@ -98,7 +98,6 @@ const UserDashboard: React.FC = () => {
 
   const goToPackages = () => navigate('/packages');
   const goToPayments = () => navigate('/dashboard/payments');
-  const goToProfile = () => navigate('/dashboard/profile');
 
   const activePkgs = userPackages.filter(
     (up) => up.remainingSessions !== undefined && up.remainingSessions > 0
