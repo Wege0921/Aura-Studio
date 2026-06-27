@@ -80,7 +80,7 @@ app.use('/api/reviews', reviewsRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
-  res.json({ message: 'AURA Yoga API Server is running!' });
+  res.json({ message: 'AURA Studio API Server is running!' });
 });
 
 // Health check

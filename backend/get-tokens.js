@@ -51,7 +51,7 @@ async function main() {
 
     // Login as admin
     console.log('1. Logging in as admin...');
-    const adminToken = await loginAndGetToken('admin@aura-yoga.com', 'admin123');
+    const adminToken = await loginAndGetToken('admin@aurastudio.com', 'admin123');
     console.log('✅ Admin Token:', adminToken);
 
     // Login as regular user

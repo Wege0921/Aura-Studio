@@ -1,7 +1,7 @@
 {
-  "name": "aura-yoga-backend",
+  "name": "aura-studio-backend",
   "version": "1.0.0",
-  "description": "AURA Yoga Web App Backend API",
+  "description": "AURA Studio Web App Backend API",
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",

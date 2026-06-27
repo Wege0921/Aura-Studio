@@ -1,6 +1,6 @@
-const CACHE_NAME = 'aura-yoga-v2';
-const STATIC_CACHE = 'aura-yoga-static-v2';
-const API_CACHE = 'aura-yoga-api-v2';
+const CACHE_NAME = 'aura-studio-v2';
+const STATIC_CACHE = 'aura-studio-static-v2';
+const API_CACHE = 'aura-studio-api-v2';
 
 const staticUrlsToCache = [
   '/',
@@ -141,7 +141,7 @@ function doBackgroundSync() {
 // Push notification handler
 self.addEventListener('push', (event) => {
   const options = {
-    body: event.data ? event.data.text() : 'New notification from AURA Yoga',
+    body: event.data ? event.data.text() : 'New notification from AURA Studio',
     icon: '/favicon.ico',
     badge: '/favicon.ico',
     vibrate: [100, 50, 100],
@@ -164,7 +164,7 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification('AURA Yoga', options)
+    self.registration.showNotification('AURA Studio', options)
   );
 });
 

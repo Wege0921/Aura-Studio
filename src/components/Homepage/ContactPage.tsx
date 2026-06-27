@@ -100,7 +100,7 @@ const ContactPage: React.FC = () => {
         <div className="text-sm text-aura-sand space-y-2">
           <p>📍 Addis Ababa, Ethiopia</p>
           <p>📞 +251 911 234 567</p>
-          <p>✉️ hello@aurayoga.com</p>
+          <p>✉️ hello@aurastudio.com</p>
           <div className="flex gap-4 mt-3">
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-aura-sand hover:text-aura-cream transition-colors">
               Instagram

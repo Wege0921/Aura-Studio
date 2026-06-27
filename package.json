@@ -1,7 +1,7 @@
 {
-  "name": "aura-yoga-app",
+  "name": "aura-studio-app",
   "version": "1.0.0",
-  "description": "AURA Yoga & Pilates Web App - Women Only Studio",
+  "description": "AURA Studio Web App - Women Only Studio",
   "private": true,
   "dependencies": {
     "@headlessui/react": "^1.7.17",

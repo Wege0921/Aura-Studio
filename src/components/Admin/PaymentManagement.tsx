@@ -51,6 +51,7 @@ const PaymentManagement: React.FC = () => {
   const fetchPayments = async () => {
     try {
       setLoading(true);
+      setError('');
       const token = localStorage.getItem('token');
       
       const params = new URLSearchParams({
@@ -66,14 +67,15 @@ const PaymentManagement: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch payments');
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || `Server error ${response.status}`);
       }
 
       const data = await response.json();
       setPayments(data.payments || []);
       setTotalPages(data.totalPages || 1);
     } catch (err) {
-      setError('Failed to load payments');
+      setError(err instanceof Error ? err.message : 'Failed to load payments');
     } finally {
       setLoading(false);
     }

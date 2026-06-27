@@ -5,7 +5,7 @@ async function testBookingAPI() {
     console.log('Testing booking API endpoint...');
     
     // Generate a test token for real database user
-    const token = jwt.sign({ userId: 'cmopj63rr0000c6qy2b0ndc9e' }, 'aura-yoga-super-secret-jwt-key-for-development', { expiresIn: '7d' });
+    const token = jwt.sign({ userId: 'cmopj63rr0000c6qy2b0ndc9e' }, 'aura-studio-super-secret-jwt-key-for-development', { expiresIn: '7d' });
     console.log('Generated test token:', token);
     
     // Test the booking endpoint

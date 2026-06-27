@@ -4,7 +4,7 @@ import { supabase } from './lib/supabase';
 const prisma = new PrismaClient();
 
 async function main() {
-  const adminEmail = 'admin@aura-yoga.com';
+  const adminEmail = 'admin@aurastudio.com';
   let adminId: string | undefined;
 
   // Try to create admin in Supabase Auth first
@@ -74,7 +74,7 @@ async function main() {
   }
 
   console.log('Database seeded successfully!');
-  console.log('Admin user: admin@aura-yoga.com / admin123');
+  console.log('Admin user: admin@aurastudio.com / admin123');
 }
 
 main()

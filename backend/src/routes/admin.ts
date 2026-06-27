@@ -408,6 +408,12 @@ router.get('/payments', authenticateToken, requireAdmin, async (req: Authenticat
             email: true,
           },
         },
+        package: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
       skip: (Number(page) - 1) * Number(limit),
@@ -422,7 +428,8 @@ router.get('/payments', authenticateToken, requireAdmin, async (req: Authenticat
     });
   } catch (error) {
     console.error('Error fetching payments:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    const msg = error instanceof Error ? error.message : 'Internal server error';
+    res.status(500).json({ error: msg });
   }
 });
 
@@ -902,8 +909,8 @@ router.post('/campaigns', authenticateToken, requireAdmin, [
           await sendEmail({
             to: u.email,
             subject,
-            text: `Hi ${u.name || 'there'},\n\n${emailBody}\n\nAURA Yoga`,
-            html: `<p>Hi ${u.name || 'there'},</p><p>${emailBody.replace(/\n/g, '<br/>')}</p><p>AURA Yoga</p>`,
+            text: `Hi ${u.name || 'there'},\n\n${emailBody}\n\nAURA Studio`,
+            html: `<p>Hi ${u.name || 'there'},</p><p>${emailBody.replace(/\n/g, '<br/>')}</p><p>AURA Studio</p>`,
           });
           sent++;
         } catch (e) {

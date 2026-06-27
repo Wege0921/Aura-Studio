@@ -4,8 +4,8 @@ const SMTP_HOST = process.env.SMTP_HOST || '';
 const SMTP_PORT = Number(process.env.SMTP_PORT || '587');
 const SMTP_USER = process.env.SMTP_USER || '';
 const SMTP_PASS = process.env.SMTP_PASS || '';
-const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@aurayoga.com';
-const FROM_NAME = process.env.FROM_NAME || 'AURA Yoga';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@aurastudio.com';
+const FROM_NAME = process.env.FROM_NAME || 'AURA Studio';
 
 let transporter: nodemailer.Transporter | null = null;
 
@@ -85,8 +85,8 @@ export async function sendBookingConfirmation({
   await sendEmail({
     to,
     subject: `Booking Confirmed — ${className}`,
-    text: `Hi ${userName},\n\nYour booking for "${className}" on ${classDate} at ${classTime} is confirmed.\n\nSee you on the mat!\nAURA Yoga`,
-    html: `<p>Hi ${userName},</p><p>Your booking for <strong>${className}</strong> on ${classDate} at ${classTime} is confirmed.</p><p>See you on the mat!<br/>AURA Yoga</p>`,
+    text: `Hi ${userName},\n\nYour booking for "${className}" on ${classDate} at ${classTime} is confirmed.\n\nSee you on the mat!\nAURA Studio`,
+    html: `<p>Hi ${userName},</p><p>Your booking for <strong>${className}</strong> on ${classDate} at ${classTime} is confirmed.</p><p>See you on the mat!<br/>AURA Studio</p>`,
   });
 }
 
@@ -101,9 +101,9 @@ export async function sendPaymentVerified({
 }): Promise<void> {
   await sendEmail({
     to,
-    subject: 'Payment Verified — AURA Yoga',
-    text: `Hi ${userName},\n\nYour payment of ETB ${amount.toLocaleString()} has been verified. Thank you!\n\nAURA Yoga`,
-    html: `<p>Hi ${userName},</p><p>Your payment of <strong>ETB ${amount.toLocaleString()}</strong> has been verified. Thank you!</p><p>AURA Yoga</p>`,
+    subject: 'Payment Verified — AURA Studio',
+    text: `Hi ${userName},\n\nYour payment of ETB ${amount.toLocaleString()} has been verified. Thank you!\n\nAURA Studio`,
+    html: `<p>Hi ${userName},</p><p>Your payment of <strong>ETB ${amount.toLocaleString()}</strong> has been verified. Thank you!</p><p>AURA Studio</p>`,
   });
 }
 
@@ -120,8 +120,8 @@ export async function sendPackageExpiryReminder({
 }): Promise<void> {
   await sendEmail({
     to,
-    subject: 'Package Expiry Reminder — AURA Yoga',
-    text: `Hi ${userName},\n\nYour ${packageName} package expires in ${daysLeft} day(s). Book your remaining sessions before it expires!\n\nAURA Yoga`,
-    html: `<p>Hi ${userName},</p><p>Your <strong>${packageName}</strong> package expires in <strong>${daysLeft} day(s)</strong>. Book your remaining sessions before it expires!</p><p>AURA Yoga</p>`,
+    subject: 'Package Expiry Reminder — AURA Studio',
+    text: `Hi ${userName},\n\nYour ${packageName} package expires in ${daysLeft} day(s). Book your remaining sessions before it expires!\n\nAURA Studio`,
+    html: `<p>Hi ${userName},</p><p>Your <strong>${packageName}</strong> package expires in <strong>${daysLeft} day(s)</strong>. Book your remaining sessions before it expires!</p><p>AURA Studio</p>`,
   });
 }

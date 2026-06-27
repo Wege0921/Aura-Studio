@@ -10,7 +10,7 @@ async function testInstructorManagement() {
     console.log('1. Testing POST /api/users/instructor - Create instructor');
     const instructorData = {
       name: 'Test Instructor',
-      email: 'instructor@yoga.com',
+      email: 'instructor@aurastudio.com',
       password: 'instructor123',
       phone: '+1234567890'
     };

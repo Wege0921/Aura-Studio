@@ -11,8 +11,8 @@ interface SEOOptions {
 export function useSEO(options: SEOOptions = {}) {
   useEffect(() => {
     const {
-      title = 'AURA Yoga & Pilates Studio',
-      description = 'Women-only Pilates & Yoga studio in Addis Ababa. Book classes, purchase packages, and begin your wellness journey.',
+      title = 'AURA Studio',
+      description = 'Women-only Pilates studio in Addis Ababa. Book classes, purchase packages, and begin your wellness journey.',
       ogTitle,
       ogDescription,
       ogImage,

@@ -36,7 +36,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) => {
-  useSEO({ title: 'Packages — AURA Yoga' });
+  useSEO({ title: 'Packages — AURA Studio' });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();

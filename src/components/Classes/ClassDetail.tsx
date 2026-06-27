@@ -37,8 +37,8 @@ const ClassDetail: React.FC = () => {
 
   useSEO(
     cls
-      ? { title: `${cls.name} — AURA Yoga`, description: cls.description || 'Join this class at AURA Yoga' }
-      : { title: 'Class Details — AURA Yoga', description: 'Join this class at AURA Yoga' }
+      ? { title: `${cls.name} — AURA Studio`, description: cls.description || 'Join this class at AURA Studio' }
+      : { title: 'Class Details — AURA Studio', description: 'Join this class at AURA Studio' }
   );
 
   const fetchClass = useCallback(async () => {
@@ -138,8 +138,8 @@ const ClassDetail: React.FC = () => {
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: cls?.name || 'AURA Yoga Class',
-        text: `Join ${cls?.name} with ${cls?.instructor} at AURA Yoga!`,
+        title: cls?.name || 'AURA Studio Class',
+        text: `Join ${cls?.name} with ${cls?.instructor} at AURA Studio!`,
         url: window.location.href,
       });
     } else {
@@ -198,7 +198,7 @@ const ClassDetail: React.FC = () => {
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-aura-cream mb-2">{cls.name}</h1>
-              <p className="text-aura-sand">{cls.description || 'A rejuvenating yoga session.'}</p>
+              <p className="text-aura-sand">{cls.description || 'A rejuvenating pilates session.'}</p>
             </div>
             <button
               onClick={handleShare}

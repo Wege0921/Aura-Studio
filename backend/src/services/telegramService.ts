@@ -279,7 +279,7 @@ ${statusEmoji} <b>New Booking Confirmed!</b>
   }
 
   async testConnection(): Promise<boolean> {
-    const message = '🔔 <b>Telegram Bot Test</b>\n\nAURA Yoga Studio bot is working correctly!';
+    const message = '🔔 <b>Telegram Bot Test</b>\n\nAURA Studio bot is working correctly!';
     return await this.sendTextMessage(message);
   }
 }

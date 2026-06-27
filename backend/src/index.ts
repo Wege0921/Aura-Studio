@@ -10,7 +10,7 @@ if (process.env.VERCEL !== '1') {
   scheduler.start();
 
   app.listen(PORT, () => {
-    console.log(`🧘‍♀️ AURA Yoga API server running on port ${PORT}`);
+    console.log(`AURA Studio API server running on port ${PORT}`);
     console.log('Package expiry scheduler initialized');
     console.log(`📡 Health check available at http://localhost:${PORT}/health`);
   });

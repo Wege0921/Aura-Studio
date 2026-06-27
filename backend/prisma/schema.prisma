@@ -40,7 +40,7 @@ model Class {
   time        String
   duration    Int
   capacity    Int
-  classType   String   @default("YOGA")
+  classType   String   @default("PILATES")
   price       Float?
   imageUrl    String?
   isActive    Boolean  @default(true)
