@@ -1,11 +1,11 @@
 import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import multer from 'multer';
-import path from 'path';
 import { prisma } from '../lib/prisma';
 import { authenticateToken } from '../middleware/auth';
 import { telegramService } from '../services/telegramService';
 import { promoteNextForClass } from '../services/waitlistService';
+import { uploadToSupabase } from '../lib/upload';
 
 // Extend Request interface to include user property
 interface AuthenticatedRequest extends Request {
@@ -18,25 +18,15 @@ interface AuthenticatedRequest extends Request {
 
 const router = express.Router();
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'payment-receipt-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
+// Configure multer for file uploads (memory storage — uploaded to Supabase Storage)
 const upload = multer({
-  storage: storage,
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|pdf/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const extname = allowedTypes.test(file.originalname.toLowerCase().split('.').pop() || '');
     const mimetype = allowedTypes.test(file.mimetype);
 
     if (mimetype && extname) {
@@ -149,8 +139,15 @@ router.post('/', authenticateToken, upload.single('paymentReceipt'), [
         return res.status(400).json({ error: 'Payment receipt is required for bank transfer and mobile money payments' });
       }
 
-      const receiptUrl = paymentReceiptFile ? `/uploads/${paymentReceiptFile.filename}` : null;
-      bookingData.paymentStatus = paymentMethod === 'CASH' ? 'PENDING' : 'PENDING';
+      let receiptUrl: string | null = null;
+      if (paymentReceiptFile) {
+        receiptUrl = await uploadToSupabase(
+          paymentReceiptFile.buffer,
+          paymentReceiptFile.originalname,
+          paymentReceiptFile.mimetype
+        );
+      }
+      bookingData.paymentStatus = 'PENDING';
       bookingData.paymentReceiptUrl = receiptUrl;
     }
 
@@ -174,11 +171,7 @@ router.post('/', authenticateToken, upload.single('paymentReceipt'), [
 
     // Send Telegram notification to admin
     if (!useSession && paymentMethod !== 'CASH' && booking.paymentReceiptUrl) {
-      const receiptUrl = booking.paymentReceiptUrl;
-      const fullReceiptUrl = `${process.env.SERVER_URL || 'http://localhost:5000'}${receiptUrl}`;
-      
       try {
-        // Send text notification first
         await telegramService.sendPaymentNotification({
           userName: booking.user.name || 'Unknown User',
           userEmail: booking.user.email,
@@ -187,35 +180,10 @@ router.post('/', authenticateToken, upload.single('paymentReceipt'), [
           classTime: booking.class.time,
           paymentMethod: paymentMethod,
           amount: booking.paymentAmount || 0,
-          receiptUrl: fullReceiptUrl,
+          receiptUrl: booking.paymentReceiptUrl,
         });
-        
-        // Send receipt file if it exists
-        if (paymentReceiptFile && receiptUrl) {
-          const fs = require('fs');
-          const path = require('path');
-          const receiptPath = path.join(process.cwd(), receiptUrl);
-          
-          if (fs.existsSync(receiptPath)) {
-            // Send the actual file instead of URL
-            const fileExtension = path.extname(receiptPath).toLowerCase();
-            const isImage = ['.jpg', '.jpeg', '.png', '.gif'].includes(fileExtension);
-            
-            if (isImage) {
-              // Try to send as photo first, fallback to document if it fails
-              const photoSent = await telegramService.sendPhotoFile(receiptPath, `💳 Payment receipt for ${booking.user.name || 'Unknown User'} - ${booking.class.name}`);
-              if (!photoSent) {
-                console.log('Photo upload failed, sending as document instead');
-                await telegramService.sendDocumentWithCaption(receiptPath, `💳 Payment receipt for ${booking.user.name || 'Unknown User'} - ${booking.class.name}`);
-              }
-            } else {
-              await telegramService.sendDocumentWithCaption(receiptPath, `💳 Payment receipt for ${booking.user.name || 'Unknown User'} - ${booking.class.name}`);
-            }
-          }
-        }
       } catch (telegramError) {
         console.error('Telegram notification failed:', telegramError);
-        // Continue with booking even if Telegram fails
       }
     } else if (useSession) {
       try {
@@ -242,7 +210,6 @@ router.post('/', authenticateToken, upload.single('paymentReceipt'), [
         });
       } catch (telegramError) {
         console.error('Telegram notification failed:', telegramError);
-        // Continue with booking even if Telegram fails
       }
     }
 
@@ -283,12 +250,22 @@ router.post('/:id/payment', authenticateToken, upload.single('receipt'), async (
       return res.status(403).json({ error: 'Not authorized to update this booking' });
     }
 
+    // Upload receipt to Supabase Storage
+    let receiptUrl: string | null = null;
+    if (req.file) {
+      receiptUrl = await uploadToSupabase(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype
+      );
+    }
+
     // Update booking with payment information
     const updatedBooking = await prisma.booking.update({
       where: { id },
       data: {
         paymentMethod: paymentMethod || booking.paymentMethod,
-        paymentReceiptUrl: req.file ? `/uploads/${req.file.filename}` : null,
+        paymentReceiptUrl: receiptUrl,
         paymentAmount: booking.paymentAmount || booking.class.price || 0,
       },
       include: {

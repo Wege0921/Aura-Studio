@@ -1,9 +1,9 @@
 import express, { Request, Response } from 'express';
 import multer from 'multer';
-import path from 'path';
 import { body, validationResult } from 'express-validator';
 import { prisma } from '../lib/prisma';
 import { authenticateToken, requireAdmin } from '../middleware/auth';
+import { uploadToSupabase } from '../lib/upload';
 
 // Extend Request interface to include user property
 interface AuthenticatedRequest extends Request {
@@ -17,25 +17,15 @@ interface AuthenticatedRequest extends Request {
 
 const router = express.Router();
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
+// Configure multer for file uploads (memory storage — uploaded to Supabase Storage)
 const upload = multer({
-  storage: storage,
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|pdf/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const extname = allowedTypes.test(file.originalname.toLowerCase().split('.').pop() || '');
     const mimetype = allowedTypes.test(file.mimetype);
 
     if (mimetype && extname) {
@@ -82,13 +72,20 @@ router.post('/', authenticateToken, upload.single('receipt'), [
       }
     }
 
+    // Upload receipt to Supabase Storage
+    const receiptUrl = await uploadToSupabase(
+      receiptFile.buffer,
+      receiptFile.originalname,
+      receiptFile.mimetype
+    );
+
     // Create payment record
     const payment = await prisma.payment.create({
       data: {
         userId,
         amount,
         paymentMethod,
-        receiptUrl: receiptFile.filename,
+        receiptUrl,
         status: 'PENDING',
         packageId: packageId || null,
       },
@@ -275,13 +272,7 @@ router.get('/:id/receipt', authenticateToken, async (req: AuthenticatedRequest, 
       return res.status(404).json({ error: 'Receipt not found' });
     }
 
-    const filePath = path.join('uploads', payment.receiptUrl);
-    res.sendFile(filePath, (err) => {
-      if (err) {
-        console.error('Error serving receipt:', err);
-        res.status(404).json({ error: 'Receipt file not found' });
-      }
-    });
+    res.redirect(payment.receiptUrl);
   } catch (error) {
     console.error('Error fetching receipt:', error);
     res.status(500).json({ error: 'Internal server error' });
