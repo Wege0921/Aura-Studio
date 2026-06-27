@@ -39,7 +39,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
     <aside className="hidden lg:flex flex-col w-64 h-screen sticky top-0 bg-aura-bark border-r border-aura-sand/10 z-40">
       {/* Logo */}
       <div className="flex items-center h-16 px-6 border-b border-aura-sand/10">
-        <h1 className="text-xl font-bold text-aura-ivory font-serif">AURA</h1>
+        <img src="/Aura-header-black.png" alt="AURA" className="h-8 w-auto" />
       </div>
 
       {/* Navigation */}

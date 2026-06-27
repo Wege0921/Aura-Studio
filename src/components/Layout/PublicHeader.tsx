@@ -152,7 +152,7 @@ const PublicHeader: React.FC = () => {
       {/* Nav Bar */}
       <header className={`ph-nav ${isLandingPage ? 'ph-landing' : ''}`}>
         <button className="ph-logo" onClick={handleLogoClick}>
-          AURA
+          <img src="/Aura-header-black.png" alt="AURA" className="h-8 w-auto" />
         </button>
         <nav className="ph-links">
           <button onClick={() => handleNav('top')}>Home</button>

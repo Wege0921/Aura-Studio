@@ -226,7 +226,7 @@ const DashboardLayout: React.FC = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
-              <h1 className="text-lg font-bold text-aura-ivory font-serif">AURA</h1>
+              <img src="/Aura-header-black.png" alt="AURA" className="h-7 w-auto" />
             </div>
             <div className="relative">
               <button

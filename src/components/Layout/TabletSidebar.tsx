@@ -45,11 +45,7 @@ const TabletSidebar: React.FC<TabletSidebarProps> = ({
     >
       {/* Logo */}
       <div className="flex items-center justify-center h-16 border-b border-aura-sand/10 px-3">
-        {expanded ? (
-          <h1 className="text-lg font-bold text-aura-ivory font-serif truncate">AURA</h1>
-        ) : (
-          <span className="text-xl font-bold text-aura-ivory font-serif">A</span>
-        )}
+        <img src="/Aura-header-black.png" alt="AURA" className="h-8 w-auto" />
       </div>
 
       {/* Navigation */}
