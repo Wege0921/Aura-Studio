@@ -44,9 +44,24 @@ app.use(helmet({
 }));
 
 // CORS - restrict to frontend origin in production
-const allowedOrigins = process.env.FRONTEND_URL
-  ? [process.env.FRONTEND_URL]
+// FRONTEND_URL may be a comma-separated list of origins
+const configuredOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map((o) => o.trim()).filter(Boolean)
   : ['http://localhost:3000'];
+
+// Auto-include the www / non-www counterpart of each origin
+const allowedOrigins = configuredOrigins.flatMap((origin) => {
+  try {
+    const url = new URL(origin);
+    const host = url.host;
+    const counterpartHost = host.startsWith('www.')
+      ? host.slice(4)
+      : `www.${host}`;
+    return [origin, `${url.protocol}//${counterpartHost}`];
+  } catch {
+    return [origin];
+  }
+});
 
 app.use(cors({
   origin: (origin, callback) => {

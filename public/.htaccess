@@ -1,4 +1,31 @@
 Options -MultiViews
 RewriteEngine On
+
+# Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# SPA routing: serve index.html for any non-file request
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.html [QSA,L]
+
+# Gzip compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css application/json
+  AddOutputFilterByType DEFLATE application/javascript application/x-javascript text/javascript
+  AddOutputFilterByType DEFLATE image/svg+xml application/font-woff application/font-woff2
+</IfModule>
+
+# Cache static assets (CRA hashes filenames, so long cache is safe)
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  # Never cache index.html so new deploys are picked up
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
