@@ -19,7 +19,6 @@ services:
   - type: web
     name: aura-studio-web
     runtime: static
-    plan: free
     branch: master
     buildCommand: npm install && npm run build
     staticPublishPath: ./build
