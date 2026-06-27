@@ -167,7 +167,7 @@ const UserManagement: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/admin/users/${deleteTargetId}`, {
+      const response = await fetch(`/api/users/${deleteTargetId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });

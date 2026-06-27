@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { format } from 'date-fns';
 
 interface DashboardStats {
@@ -41,7 +41,7 @@ interface AdminDashboardPageProps {
   onTabChange?: (tabId: string) => void;
 }
 
-const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onTabChange }) => {
+const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTabChange }) => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentBookings, setRecentBookings] = useState<RecentBooking[]>([]);
   const [recentPayments, setRecentPayments] = useState<RecentPayment[]>([]);
@@ -55,36 +55,22 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onTabChange }) 
   const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem('token');
-      
-      // Fetch dashboard stats
-      const statsResponse = await fetch('/api/admin/dashboard/stats', {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      
-      // Fetch recent bookings
-      const bookingsResponse = await fetch('/api/admin/bookings?limit=5', {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      
-      // Fetch recent payments
-      const paymentsResponse = await fetch('/api/payments?limit=5', {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
 
-      if (statsResponse.ok) {
-        const statsData = await statsResponse.json();
-        setStats(statsData);
-      }
+      const [statsRes, bookingsRes, paymentsRes] = await Promise.all([
+        fetch('/api/admin/dashboard/stats', { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch('/api/admin/bookings?limit=5', { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch('/api/payments?limit=5', { headers: { 'Authorization': `Bearer ${token}` } }),
+      ]);
 
-      if (bookingsResponse.ok) {
-        const bookingsData = await bookingsResponse.json();
-        setRecentBookings(bookingsData.bookings || []);
-      }
+      const [statsData, bookingsData, paymentsData] = await Promise.all([
+        statsRes.ok ? statsRes.json() : null,
+        bookingsRes.ok ? bookingsRes.json() : null,
+        paymentsRes.ok ? paymentsRes.json() : null,
+      ]);
 
-      if (paymentsResponse.ok) {
-        const paymentsData = await paymentsResponse.json();
-        setRecentPayments(paymentsData.payments || []);
-      }
+      if (statsData) setStats(statsData);
+      if (bookingsData) setRecentBookings(bookingsData.bookings || []);
+      if (paymentsData) setRecentPayments(paymentsData.payments || []);
     } catch (err) {
       setError('Failed to load dashboard data');
     } finally {
@@ -92,7 +78,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onTabChange }) 
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = useCallback((status: string) => {
     switch (status) {
       case 'CONFIRMED':
       case 'VERIFIED':
@@ -105,7 +91,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onTabChange }) 
       default:
         return 'bg-aura-umber/40 text-aura-sand';
     }
-  };
+  }, []);
 
   if (loading) {
     return (
@@ -321,6 +307,6 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onTabChange }) 
       </div>
     </div>
   );
-};
+});
 
 export default AdminDashboardPage;

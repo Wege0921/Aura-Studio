@@ -370,9 +370,10 @@ router.delete('/:id', authenticateToken, async (req: AuthenticatedRequest, res: 
     res.json({
       message: 'User deleted successfully'
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Delete user error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    const msg = error?.code === 'P2003' ? 'Cannot delete user: related records exist' : (error?.message || 'Internal server error');
+    res.status(500).json({ error: msg });
   }
 });
 

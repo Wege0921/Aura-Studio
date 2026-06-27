@@ -32,14 +32,8 @@ router.get('/dashboard/stats', authenticateToken, requireAdmin, async (req: Auth
         where: { status: 'VERIFIED' },
         _sum: { amount: true },
       }),
-      prisma.userPackage.count({
-        where: {
-          remainingSessions: { gt: 0 },
-          OR: [
-            { expiresAt: null },
-            { expiresAt: { gte: new Date() } },
-          ],
-        },
+      prisma.package.count({
+        where: { isActive: true },
       }),
       prisma.payment.count({
         where: { status: 'PENDING' },
@@ -101,6 +95,48 @@ router.get('/bookings', authenticateToken, requireAdmin, async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching bookings:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update booking status (admin only)
+router.patch('/bookings/:id/status', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!['CONFIRMED', 'CANCELLED', 'COMPLETED', 'PENDING'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    const updatedBooking = await prisma.booking.update({
+      where: { id },
+      data: { status },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        class: true,
+      },
+    });
+
+    res.json({ message: 'Booking status updated', booking: updatedBooking });
+  } catch (error) {
+    console.error('Error updating booking status:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Delete booking (admin only)
+router.delete('/bookings/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    await prisma.booking.delete({
+      where: { id },
+    });
+
+    res.json({ message: 'Booking deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting booking:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
