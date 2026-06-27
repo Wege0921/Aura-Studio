@@ -132,6 +132,10 @@ const DashboardLayout: React.FC = () => {
   };
 
   const handleTabChange = (tabId: string) => {
+    if (tabId === 'home') {
+      navigate('/');
+      return;
+    }
     setActiveTab(tabId as TabType);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });

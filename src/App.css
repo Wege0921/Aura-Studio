@@ -8,7 +8,6 @@ body {
   font-size: 14px;
   line-height: 1.5;
   -webkit-tap-highlight-color: transparent;
-  overscroll-behavior-y: none;
 }
 
 /* Ensure minimum tap target size everywhere */
