@@ -12,6 +12,7 @@ interface AuthenticatedRequest extends Request {
     email: string;
     role: string;
   };
+  file?: Express.Multer.File;
 }
 
 const router = express.Router();
