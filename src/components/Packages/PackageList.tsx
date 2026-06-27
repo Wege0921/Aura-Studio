@@ -301,9 +301,21 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
       {/* Packages Grid */}
       {filteredPackages.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-aura-cream">
-            {showUserPackages ? 'No packages found.' : 'No packages available at the moment.'}
-          </p>
+          {packagesError ? (
+            <>
+              <p className="text-red-300 mb-3">Failed to load packages. Please check your connection.</p>
+              <button
+                onClick={() => queryClient.invalidateQueries({ queryKey: ['packages-available'] })}
+                className="px-4 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700"
+              >
+                Retry
+              </button>
+            </>
+          ) : (
+            <p className="text-aura-cream">
+              {showUserPackages ? 'No packages found.' : 'No packages available at the moment.'}
+            </p>
+          )}
         </div>
       ) : (
         <>
