@@ -1,5 +1,4 @@
 node_modules
-backend/node_modules
 .git
 *.zip
 *.tar.gz
