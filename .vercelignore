@@ -1,0 +1,10 @@
+node_modules
+backend/node_modules
+.git
+*.zip
+*.tar.gz
+*.tgz
+.cursor
+.vercel
+uploads
+backend/back-end compressed.zip

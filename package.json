@@ -57,7 +57,7 @@
     "client": "react-scripts start",
     "eject": "react-scripts eject",
     "install-deps": "npm install --legacy-peer-deps && cd backend && npm install --legacy-peer-deps",
-    "vercel-build": "npx prisma generate --schema=backend/prisma/schema.prisma && npx prisma db push --schema=backend/prisma/schema.prisma && npx tsc -p backend/tsconfig.json && npx ts-node backend/src/seed.ts && CI=false npm run build",
+    "vercel-build": "cp .env.production .env && cd backend && npm install --legacy-peer-deps && cd .. && npx prisma generate --schema=backend/prisma/schema.prisma && npx prisma db push --schema=backend/prisma/schema.prisma && npx tsc -p backend/tsconfig.json && CI=false npm run build",
     "build:prod": "cp .env.production .env && npm run build",
     "deploy": "bash deploy.sh"
   },
