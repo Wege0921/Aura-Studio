@@ -47,7 +47,7 @@ app.use(helmet({
 // CORS - restrict to frontend origin in production
 // FRONTEND_URL may be a comma-separated list of origins
 const configuredOrigins = process.env.FRONTEND_URL
-  ? process.env.FRONTEND_URL.split(',').map((o) => o.trim()).filter(Boolean)
+  ? process.env.FRONTEND_URL.split(',').map((o) => o.trim().replace(/\/$/, '')).filter(Boolean)
   : ['http://localhost:3000'];
 
 // Auto-include the www / non-www counterpart of each origin
