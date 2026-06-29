@@ -2,12 +2,12 @@
   "buildCommand": "npm run vercel-build",
   "outputDirectory": "build",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/backend/dist/index" },
-    { "source": "/health", "destination": "/backend/dist/index" },
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/health", "destination": "/api" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "functions": {
-    "backend/dist/index.js": {
+    "api/index.js": {
       "memory": 1024,
       "maxDuration": 30
     }
