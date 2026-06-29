@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import { api } from '../../lib/api';
 
 interface DashboardStats {
   totalUsers: number;
@@ -42,41 +44,26 @@ interface AdminDashboardPageProps {
 }
 
 const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTabChange }) => {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [recentBookings, setRecentBookings] = useState<RecentBooking[]>([]);
-  const [recentPayments, setRecentPayments] = useState<RecentPayment[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async () => {
-    try {
-      const token = localStorage.getItem('token');
-
-      const [statsRes, bookingsRes, paymentsRes] = await Promise.all([
-        fetch('/api/admin/dashboard/stats', { headers: { 'Authorization': `Bearer ${token}` } }),
-        fetch('/api/admin/bookings?limit=5', { headers: { 'Authorization': `Bearer ${token}` } }),
-        fetch('/api/payments?limit=5', { headers: { 'Authorization': `Bearer ${token}` } }),
-      ]);
-
+  const { data: dashboardData, isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['admin-dashboard'],
+    queryFn: async () => {
       const [statsData, bookingsData, paymentsData] = await Promise.all([
-        statsRes.ok ? statsRes.json() : null,
-        bookingsRes.ok ? bookingsRes.json() : null,
-        paymentsRes.ok ? paymentsRes.json() : null,
+        api.get<DashboardStats>('/api/admin/dashboard/stats'),
+        api.get<{ bookings: RecentBooking[] }>('/api/admin/bookings?limit=5'),
+        api.get<{ payments: RecentPayment[] }>('/api/payments?limit=5'),
       ]);
+      return {
+        stats: statsData,
+        recentBookings: bookingsData.bookings || [],
+        recentPayments: paymentsData.payments || [],
+      };
+    },
+  });
 
-      if (statsData) setStats(statsData);
-      if (bookingsData) setRecentBookings(bookingsData.bookings || []);
-      if (paymentsData) setRecentPayments(paymentsData.payments || []);
-    } catch (err) {
-      setError('Failed to load dashboard data');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const stats = dashboardData?.stats ?? null;
+  const recentBookings: RecentBooking[] = dashboardData?.recentBookings ?? [];
+  const recentPayments: RecentPayment[] = dashboardData?.recentPayments ?? [];
+  const error = queryError ? 'Failed to load dashboard data' : '';
 
   const getStatusColor = useCallback((status: string) => {
     switch (status) {

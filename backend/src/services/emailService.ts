@@ -1,10 +1,11 @@
 import nodemailer from 'nodemailer';
 
-const SMTP_HOST = process.env.SMTP_HOST || '';
-const SMTP_PORT = Number(process.env.SMTP_PORT || '587');
-const SMTP_USER = process.env.SMTP_USER || '';
-const SMTP_PASS = process.env.SMTP_PASS || '';
-const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@aurastudio.com';
+// Support both SMTP_* and EMAIL_* env conventions for backward compatibility
+const SMTP_HOST = process.env.SMTP_HOST || process.env.EMAIL_HOST || '';
+const SMTP_PORT = Number(process.env.SMTP_PORT || process.env.EMAIL_PORT || '587');
+const SMTP_USER = process.env.SMTP_USER || process.env.EMAIL_USER || '';
+const SMTP_PASS = process.env.SMTP_PASS || process.env.EMAIL_PASS || '';
+const FROM_EMAIL = process.env.FROM_EMAIL || process.env.EMAIL_USER || 'noreply@aurastudio.com';
 const FROM_NAME = process.env.FROM_NAME || 'AURA Studio';
 
 let transporter: nodemailer.Transporter | null = null;

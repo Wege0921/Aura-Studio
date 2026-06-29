@@ -186,7 +186,7 @@ const InstructorManagement: React.FC = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-sm">
             <div className="flex items-center mb-4">
               <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-900/60 flex items-center justify-center mr-3">
@@ -215,7 +215,7 @@ const InstructorManagement: React.FC = () => {
 
       {/* Add Instructor Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold text-aura-cream mb-4">Add New Instructor</h2>
 

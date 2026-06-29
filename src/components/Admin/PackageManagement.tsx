@@ -33,7 +33,7 @@ interface PackageDefinition {
   validityDays: number;
 }
 
-const CLASS_TYPES = ['PILATES', 'PRENATAL', 'POSTPARTUM'] as const;
+const CLASS_TYPES = ['PILATES', 'PRENATAL', 'POSTPARTUM', 'MEDITATION'] as const;
 
 const PACKAGE_DEFINITIONS: Record<string, PackageDefinition[]> = {
   'PILATES': [
@@ -62,6 +62,15 @@ const PACKAGE_DEFINITIONS: Record<string, PackageDefinition[]> = {
     { name: 'Unlimited 3 Month', sessionsCount: 0, price: 60000, validityDays: 90 },
     { name: 'Unlimited 6month', sessionsCount: 0, price: 108000, validityDays: 180 },
     { name: 'Unlimited 1year', sessionsCount: 0, price: 192000, validityDays: 365 },
+  ],
+  'MEDITATION': [
+    { name: 'Drop - in', sessionsCount: 1, price: 2000, validityDays: 1 },
+    { name: '4 Class Packs', sessionsCount: 4, price: 7000, validityDays: 30 },
+    { name: '8 Class Packs', sessionsCount: 8, price: 12000, validityDays: 60 },
+    { name: 'Unlimited Monthly', sessionsCount: 0, price: 20000, validityDays: 30 },
+    { name: 'Unlimited 3 Month', sessionsCount: 0, price: 54000, validityDays: 90 },
+    { name: 'Unlimited 6month', sessionsCount: 0, price: 96000, validityDays: 180 },
+    { name: 'Unlimited 1year', sessionsCount: 0, price: 168000, validityDays: 365 },
   ],
 };
 
@@ -329,7 +338,7 @@ const PackageManagement: React.FC = () => {
 
       {/* Package Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">
               {editingPackage ? 'Edit Package' : 'Create New Package'}
@@ -606,7 +615,7 @@ const PackageManagement: React.FC = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-sm">
             <div className="flex items-center mb-4">
               <div className="w-10 h-10 rounded-full bg-red-900/50 flex items-center justify-center mr-3">

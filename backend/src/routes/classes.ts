@@ -15,7 +15,7 @@ router.get('/', [
     const { date, classType, instructor } = req.query;
 
     // Build filter conditions
-    const where: any = {};
+    const where: any = { isActive: true };
 
     if (date) {
       const filterDate = new Date(date as string);

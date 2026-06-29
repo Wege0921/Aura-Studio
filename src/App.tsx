@@ -20,6 +20,8 @@ const ForgotPassword = lazy(() => import('./components/Auth/ForgotPassword'));
 const ResetPassword = lazy(() => import('./components/Auth/ResetPassword'));
 const DashboardLayout = lazy(() => import('./components/DashboardLayout'));
 const PackageList = lazy(() => import('./components/Packages/PackageList'));
+const ClassList = lazy(() => import('./components/Classes/ClassList'));
+const ClassDetail = lazy(() => import('./components/Classes/ClassDetail'));
 const ContactPage = lazy(() => import('./components/Homepage/ContactPage'));
 const NotificationSettings = lazy(() => import('./components/Notifications/NotificationSettings'));
 const ClassManagement = lazy(() => import('./components/Admin/ClassManagement'));
@@ -75,8 +77,6 @@ function AppRoutes() {
       <Route path="/home" element={<PublicLayout fullWidth><Homepage /></PublicLayout>} />
 
       {/* Public package browsing (no login required) */}
-      {/* Classes hidden for now — packages only */}
-      {/*
       <Route
         path="/classes"
         element={
@@ -93,7 +93,6 @@ function AppRoutes() {
           </PublicLayout>
         }
       />
-      */}
       <Route
         path="/packages"
         element={

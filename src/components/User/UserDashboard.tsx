@@ -97,6 +97,8 @@ const UserDashboard: React.FC = () => {
   };
 
   const goToPackages = () => navigate('/packages');
+  const goToClasses = () => navigate('/classes');
+  const goToBookings = () => navigate('/dashboard/bookings');
   const goToPayments = () => navigate('/dashboard/payments');
 
   const activePkgs = userPackages.filter(
@@ -138,15 +140,48 @@ const UserDashboard: React.FC = () => {
       {/* Quick Actions Grid */}
       <div>
         <h2 className="text-lg font-semibold text-aura-cream mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <QuickActionCard
+            title="Browse Classes"
+            description="View all available classes"
+            color="bg-pink-600/20 text-pink-400"
+            onClick={goToClasses}
+            icon={
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            }
+          />
+          <QuickActionCard
+            title="Book a Class"
+            description="Find and book your next session"
+            color="bg-purple-600/20 text-purple-400"
+            onClick={goToClasses}
+            icon={
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            }
+          />
+          <QuickActionCard
+            title="My Bookings"
+            description="View your class bookings"
+            color="bg-indigo-600/20 text-indigo-400"
+            onClick={goToBookings}
+            icon={
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            }
+          />
           <QuickActionCard
             title="Browse Packages"
             description="View all available packages"
-            color="bg-purple-600/20 text-purple-400"
+            color="bg-teal-600/20 text-teal-400"
             onClick={goToPackages}
             icon={
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
             }
           />
@@ -157,18 +192,7 @@ const UserDashboard: React.FC = () => {
             onClick={goToPackages}
             icon={
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-            }
-          />
-          <QuickActionCard
-            title="My Packages"
-            description="View your active packages"
-            color="bg-blue-600/20 text-blue-400"
-            onClick={goToPackages}
-            icon={
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             }
           />

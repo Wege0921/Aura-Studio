@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
@@ -52,6 +53,9 @@ model Class {
   waitlistEntries  WaitlistEntry[]
   reviews          Review[]
 
+  @@index([date])
+  @@index([isActive])
+  @@index([classType])
   @@map("classes")
 }
 
@@ -77,6 +81,10 @@ model Booking {
   userPackage UserPackage? @relation(fields: [userPackageId], references: [id], onDelete: SetNull)
 
   @@unique([userId, classId])
+  @@index([createdAt])
+  @@index([status])
+  @@index([userId])
+  @@index([classId])
   @@map("bookings")
 }
 
@@ -115,6 +123,8 @@ model UserPackage {
   package Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
   bookings Booking[]
 
+  @@index([userId])
+  @@index([expiresAt])
   @@map("user_packages")
 }
 
@@ -134,6 +144,10 @@ model Payment {
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   package Package? @relation(fields: [packageId], references: [id], onDelete: SetNull)
 
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId])
+  @@index([paymentMethod])
   @@map("payments")
 }
 
@@ -152,6 +166,8 @@ model WaitlistEntry {
   class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
 
   @@unique([userId, classId])
+  @@index([classId])
+  @@index([status])
   @@map("waitlist_entries")
 }
 
@@ -197,4 +213,12 @@ model NotificationPreference {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notification_preferences")
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  @@map("newsletter_subscribers")
 }

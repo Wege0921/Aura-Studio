@@ -323,7 +323,11 @@
   padding: 6.5rem 3.5rem 7rem;
   text-align: center;
 }
-.landing-page .lp-offerings .lp-eyebrow { color: var(--lp-umber); }
+.landing-page .lp-offerings .lp-eyebrow {
+  color: var(--lp-umber);
+  font-size: 0.85rem;
+  letter-spacing: 0.28em;
+}
 .landing-page .lp-divider {
   width: 34px;
   height: 1px;
@@ -354,10 +358,11 @@
   object-fit: cover;
 }
 .landing-page .lp-card h3 {
-  font-size: 1rem;
-  letter-spacing: 0.14em;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 700;
   margin-bottom: 0.8rem;
   color: var(--lp-bark);
 }
@@ -440,6 +445,11 @@
   font-size: 1.55rem;
   letter-spacing: 0.18em;
 }
+.landing-page .lp-footer-logo-img {
+  max-width: 92px;
+  height: auto;
+  display: block;
+}
 .landing-page .lp-footer-logo small {
   display: block;
   font-family: 'Jost', sans-serif;
@@ -495,6 +505,13 @@
 }
 .landing-page .lp-subscribe input::placeholder { color: rgba(242,235,224,0.45); }
 .landing-page .lp-subscribe button { color: var(--lp-sand); font-size: 1rem; }
+.landing-page .lp-newsletter-feedback {
+  font-size: 0.78rem;
+  margin-top: 0.6rem;
+  line-height: 1.4;
+}
+.landing-page .lp-newsletter-success { color: #a8d5a2; }
+.landing-page .lp-newsletter-error { color: #e8a0a0; }
 .landing-page .lp-footer-bottom {
   border-top: 1px solid var(--lp-line);
   display: flex;

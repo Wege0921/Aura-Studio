@@ -141,11 +141,15 @@ router.post('/', authenticateToken, upload.single('paymentReceipt'), [
 
       let receiptUrl: string | null = null;
       if (paymentReceiptFile) {
-        receiptUrl = await uploadToSupabase(
-          paymentReceiptFile.buffer,
-          paymentReceiptFile.originalname,
-          paymentReceiptFile.mimetype
-        );
+        try {
+          receiptUrl = await uploadToSupabase(
+            paymentReceiptFile.buffer,
+            paymentReceiptFile.originalname,
+            paymentReceiptFile.mimetype
+          );
+        } catch (uploadErr) {
+          console.error('Payment receipt upload failed:', uploadErr);
+        }
       }
       bookingData.paymentStatus = 'PENDING';
       bookingData.paymentReceiptUrl = receiptUrl;
@@ -253,11 +257,15 @@ router.post('/:id/payment', authenticateToken, upload.single('receipt'), async (
     // Upload receipt to Supabase Storage
     let receiptUrl: string | null = null;
     if (req.file) {
-      receiptUrl = await uploadToSupabase(
-        req.file.buffer,
-        req.file.originalname,
-        req.file.mimetype
-      );
+      try {
+        receiptUrl = await uploadToSupabase(
+          req.file.buffer,
+          req.file.originalname,
+          req.file.mimetype
+        );
+      } catch (uploadErr) {
+        console.error('Payment receipt upload failed:', uploadErr);
+      }
     }
 
     // Update booking with payment information

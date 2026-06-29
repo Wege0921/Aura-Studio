@@ -60,7 +60,7 @@ const ClassManagement: React.FC = () => {
     imageUrl: '',
   });
 
-  const classTypes = ['PILATES', 'PRENATAL', 'POSTPARTUM'];
+  const classTypes = ['PILATES', 'PRENATAL', 'POSTPARTUM', 'MEDITATION'];
   const [instructors, setInstructors] = useState<string[]>([]);
 
   useEffect(() => {
@@ -275,14 +275,12 @@ const ClassManagement: React.FC = () => {
           <h1 className="text-3xl font-bold text-aura-cream">Class Management</h1>
           <p className="text-aura-sand/70">Create and manage pilates classes</p>
         </div>
-        {/* Class creation disabled — classes hidden for now
-        <button
+          <button
           onClick={() => setShowForm(true)}
           className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
         >
           Create New Class
         </button>
-        */}
       </div>
 
       {/* Messages */}
@@ -302,7 +300,7 @@ const ClassManagement: React.FC = () => {
       {/* Class Form Modal */}
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-sm">
             <div className="flex items-center mb-4">
               <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-900/60 flex items-center justify-center mr-3">
@@ -330,7 +328,7 @@ const ClassManagement: React.FC = () => {
       )}
 
       {showForm && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">
               {editingClass ? 'Edit Class' : 'Create New Class'}

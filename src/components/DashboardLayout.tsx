@@ -15,15 +15,19 @@ import {
   InstructorIcon,
   AnalyticsIcon,
   ProfileIcon,
-  // WaitlistIcon,
-  // CalendarIcon,
+  WaitlistIcon,
+  CalendarIcon,
 } from './Layout/TabIcons';
 
 // Lazy-loaded — each loads only when its tab is first opened
 const UserDashboard = lazy(() => import('./User/UserDashboard'));
 const ProfilePage = lazy(() => import('./User/ProfilePage'));
 const PackageList = lazy(() => import('./Packages/PackageList'));
+const ClassList = lazy(() => import('./Classes/ClassList'));
 const PaymentHistory = lazy(() => import('./Payment/PaymentHistory'));
+const BookingHistory = lazy(() => import('./Booking/BookingHistory'));
+const MyWaitlist = lazy(() => import('./User/MyWaitlist'));
+const CalendarView = lazy(() => import('./Classes/CalendarView'));
 const AdminDashboardPage = lazy(() => import('./Admin/AdminDashboardPage'));
 const ClassManagement = lazy(() => import('./Admin/ClassManagement'));
 const UserManagement = lazy(() => import('./Admin/UserManagement'));
@@ -33,7 +37,7 @@ const PaymentManagement = lazy(() => import('./Admin/PaymentManagement'));
 const InstructorManagement = lazy(() => import('./Admin/InstructorManagement'));
 const Analytics = lazy(() => import('./Admin/Analytics'));
 
-type TabType = 'home' | /* 'classes' | */ 'packages' | /* 'bookings' | */ 'payments' | /* 'waitlist' | */ 'profile' | /* 'calendar' | */ 'admin-dashboard' | 'admin-classes' | 'admin-users' | 'admin-bookings' | 'admin-packages' | 'admin-payments' | 'admin-instructors' | 'admin-analytics';
+type TabType = 'home' | 'classes' | 'packages' | 'bookings' | 'payments' | 'waitlist' | 'profile' | 'calendar' | 'admin-dashboard' | 'admin-classes' | 'admin-users' | 'admin-bookings' | 'admin-packages' | 'admin-payments' | 'admin-instructors' | 'admin-analytics';
 
 interface TabDef {
   id: TabType;
@@ -67,7 +71,7 @@ const DashboardLayout: React.FC = () => {
     const isAdmin = user.role === 'ADMIN';
     const tabMap: Record<string, TabType> = isAdmin
       ? { home: 'admin-dashboard', dashboard: 'admin-dashboard', classes: 'admin-classes', packages: 'admin-packages', bookings: 'admin-bookings', users: 'admin-users', payments: 'admin-payments', instructors: 'admin-instructors', analytics: 'admin-analytics' }
-      : { home: 'home', /* classes: 'classes', */ packages: 'packages', /* bookings: 'bookings', */ payments: 'payments', /* waitlist: 'waitlist', */ profile: 'profile' /* , calendar: 'calendar' */ };
+      : { home: 'home', classes: 'classes', packages: 'packages', bookings: 'bookings', payments: 'payments', waitlist: 'waitlist', profile: 'profile', calendar: 'calendar' };
     const segments = location.pathname.split('/').filter(Boolean);
     const tab = segments.length > 1 ? segments[1] : null;
     if (tab && tabMap[tab]) {
@@ -81,12 +85,12 @@ const DashboardLayout: React.FC = () => {
 
   const userTabs: TabDef[] = useMemo(() => [
     { id: 'home', label: 'Home', icon: <HomeIcon className="w-5 h-5" /> },
-    // { id: 'classes', label: 'Classes', icon: <ClassesIcon className="w-5 h-5" /> },
-    // { id: 'calendar', label: 'Schedule', icon: <CalendarIcon className="w-5 h-5" /> },
+    { id: 'classes', label: 'Classes', icon: <ClassesIcon className="w-5 h-5" /> },
+    { id: 'calendar', label: 'Schedule', icon: <CalendarIcon className="w-5 h-5" /> },
     { id: 'packages', label: 'Packages', icon: <PackagesIcon className="w-5 h-5" /> },
-    // { id: 'bookings', label: 'Bookings', icon: <BookingsIcon className="w-5 h-5" /> },
+    { id: 'bookings', label: 'Bookings', icon: <BookingsIcon className="w-5 h-5" /> },
     { id: 'payments', label: 'Payments', icon: <PaymentsIcon className="w-5 h-5" /> },
-    // { id: 'waitlist', label: 'Waitlist', icon: <WaitlistIcon className="w-5 h-5" /> },
+    { id: 'waitlist', label: 'Waitlist', icon: <WaitlistIcon className="w-5 h-5" /> },
     { id: 'profile', label: 'Profile', icon: <ProfileIcon className="w-5 h-5" /> },
   ], []);
 
@@ -153,13 +157,13 @@ const DashboardLayout: React.FC = () => {
 
     const content = (() => {
       switch (activeTab) {
-        // case 'classes': return <ClassList />;
+        case 'classes': return <ClassList />;
         case 'packages': return <PackageList />;
-        // case 'bookings': return <BookingHistory />;
+        case 'bookings': return <BookingHistory />;
         case 'payments': return <PaymentHistory />;
-        // case 'waitlist': return <MyWaitlist />;
+        case 'waitlist': return <MyWaitlist />;
         case 'profile': return <ProfilePage />;
-        // case 'calendar': return <CalendarView />;
+        case 'calendar': return <CalendarView />;
         case 'admin-dashboard': return <AdminDashboardPage onTabChange={handleTabChange} />;
         case 'admin-classes': return <ClassManagement />;
         case 'admin-users': return <UserManagement />;
@@ -304,7 +308,7 @@ const DashboardLayout: React.FC = () => {
 
         {/* Mobile Bottom Tab Bar — sidebar-only items excluded on mobile */}
         <MobileBottomNav
-          tabs={tabs.filter((t) => !['admin-classes', 'admin-instructors', 'admin-analytics'].includes(t.id))}
+          tabs={tabs.filter((t) => !['admin-instructors', 'admin-analytics', 'admin-users'].includes(t.id))}
           activeTab={activeTab}
           onTabChange={handleTabChange}
         />

@@ -4,6 +4,7 @@
 .env
 .env.local
 backend/.env
+backend/.env.production
 frontend/.env
 .env.development.local
 .env.test.local

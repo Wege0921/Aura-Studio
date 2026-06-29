@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   HomeIcon,
-  // CalendarDaysIcon,
+  CalendarDaysIcon,
   Squares2X2Icon,
   UserCircleIcon,
   EnvelopeIcon,
@@ -12,7 +12,7 @@ import './MobileBottomTabs.css';
 
 const tabs = [
   { label: 'Home', path: '/', icon: HomeIcon },
-  // { label: 'Classes', path: '/classes', icon: CalendarDaysIcon },
+  { label: 'Classes', path: '/classes', icon: CalendarDaysIcon },
   { label: 'Packages', path: '/packages', icon: Squares2X2Icon },
   { label: 'Contact', path: '/contact', icon: EnvelopeIcon },
 ];

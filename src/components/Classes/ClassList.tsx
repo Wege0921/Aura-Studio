@@ -40,7 +40,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
     date: '',
     classType: urlClassType,
     instructor: '',
-    packageType: urlClassType ? `${urlClassType}|dropin` : '',
+    price: '',
   });
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 9;
@@ -53,7 +53,6 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
       setFilters(prev => ({
         ...prev,
         classType: urlClassType,
-        packageType: `${urlClassType}|dropin`,
       }));
       setCurrentPage(1);
     }
@@ -157,32 +156,9 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
 
   const handleFilterChange = (filterName: string, value: string) => {
     setCurrentPage(1);
-    if (filterName === 'classType') {
-      const packageType = value ? `${value}|dropin` : '';
-      setFilters(prev => ({
-        ...prev,
-        classType: value,
-        packageType,
-      }));
-    } else {
-      setFilters(prev => ({
-        ...prev,
-        [filterName]: value,
-      }));
-    }
-  };
-
-  const handlePackageFilter = (value: string) => {
-    setCurrentPage(1);
-    if (!value) {
-      setFilters(prev => ({ ...prev, packageType: '', classType: '' }));
-      return;
-    }
-    const [classType] = value.split('|');
     setFilters(prev => ({
       ...prev,
-      packageType: value,
-      classType,
+      [filterName]: value,
     }));
   };
 
@@ -266,6 +242,17 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
     ? `${filters.classType.charAt(0) + filters.classType.slice(1).toLowerCase()} Classes`
     : 'All Classes';
 
+  // Price filter is client-side since API doesn't filter by price
+  const filteredClasses = classes.filter(cls => {
+    if (!filters.price) return true;
+    const price = cls.price || 0;
+    if (filters.price === 'under3000') return price < 3000;
+    if (filters.price === '3000to5000') return price >= 3000 && price <= 5000;
+    if (filters.price === '5000to10000') return price > 5000 && price <= 10000;
+    if (filters.price === 'over10000') return price > 10000;
+    return true;
+  });
+
   return (
     <div className="space-y-6">
       {/* Page Title */}
@@ -325,51 +312,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
               <option value="PILATES">Pilates</option>
               <option value="PRENATAL">Prenatal</option>
               <option value="POSTPARTUM">Postpartum</option>
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="packageType" className="block text-xs font-medium text-aura-sand/70 mb-0.5">Package</label>
-            <select
-              id="packageType"
-              value={filters.packageType || ''}
-              onChange={(e) => handlePackageFilter(e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm border border-aura-sand/30 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
-            >
-              <option value="">All</option>
-              {(filters.classType === '' || filters.classType === 'PILATES') && (
-                <optgroup label="Pilates">
-                  <option value="PILATES|dropin">Drop-in</option>
-                  <option value="PILATES|4pack">4 Pack</option>
-                  <option value="PILATES|8pack">8 Pack</option>
-                  <option value="PILATES|unlimited1">Monthly</option>
-                  <option value="PILATES|unlimited3">3 Month</option>
-                  <option value="PILATES|unlimited6">6 Month</option>
-                  <option value="PILATES|unlimited12">1 Year</option>
-                </optgroup>
-              )}
-              {(filters.classType === '' || filters.classType === 'PRENATAL') && (
-                <optgroup label="Prenatal">
-                  <option value="PRENATAL|dropin">Drop-in</option>
-                  <option value="PRENATAL|4pack">4 Pack</option>
-                  <option value="PRENATAL|8pack">8 Pack</option>
-                  <option value="PRENATAL|unlimited1">Monthly</option>
-                  <option value="PRENATAL|unlimited3">3 Month</option>
-                  <option value="PRENATAL|unlimited6">6 Month</option>
-                  <option value="PRENATAL|unlimited12">1 Year</option>
-                </optgroup>
-              )}
-              {(filters.classType === '' || filters.classType === 'POSTPARTUM') && (
-                <optgroup label="Postpartum">
-                  <option value="POSTPARTUM|dropin">Drop-in</option>
-                  <option value="POSTPARTUM|4pack">4 Pack</option>
-                  <option value="POSTPARTUM|8pack">8 Pack</option>
-                  <option value="POSTPARTUM|unlimited1">Monthly</option>
-                  <option value="POSTPARTUM|unlimited3">3 Month</option>
-                  <option value="POSTPARTUM|unlimited6">6 Month</option>
-                  <option value="POSTPARTUM|unlimited12">1 Year</option>
-                </optgroup>
-              )}
+              <option value="MEDITATION">Meditation</option>
             </select>
           </div>
 
@@ -387,10 +330,26 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
               ))}
             </select>
           </div>
+
+          <div>
+            <label htmlFor="class-price" className="block text-xs font-medium text-aura-sand/70 mb-0.5">Price</label>
+            <select
+              id="class-price"
+              value={filters.price}
+              onChange={(e) => handleFilterChange('price', e.target.value)}
+              className="w-full px-2.5 py-1.5 text-sm border border-aura-sand/30 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+            >
+              <option value="">All</option>
+              <option value="under3000">Under ETB 3,000</option>
+              <option value="3000to5000">ETB 3,000 - 5,000</option>
+              <option value="5000to10000">ETB 5,000 - 10,000</option>
+              <option value="over10000">Over ETB 10,000</option>
+            </select>
+          </div>
         </div>
 
         <button
-          onClick={() => { setFilters({ date: '', classType: '', instructor: '', packageType: '' }); setCurrentPage(1); }}
+          onClick={() => { setFilters({ date: '', classType: '', instructor: '', price: '' }); setCurrentPage(1); }}
           className="mt-2 text-xs text-aura-sand/70 hover:text-aura-cream"
         >
           Clear filters
@@ -398,14 +357,14 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
       </div>
 
       {/* Classes Grid */}
-      {classes.length === 0 ? (
+      {filteredClasses.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-aura-cream">No classes found matching your criteria.</p>
         </div>
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {classes.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((classItem) => (
+            {filteredClasses.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((classItem) => (
               <ClassCard
                 key={classItem.id}
                 classItem={classItem}
@@ -417,7 +376,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
           </div>
 
           {/* Pagination */}
-          {classes.length > ITEMS_PER_PAGE && (
+          {filteredClasses.length > ITEMS_PER_PAGE && (
             <div className="bg-aura-ink px-4 py-3 mt-6 flex items-center justify-between border border-aura-sand/10 rounded-lg">
               <div className="flex-1 flex justify-between sm:hidden">
                 <button
@@ -428,8 +387,8 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
                   Previous
                 </button>
                 <button
-                  onClick={() => setCurrentPage(prev => Math.min(Math.ceil(classes.length / ITEMS_PER_PAGE), prev + 1))}
-                  disabled={currentPage === Math.ceil(classes.length / ITEMS_PER_PAGE)}
+                  onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredClasses.length / ITEMS_PER_PAGE), prev + 1))}
+                  disabled={currentPage === Math.ceil(filteredClasses.length / ITEMS_PER_PAGE)}
                   className="relative inline-flex items-center px-4 py-2 border border-aura-sand/20 text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
                 >
                   Next
@@ -438,7 +397,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-aura-sand">
-                    Showing <span className="font-medium">{((currentPage - 1) * ITEMS_PER_PAGE) + 1}</span> to <span className="font-medium">{Math.min(currentPage * ITEMS_PER_PAGE, classes.length)}</span> of <span className="font-medium">{classes.length}</span> results
+                    Showing <span className="font-medium">{((currentPage - 1) * ITEMS_PER_PAGE) + 1}</span> to <span className="font-medium">{Math.min(currentPage * ITEMS_PER_PAGE, filteredClasses.length)}</span> of <span className="font-medium">{filteredClasses.length}</span> results
                   </p>
                 </div>
                 <div>
@@ -450,7 +409,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
                     >
                       Previous
                     </button>
-                    {Array.from({ length: Math.ceil(classes.length / ITEMS_PER_PAGE) }, (_, i) => i + 1).map(page => (
+                    {Array.from({ length: Math.ceil(filteredClasses.length / ITEMS_PER_PAGE) }, (_, i) => i + 1).map(page => (
                       <button
                         key={page}
                         onClick={() => setCurrentPage(page)}
@@ -464,8 +423,8 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
                       </button>
                     ))}
                     <button
-                      onClick={() => setCurrentPage(prev => Math.min(Math.ceil(classes.length / ITEMS_PER_PAGE), prev + 1))}
-                      disabled={currentPage === Math.ceil(classes.length / ITEMS_PER_PAGE)}
+                      onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredClasses.length / ITEMS_PER_PAGE), prev + 1))}
+                      disabled={currentPage === Math.ceil(filteredClasses.length / ITEMS_PER_PAGE)}
                       className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-aura-sand/20 bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
                     >
                       Next
@@ -489,6 +448,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
           date: selectedClass.date,
           time: selectedClass.time,
           duration: selectedClass.duration,
+          price: selectedClass.price,
         } : null}
         loading={bookingLoading}
         activePackages={activePackages}

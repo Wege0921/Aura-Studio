@@ -100,6 +100,8 @@ const BookingHistory: React.FC = () => {
         return 'bg-aura-sand/15 text-aura-cream';
       case 'POSTPARTUM':
         return 'bg-aura-umber/20 text-aura-cream';
+      case 'MEDITATION':
+        return 'bg-purple-500/15 text-aura-cream';
       default:
         return 'bg-aura-sand/10 text-aura-sand';
     }

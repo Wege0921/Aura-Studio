@@ -33,6 +33,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   PILATES: 'Pilates',
   PRENATAL: 'Prenatal',
   POSTPARTUM: 'Postpartum',
+  MEDITATION: 'Meditation',
 };
 
 const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) => {
@@ -229,6 +230,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
                 <option value="PILATES">Pilates</option>
                 <option value="PRENATAL">Prenatal</option>
                 <option value="POSTPARTUM">Postpartum</option>
+                <option value="MEDITATION">Meditation</option>
               </select>
             </div>
 

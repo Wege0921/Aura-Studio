@@ -500,7 +500,7 @@ const UserManagement: React.FC = () => {
 
       {/* User Details Modal */}
       {showDetails && selectedUser && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">User Details</h2>
             
@@ -550,7 +550,7 @@ const UserManagement: React.FC = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-sm">
             <div className="flex items-center mb-4">
               <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-900/60 flex items-center justify-center mr-3">
@@ -579,7 +579,7 @@ const UserManagement: React.FC = () => {
 
       {/* Edit User Modal */}
       {showEditForm && selectedUser && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Edit User</h2>
             
@@ -640,7 +640,7 @@ const UserManagement: React.FC = () => {
 
   {/* Add Instructor Modal */}
   {showInstructorForm && (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
       <div className="bg-aura-ink rounded-lg p-6 w-full max-w-md">
         <h2 className="text-xl font-bold mb-4">Add New Instructor</h2>
         

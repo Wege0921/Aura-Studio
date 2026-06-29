@@ -1,16 +1,18 @@
 {
-  "framework": "create-react-app",
   "buildCommand": "npm run vercel-build",
   "outputDirectory": "build",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index" },
-    { "source": "/health", "destination": "/api/index" },
+    { "source": "/api/(.*)", "destination": "/backend/dist/index" },
+    { "source": "/health", "destination": "/backend/dist/index" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "functions": {
-    "api/index.js": {
+    "backend/dist/index.js": {
       "memory": 1024,
       "maxDuration": 30
     }
-  }
+  },
+  "crons": [
+    { "path": "/api/admin/run-expiry-check", "schedule": "0 0 * * *" }
+  ]
 }

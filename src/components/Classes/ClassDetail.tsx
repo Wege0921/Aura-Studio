@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSEO } from '../../hooks/useSEO';
+import BookingModal from '../Booking/BookingModal';
 
 interface ClassDetailData {
   id: string;
@@ -29,6 +30,8 @@ const ClassDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [bookingLoading, setBookingLoading] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [activePackages, setActivePackages] = useState<{ id: string; name: string; remainingSessions: number }[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewAvg, setReviewAvg] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
@@ -66,10 +69,34 @@ const ClassDetail: React.FC = () => {
     }
   }, [id]);
 
+  const fetchActivePackages = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      const response = await fetch('/api/packages/my-packages', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const active = data
+          .filter((pkg: any) => pkg.remainingSessions > 0 && (!pkg.expiresAt || new Date(pkg.expiresAt) >= new Date()))
+          .map((pkg: any) => ({
+            id: pkg.id,
+            name: pkg.package.name,
+            remainingSessions: pkg.remainingSessions,
+          }));
+        setActivePackages(active);
+      }
+    } catch (e) {
+      console.error('Failed to fetch active packages', e);
+    }
+  }, []);
+
   useEffect(() => {
     if (!id) return;
     fetchClass();
-  }, [id, fetchClass]);
+    fetchActivePackages();
+  }, [id, fetchClass, fetchActivePackages]);
 
   const handleSubmitReview = async () => {
     if (!user) {
@@ -101,29 +128,41 @@ const ClassDetail: React.FC = () => {
     }
   };
 
-  const handleBook = async () => {
+  const handleOpenBooking = () => {
     if (!user) {
       navigate('/login');
       return;
     }
-    setBookingLoading(true);
+    setShowBookingModal(true);
+  };
+
+  const handleConfirmBooking = async (paymentMethod: string, receiptFile?: File, usePackageSession?: boolean) => {
+    if (!cls) return;
     try {
+      setBookingLoading(true);
       const token = localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('classId', cls.id);
+      formData.append('paymentMethod', paymentMethod);
+      formData.append('paymentAmount', (cls.price || 0).toString());
+      if (usePackageSession) {
+        formData.append('usePackageSession', 'true');
+      }
+      if (receiptFile) {
+        formData.append('paymentReceipt', receiptFile);
+      }
+
       const response = await fetch('/api/bookings', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          classId: id,
-          paymentMethod: 'CASH',
-          usePackageSession: 'false',
-        }),
+        body: formData,
       });
+
       const data = await response.json();
       if (response.ok) {
-        alert('Booking successful!');
+        setShowBookingModal(false);
         fetchClass();
       } else {
         alert(data.error || 'Booking failed');
@@ -133,6 +172,10 @@ const ClassDetail: React.FC = () => {
     } finally {
       setBookingLoading(false);
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowBookingModal(false);
   };
 
   const handleShare = () => {
@@ -247,17 +290,15 @@ const ClassDetail: React.FC = () => {
           {!isPast && (
             <div className="mt-6">
               <button
-                onClick={handleBook}
-                disabled={bookingLoading || cls.isFullyBooked || isWithin2Hours}
+                onClick={handleOpenBooking}
+                disabled={cls.isFullyBooked || isWithin2Hours}
                 className={`px-6 py-3 rounded-lg text-sm font-medium transition-colors ${
                   cls.isFullyBooked || isWithin2Hours
                     ? 'bg-purple-300/40 text-purple-200 cursor-not-allowed'
                     : 'bg-purple-600 text-white hover:bg-purple-700'
                 }`}
               >
-                {bookingLoading
-                  ? 'Booking...'
-                  : cls.isFullyBooked
+                {cls.isFullyBooked
                   ? 'Fully Booked'
                   : isWithin2Hours
                   ? 'Booking closed'
@@ -267,6 +308,23 @@ const ClassDetail: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Booking Modal */}
+      <BookingModal
+        isOpen={showBookingModal}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmBooking}
+        classInfo={cls ? {
+          name: cls.name,
+          instructor: cls.instructor,
+          date: cls.date,
+          time: cls.time,
+          duration: cls.duration,
+          price: cls.price,
+        } : null}
+        loading={bookingLoading}
+        activePackages={activePackages}
+      />
 
       {/* Reviews */}
       <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-sand/10 p-6 md:p-8">

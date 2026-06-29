@@ -2,13 +2,22 @@ import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
 import { supabase } from '../lib/supabase';
 
-interface AuthRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    role: string;
-  };
+interface AuthUser {
+  id: string;
+  email: string;
+  role: string;
 }
+
+interface AuthRequest extends Request {
+  user?: AuthUser;
+}
+
+// Short-TTL in-memory cache of token -> resolved app user.
+// Avoids hitting Supabase Auth (network) + Prisma on every single request.
+// On warm serverless instances this turns repeated calls (e.g. the 3 parallel
+// admin-dashboard requests) into instant cache hits.
+const TOKEN_CACHE_TTL_MS = 60 * 1000; // 60 seconds
+const tokenCache = new Map<string, { user: AuthUser; expiresAt: number }>();
 
 export const authenticateToken = async (req: AuthRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];
@@ -16,6 +25,13 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
 
   if (!token) {
     return res.status(401).json({ error: 'Access token required' });
+  }
+
+  // Fast path: serve from cache if the token was recently verified
+  const cached = tokenCache.get(token);
+  if (cached && cached.expiresAt > Date.now()) {
+    req.user = cached.user;
+    return next();
   }
 
   try {
@@ -64,6 +80,17 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
     }
 
     req.user = user;
+
+    // Cache the verified user for subsequent requests with the same token
+    tokenCache.set(token, { user, expiresAt: Date.now() + TOKEN_CACHE_TTL_MS });
+    // Bound the cache: drop expired entries when it grows large
+    if (tokenCache.size > 1000) {
+      const now = Date.now();
+      for (const [key, val] of tokenCache) {
+        if (val.expiresAt <= now) tokenCache.delete(key);
+      }
+    }
+
     next();
   } catch (error) {
     console.error('Token verification error:', error);

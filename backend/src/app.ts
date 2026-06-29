@@ -16,6 +16,7 @@ import notificationsRoutes from './routes/notifications';
 import waitlistRoutes from './routes/waitlist';
 import contactRoutes from './routes/contact';
 import reviewsRoutes from './routes/reviews';
+import newsletterRoutes from './routes/newsletter';
 
 dotenv.config();
 
@@ -91,6 +92,7 @@ app.use('/api/users', usersRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/waitlist', waitlistRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/reviews', reviewsRoutes);
 
 // Basic route

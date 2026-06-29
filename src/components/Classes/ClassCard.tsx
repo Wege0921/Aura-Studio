@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 
 interface Class {
@@ -15,6 +14,7 @@ interface Class {
   imageUrl?: string;
   availableSpots: number;
   isFullyBooked: boolean;
+  price?: number;
 }
 
 interface ClassCardProps {
@@ -24,12 +24,19 @@ interface ClassCardProps {
   onWaitlist?: boolean;
 }
 
+const classTypeLabels: Record<string, string> = {
+  PILATES: 'Pilates',
+  PRENATAL: 'Prenatal',
+  POSTPARTUM: 'Postpartum',
+  MEDITATION: 'Meditation',
+};
+
 const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist, onWaitlist = false }) => {
-  const navigate = useNavigate();
-  const classTypeColors = {
+  const classTypeColors: Record<string, string> = {
     PILATES: 'bg-aura-clay/20 text-aura-cream',
     PRENATAL: 'bg-aura-sand/10 text-aura-cream',
     POSTPARTUM: 'bg-aura-clay/15 text-aura-cream',
+    MEDITATION: 'bg-purple-500/15 text-aura-cream',
   };
 
   const handleBookClick = () => {
@@ -39,63 +46,71 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
   };
 
   return (
-    <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 overflow-hidden hover:shadow-xl transition-shadow duration-200 border border-aura-sand/10">
-      {classItem.imageUrl && (
-        <div className="h-40 w-full bg-aura-bark cursor-pointer" onClick={() => navigate(`/classes/${classItem.id}`)}>
-          <img src={classItem.imageUrl} alt={classItem.name} className="w-full h-full object-cover" />
-        </div>
-      )}
-      <div className="p-6">
+    <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 p-6 hover:shadow-xl transition-shadow duration-200 border border-aura-sand/10">
+      {/* Header — like PackageCard */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-aura-cream mb-2">{classItem.name}</h3>
-          <p className="text-aura-sand text-sm mb-2">{classItem.description}</p>
+          <div className="flex items-center gap-2 mb-2">
+            <h3 className="text-lg font-semibold text-aura-cream">{classItem.name}</h3>
+            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${classTypeColors[classItem.classType] || 'bg-aura-sand/15 text-aura-cream'}`}>
+              {classTypeLabels[classItem.classType] || classItem.classType}
+            </span>
+          </div>
+          {classItem.description && (
+            <p className="text-aura-sand text-sm">{classItem.description}</p>
+          )}
         </div>
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${classTypeColors[classItem.classType as keyof typeof classTypeColors]}`}>
-          {classItem.classType}
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${classItem.isFullyBooked ? 'bg-red-900/30 text-red-300' : 'bg-green-900/30 text-green-300'}`}>
+          {classItem.isFullyBooked ? 'Full' : 'Open'}
         </span>
       </div>
 
+      {/* Details — flex rows like PackageCard */}
       <div className="space-y-2 mb-4">
-        <div className="flex items-center text-sm text-aura-sand">
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-          {classItem.instructor}
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-aura-sand">Instructor:</span>
+          <span className="text-sm font-medium text-aura-cream">{classItem.instructor}</span>
         </div>
 
-        <div className="flex items-center text-sm text-aura-sand">
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          {format(new Date(classItem.date), 'MMM dd, yyyy')} at {classItem.time}
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-aura-sand">Date:</span>
+          <span className="text-sm font-medium text-aura-cream">{format(new Date(classItem.date), 'MMM dd, yyyy')}</span>
         </div>
 
-        <div className="flex items-center text-sm text-aura-sand">
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          {classItem.duration} minutes
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-aura-sand">Time:</span>
+          <span className="text-sm font-medium text-aura-cream">{classItem.time}</span>
         </div>
 
-        <div className="flex items-center text-sm text-aura-sand">
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-          {classItem.availableSpots} of {classItem.capacity} spots available
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-aura-sand">Duration:</span>
+          <span className="text-sm font-medium text-aura-cream">{classItem.duration} min</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-aura-sand">Spots:</span>
+          <span className={`text-sm font-medium ${classItem.isFullyBooked ? 'text-red-400' : 'text-aura-cream'}`}>
+            {classItem.availableSpots} / {classItem.capacity}
+          </span>
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className={`text-sm font-medium ${classItem.isFullyBooked ? 'text-red-400' : 'text-green-400'}`}>
-          {classItem.isFullyBooked ? 'Fully Booked' : `${classItem.availableSpots} spots left`}
+      {/* Price + CTA — like PackageCard */}
+      <div className="border-t border-aura-sand/10 pt-4">
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-2xl font-bold text-aura-cream">
+            {classItem.price ? `ETB ${classItem.price.toLocaleString()}` : 'Free'}
+          </span>
+          <span className="text-sm text-aura-sand">
+            {classItem.isFullyBooked ? 'Waitlist available' : `${classItem.availableSpots} spots left`}
+          </span>
         </div>
-        
+
         {classItem.isFullyBooked ? (
           <button
             onClick={() => onJoinWaitlist && !onWaitlist && onJoinWaitlist(classItem.id)}
             disabled={onWaitlist}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+            className={`w-full px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
               onWaitlist
                 ? 'bg-amber-900/30 text-amber-300 cursor-default'
                 : 'bg-amber-700 text-aura-cream hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2'
@@ -106,12 +121,11 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
         ) : (
           <button
             onClick={handleBookClick}
-            className="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 bg-purple-600 text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+            className="w-full px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 bg-purple-600 text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
           >
             Book Now
           </button>
         )}
-      </div>
       </div>
     </div>
   );

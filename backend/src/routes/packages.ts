@@ -112,11 +112,15 @@ router.post('/purchase', authenticateToken, upload.single('paymentReceipt'), [
 
     let receiptUrl: string | null = null;
     if (paymentReceiptFile) {
-      receiptUrl = await uploadToSupabase(
-        paymentReceiptFile.buffer,
-        paymentReceiptFile.originalname,
-        paymentReceiptFile.mimetype
-      );
+      try {
+        receiptUrl = await uploadToSupabase(
+          paymentReceiptFile.buffer,
+          paymentReceiptFile.originalname,
+          paymentReceiptFile.mimetype
+        );
+      } catch (uploadErr) {
+        console.error('Payment receipt upload failed:', uploadErr);
+      }
     }
 
     // Create a pending payment record for admin verification

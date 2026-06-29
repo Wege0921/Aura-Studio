@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import { prisma } from '../lib/prisma';
 import { authenticateToken, requireAdmin } from '../middleware/auth';
+import { PackageExpiryService } from '../services/packageExpiryService';
+import { sendPackageExpiryReminder } from '../services/emailService';
 
 // Extend Request interface to include user property
 interface AuthenticatedRequest extends Request {
@@ -79,7 +81,7 @@ router.get('/bookings', authenticateToken, requireAdmin, async (req, res) => {
       },
       orderBy: { createdAt: 'desc' },
       skip: (Number(page) - 1) * Number(limit),
-      take: Number(limit),
+      take: Math.min(Math.max(Number(limit) || 20, 1), 100),
     });
 
     const total = await prisma.booking.count({ where });
@@ -175,6 +177,7 @@ router.post('/classes', authenticateToken, requireAdmin, async (req: Authenticat
       capacity,
       classType,
       price,
+      isActive,
     } = req.body;
 
     const newClass = await prisma.class.create({
@@ -182,11 +185,13 @@ router.post('/classes', authenticateToken, requireAdmin, async (req: Authenticat
         name,
         description,
         instructor,
-        date: new Date(date),
-        time,
-        duration,
-        capacity,
-        classType,
+        date: date ? new Date(date) : new Date(),
+        time: time || '09:00',
+        duration: duration ? Number(duration) : 60,
+        capacity: capacity ? Number(capacity) : 20,
+        classType: classType || 'PILATES',
+        price: price !== undefined ? Number(price) : undefined,
+        isActive: isActive !== undefined ? Boolean(isActive) : true,
       },
       include: {
         _count: {
@@ -197,7 +202,7 @@ router.post('/classes', authenticateToken, requireAdmin, async (req: Authenticat
       },
     });
 
-    res.json(newClass);
+    res.status(201).json(newClass);
   } catch (error) {
     console.error('Error creating class:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -218,20 +223,24 @@ router.put('/classes/:id', authenticateToken, requireAdmin, async (req: Authenti
       capacity,
       classType,
       price,
+      isActive,
     } = req.body;
+
+    const updateData: any = {};
+    if (name !== undefined) updateData.name = name;
+    if (description !== undefined) updateData.description = description;
+    if (instructor !== undefined) updateData.instructor = instructor;
+    if (date !== undefined) updateData.date = new Date(date);
+    if (time !== undefined) updateData.time = time;
+    if (duration !== undefined) updateData.duration = Number(duration);
+    if (capacity !== undefined) updateData.capacity = Number(capacity);
+    if (classType !== undefined) updateData.classType = classType;
+    if (price !== undefined) updateData.price = Number(price);
+    if (isActive !== undefined) updateData.isActive = Boolean(isActive);
 
     const updatedClass = await prisma.class.update({
       where: { id },
-      data: {
-        name,
-        description,
-        instructor,
-        date: new Date(date),
-        time,
-        duration,
-        capacity,
-        classType,
-      },
+      data: updateData,
       include: {
         _count: {
           select: {
@@ -253,6 +262,20 @@ router.delete('/classes/:id', authenticateToken, requireAdmin, async (req: Authe
   try {
     const { id } = req.params;
 
+    // Check if class has any active bookings
+    const activeBookings = await prisma.booking.count({
+      where: {
+        classId: id,
+        status: { not: 'CANCELLED' },
+      },
+    });
+
+    if (activeBookings > 0) {
+      return res.status(400).json({
+        error: 'Cannot delete class with active bookings. Cancel or complete bookings first.',
+      });
+    }
+
     await prisma.class.delete({
       where: { id },
     });
@@ -270,12 +293,12 @@ router.patch('/classes/:id/toggle-status', authenticateToken, requireAdmin, asyn
     const { id } = req.params;
     const { isActive } = req.body;
 
-    // Toggle status functionality temporarily disabled
-    // await prisma.class.update({
-    //   where: { id },
-    //   data: { isActive },
-    // });
-    res.json({ message: 'Class status toggle temporarily disabled' });
+    const updatedClass = await prisma.class.update({
+      where: { id },
+      data: { isActive: Boolean(isActive) },
+    });
+
+    res.json({ message: `Class ${isActive ? 'activated' : 'deactivated'} successfully`, class: updatedClass });
   } catch (error) {
     console.error('Error toggling class status:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -453,7 +476,7 @@ router.get('/payments', authenticateToken, requireAdmin, async (req: Authenticat
       },
       orderBy: { createdAt: 'desc' },
       skip: (Number(page) - 1) * Number(limit),
-      take: Number(limit),
+      take: Math.min(Math.max(Number(limit) || 20, 1), 100),
     });
 
     const total = await prisma.payment.count({ where });
@@ -520,7 +543,7 @@ router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
       },
       orderBy: { createdAt: 'desc' },
       skip: (Number(page) - 1) * Number(limit),
-      take: Number(limit),
+      take: Math.min(Math.max(Number(limit) || 20, 1), 100),
     });
 
     const total = await prisma.user.count({ where });
@@ -958,6 +981,53 @@ router.post('/campaigns', authenticateToken, requireAdmin, [
     res.json({ message: `Campaign sent to ${sent} users`, sent });
   } catch (error) {
     console.error('Error sending campaign:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Vercel Cron: run package expiry check daily at midnight
+// No auth required — Vercel cron jobs don't send auth headers.
+// Optionally verify CRON_SECRET header if you set one in the dashboard.
+router.post('/run-expiry-check', async (req: Request, res: Response) => {
+  try {
+    const cronSecret = process.env.CRON_SECRET;
+    if (cronSecret) {
+      const headerSecret = req.headers['x-cron-secret'] || req.headers['authorization'];
+      if (headerSecret !== cronSecret && headerSecret !== `Bearer ${cronSecret}`) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+    }
+
+    console.log('[Cron] Running package expiry check...');
+    await PackageExpiryService.checkAndExpirePackages();
+
+    // Send reminder emails for packages expiring in 3 days
+    const expiringPackages = await PackageExpiryService.getExpiringPackages(3);
+    let remindersSent = 0;
+    for (const up of expiringPackages) {
+      if (up.user?.email && up.expiresAt) {
+        const daysLeft = Math.ceil((new Date(up.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+        try {
+          await sendPackageExpiryReminder({
+            to: up.user.email,
+            userName: up.user.name,
+            packageName: up.package.name,
+            daysLeft: Math.max(0, daysLeft),
+          });
+          remindersSent++;
+        } catch (emailErr) {
+          console.error('Failed to send expiry reminder:', emailErr);
+        }
+      }
+    }
+
+    res.json({
+      message: 'Expiry check completed',
+      remindersSent,
+      expiredChecked: true,
+    });
+  } catch (error) {
+    console.error('[Cron] Error in package expiry check:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

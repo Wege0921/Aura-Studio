@@ -43,8 +43,16 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  // Immediately restore from localStorage so the UI doesn't flash logged-out state
+  const storedUser = (() => {
+    try {
+      const raw = localStorage.getItem('user');
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  })();
+
+  const [user, setUser] = useState<User | null>(storedUser);
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
   const restoringRef = useRef(false);
 
@@ -96,16 +104,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             localStorage.setItem('token', session.access_token);
             localStorage.setItem('refreshToken', session.refresh_token);
             localStorage.setItem('user', JSON.stringify(backendUser));
-          } else {
+          } else if (response.status === 401 || response.status === 403) {
             // Backend rejected token — sign out and clear
             await supabase.auth.signOut();
+            setUser(null);
+            setToken(null);
             localStorage.removeItem('token');
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('user');
           }
+          // For other errors (5xx, network), keep the existing localStorage session
         }
       } catch (err) {
         console.error('Session restore error:', err);
+        // Don't clear on network errors — user stays logged in with cached credentials
       } finally {
         setLoading(false);
         restoringRef.current = false;
@@ -114,6 +126,47 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     restoreSession();
   }, []);
+
+  // Periodic session refresh — keeps Supabase token alive while app is open
+  useEffect(() => {
+    if (!token) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error || !data.session) {
+          // Session expired — try custom refresh
+          const storedRefreshToken = localStorage.getItem('refreshToken');
+          if (storedRefreshToken) {
+            const refreshRes = await fetch('/api/auth/refresh', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ refreshToken: storedRefreshToken }),
+            });
+            if (refreshRes.ok) {
+              const refreshData = await refreshRes.json();
+              setToken(refreshData.token);
+              localStorage.setItem('token', refreshData.token);
+              localStorage.setItem('refreshToken', refreshData.refreshToken);
+              await supabase.auth.setSession({
+                access_token: refreshData.token,
+                refresh_token: refreshData.refreshToken,
+              });
+            }
+          }
+        } else if (data.session.access_token !== token) {
+          // Supabase auto-refreshed the token — sync our state
+          setToken(data.session.access_token);
+          localStorage.setItem('token', data.session.access_token);
+          localStorage.setItem('refreshToken', data.session.refresh_token);
+        }
+      } catch (e) {
+        console.error('Periodic session refresh error:', e);
+      }
+    }, 5 * 60 * 1000); // every 5 minutes
+
+    return () => clearInterval(interval);
+  }, [token]);
 
   const persistSession = (data: { token: string; refreshToken: string; user: User }) => {
     setToken(data.token);

@@ -373,7 +373,7 @@ const PaymentManagement: React.FC = () => {
 
       {/* Payment Details Modal */}
       {showDetails && selectedPayment && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">Payment Details</h2>
             
