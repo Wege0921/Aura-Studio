@@ -67,7 +67,7 @@ const CalendarView: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-            className="p-2 rounded-lg bg-aura-ink border border-aura-sand/10 text-aura-sand hover:text-aura-cream"
+            className="p-2 rounded-lg bg-aura-ink border border-aura-umber text-aura-sand hover:text-aura-cream"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -78,7 +78,7 @@ const CalendarView: React.FC = () => {
           </span>
           <button
             onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-            className="p-2 rounded-lg bg-aura-ink border border-aura-sand/10 text-aura-sand hover:text-aura-cream"
+            className="p-2 rounded-lg bg-aura-ink border border-aura-umber text-aura-sand hover:text-aura-cream"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -87,7 +87,7 @@ const CalendarView: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-aura-ink rounded-xl border border-aura-sand/10 p-4">
+      <div className="bg-aura-ink rounded-xl border border-aura-umber p-4">
         <div className="grid grid-cols-7 gap-1 mb-2">
           {weekDays.map(d => (
             <div key={d} className="text-center text-xs font-medium text-aura-sand/70 py-2">
@@ -109,7 +109,7 @@ const CalendarView: React.FC = () => {
                 }}
                 className={`min-h-[80px] md:min-h-[100px] rounded-lg p-1 border transition-colors cursor-pointer ${
                   isCurrentMonth
-                    ? 'bg-aura-bark border-aura-sand/10 hover:border-aura-sand/30'
+                    ? 'bg-aura-bark border-aura-umber hover:border-aura-umber'
                     : 'bg-aura-bark/50 border-transparent'
                 }`}
               >

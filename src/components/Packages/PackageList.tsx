@@ -192,13 +192,13 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
 
       {/* User Packages Summary (when not showing only user packages) */}
       {!showUserPackages && userPackages.length > 0 && (
-        <div className="bg-aura-ink border border-aura-sand/10 rounded-xl p-6 shadow-lg shadow-black/20">
+        <div className="bg-aura-ink border border-aura-umber rounded-xl p-6 shadow-lg shadow-black/20">
           <h3 className="text-lg font-semibold text-aura-cream mb-4">Your Active Packages</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {userPackages
               .filter(up => up.remainingSessions > 0 && (!up.expiresAt || new Date(up.expiresAt) >= new Date()))
               .map(userPackage => (
-                <div key={userPackage.id} className="bg-aura-bark rounded-lg p-4 shadow-sm border border-aura-sand/10">
+                <div key={userPackage.id} className="bg-aura-bark rounded-lg p-4 shadow-sm border border-aura-umber">
                   <h4 className="font-medium text-aura-cream">{userPackage.package.name}</h4>
                   <p className="text-sm text-aura-sand mt-1">
                     {userPackage.remainingSessions} sessions remaining
@@ -216,7 +216,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
 
       {/* Filters */}
       {!showUserPackages && (
-        <div className="bg-aura-ink p-3 rounded-lg border border-aura-sand/10">
+        <div className="bg-aura-ink p-3 rounded-lg border border-aura-umber">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             <div>
               <label htmlFor="pkg-classType" className="block text-xs font-medium text-aura-sand/70 mb-0.5">Type</label>
@@ -224,7 +224,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
                 id="pkg-classType"
                 value={classTypeFilter}
                 onChange={(e) => { setClassTypeFilter(e.target.value); setCurrentPage(1); }}
-                className="w-full px-2.5 py-1.5 text-sm border border-aura-sand/30 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+                className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
               >
                 <option value="">All</option>
                 <option value="PILATES">Pilates</option>
@@ -240,7 +240,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
                 id="pkg-sessions"
                 value={sessionsFilter}
                 onChange={(e) => { setSessionsFilter(e.target.value); setCurrentPage(1); }}
-                className="w-full px-2.5 py-1.5 text-sm border border-aura-sand/30 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+                className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
               >
                 <option value="">All</option>
                 <option value="1">1 (Drop-in)</option>
@@ -257,7 +257,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
                 id="pkg-price"
                 value={priceFilter}
                 onChange={(e) => { setPriceFilter(e.target.value); setCurrentPage(1); }}
-                className="w-full px-2.5 py-1.5 text-sm border border-aura-sand/30 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+                className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
               >
                 <option value="">All</option>
                 <option value="under5000">Under ETB 5,000</option>
@@ -272,7 +272,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
                 id="pkg-validity"
                 value={validityFilter}
                 onChange={(e) => { setValidityFilter(e.target.value); setCurrentPage(1); }}
-                className="w-full px-2.5 py-1.5 text-sm border border-aura-sand/30 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+                className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
               >
                 <option value="">All</option>
                 <option value="7">7 Days</option>
@@ -355,19 +355,19 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
 
           {/* Pagination */}
           {filteredPackages.length > ITEMS_PER_PAGE && (
-            <div className="bg-aura-ink px-4 py-3 mt-6 mb-20 flex items-center justify-between border border-aura-sand/10 rounded-lg">
+            <div className="bg-aura-ink px-4 py-3 mt-6 mb-20 flex items-center justify-between border border-aura-umber rounded-lg">
               <div className="flex-1 flex justify-between sm:hidden">
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-aura-sand/20 text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                  className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
                 >
                   Previous
                 </button>
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredPackages.length / ITEMS_PER_PAGE), prev + 1))}
                   disabled={currentPage === Math.ceil(filteredPackages.length / ITEMS_PER_PAGE)}
-                  className="relative inline-flex items-center px-4 py-2 border border-aura-sand/20 text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                  className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
                 >
                   Next
                 </button>
@@ -383,7 +383,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
                     <button
                       onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                       disabled={currentPage === 1}
-                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-aura-sand/20 bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
                     >
                       Previous
                     </button>
@@ -394,7 +394,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                           page === currentPage
                             ? 'z-10 bg-purple-600 border-purple-600 text-white'
-                            : 'bg-aura-ink border-aura-sand/20 text-aura-sand hover:bg-aura-umber/30'
+                            : 'bg-aura-ink border-aura-umber text-aura-sand hover:bg-aura-umber/30'
                         }`}
                       >
                         {page}
@@ -403,7 +403,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
                     <button
                       onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredPackages.length / ITEMS_PER_PAGE), prev + 1))}
                       disabled={currentPage === Math.ceil(filteredPackages.length / ITEMS_PER_PAGE)}
-                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-aura-sand/20 bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
                     >
                       Next
                     </button>

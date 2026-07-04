@@ -87,17 +87,17 @@ const MarketingDashboard: React.FC = () => {
       <h1 className="text-2xl font-bold text-aura-cream">Marketing</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-aura-ink rounded-xl border border-aura-sand/10 p-5">
+        <div className="bg-aura-ink rounded-xl border border-aura-umber p-5">
           <p className="text-sm text-aura-sand/70">Total Users</p>
           <p className="text-3xl font-bold text-aura-cream">{stats.totalUsers}</p>
         </div>
-        <div className="bg-aura-ink rounded-xl border border-aura-sand/10 p-5">
+        <div className="bg-aura-ink rounded-xl border border-aura-umber p-5">
           <p className="text-sm text-aura-sand/70">Past Campaigns</p>
           <p className="text-3xl font-bold text-aura-cream">{campaigns.length}</p>
         </div>
       </div>
 
-      <div className="bg-aura-ink rounded-xl border border-aura-sand/10 p-6">
+      <div className="bg-aura-ink rounded-xl border border-aura-umber p-6">
         <h2 className="text-lg font-semibold text-aura-cream mb-4">New Email Campaign</h2>
         {message && (
           <div className={`mb-4 px-4 py-3 rounded ${message.includes('success') ? 'bg-green-900/40 text-green-200' : 'bg-red-900/40 text-red-200'}`}>
@@ -111,7 +111,7 @@ const MarketingDashboard: React.FC = () => {
               type="text"
               value={subject}
               onChange={e => setSubject(e.target.value)}
-              className="w-full px-3 py-2 bg-aura-bark border border-aura-sand/30 rounded-lg text-aura-cream focus:outline-none focus:ring-2 focus:ring-aura-sand"
+              className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:ring-2 focus:ring-aura-sand"
               placeholder="Campaign subject"
             />
           </div>
@@ -121,7 +121,7 @@ const MarketingDashboard: React.FC = () => {
               value={body}
               onChange={e => setBody(e.target.value)}
               rows={5}
-              className="w-full px-3 py-2 bg-aura-bark border border-aura-sand/30 rounded-lg text-aura-cream focus:outline-none focus:ring-2 focus:ring-aura-sand"
+              className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:ring-2 focus:ring-aura-sand"
               placeholder="Write your campaign message..."
             />
           </div>
@@ -135,14 +135,14 @@ const MarketingDashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-aura-ink rounded-xl border border-aura-sand/10 p-6">
+      <div className="bg-aura-ink rounded-xl border border-aura-umber p-6">
         <h2 className="text-lg font-semibold text-aura-cream mb-4">Campaign History</h2>
         {campaigns.length === 0 ? (
           <p className="text-aura-sand/70 text-sm">No campaigns sent yet.</p>
         ) : (
           <div className="space-y-3">
             {campaigns.map(c => (
-              <div key={c.id} className="border-b border-aura-sand/10 pb-3 last:border-0">
+              <div key={c.id} className="border-b border-aura-umber pb-3 last:border-0">
                 <p className="text-aura-cream font-medium">{c.subject}</p>
                 <p className="text-aura-sand/70 text-sm">
                   {c.status} — {c.recipientCount} recipients

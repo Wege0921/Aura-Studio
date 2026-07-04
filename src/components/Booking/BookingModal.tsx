@@ -89,7 +89,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-aura-ink/50 overflow-y-auto h-full w-full z-[60] modal-scroll-safe">
-      <div className="relative top-20 mx-auto p-5 pb-24 md:pb-5 border border-aura-sand/20 w-full max-w-md shadow-lg shadow-black/30 rounded-xl bg-[#2c2014]/90 backdrop-blur-sm">
+      <div className="relative top-20 mx-auto p-5 pb-24 md:pb-5 border border-aura-umber w-full max-w-md shadow-lg shadow-black/30 rounded-xl bg-[#2c2014]/90 backdrop-blur-sm">
         <div className="mt-3">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-medium text-aura-cream">Confirm Booking</h3>
@@ -124,7 +124,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
                   type="checkbox"
                   checked={usePackageSession}
                   onChange={(e) => setUsePackageSession(e.target.checked)}
-                  className="mt-1 h-4 w-4 text-green-500 focus:ring-green-500 border-aura-sand/30 rounded"
+                  className="mt-1 h-4 w-4 text-green-500 focus:ring-green-500 border-aura-umber rounded"
                 />
                 <div className="ml-3">
                   <span className="text-sm font-medium text-green-300">Use Package Session</span>
@@ -148,7 +148,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
                       value={method.value}
                       checked={selectedPaymentMethod === method.value}
                       onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-                      className="mt-1 h-4 w-4 text-aura-umber focus:ring-aura-umber border-aura-sand/30"
+                      className="mt-1 h-4 w-4 text-aura-umber focus:ring-aura-umber border-aura-umber"
                     />
                     <div className="ml-3">
                       <span className="text-sm font-medium text-aura-cream">{method.label}</span>
@@ -160,7 +160,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
               {/* Payment Details */}
               {selectedPaymentMethod === 'BANK_TRANSFER' && (
-                <div className="mt-3 bg-aura-ink/40 border border-aura-sand/20 rounded-md p-3">
+                <div className="mt-3 bg-aura-ink/40 border border-aura-umber rounded-md p-3">
                   <p className="text-xs font-medium text-aura-cream mb-1">Bank Transfer Details</p>
                   <div className="space-y-1 text-xs text-aura-sand">
                     <p><strong>Account:</strong> {bankDetails.accountName}</p>
@@ -171,7 +171,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
               )}
 
               {selectedPaymentMethod === 'MOBILE_MONEY' && (
-                <div className="mt-3 bg-aura-ink/40 border border-aura-sand/20 rounded-md p-3">
+                <div className="mt-3 bg-aura-ink/40 border border-aura-umber rounded-md p-3">
                   <p className="text-xs font-medium text-aura-cream mb-1">Mobile Money Details</p>
                   <div className="space-y-1 text-xs text-aura-sand">
                     <p><strong>Telebirr:</strong> +251 900 410 603</p>
@@ -192,7 +192,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
                   <label className="block text-sm font-medium text-aura-cream mb-2">
                     Payment Receipt *
                   </label>
-                  <div className="border-2 border-dashed border-aura-sand/30 rounded-lg p-4 text-center">
+                  <div className="border-2 border-dashed border-aura-umber rounded-lg p-4 text-center">
                     <input
                       type="file"
                       id="receipt"

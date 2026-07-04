@@ -59,17 +59,17 @@ const InstructorDashboard: React.FC = () => {
       <h1 className="text-2xl font-bold text-aura-cream">Instructor Dashboard</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-aura-ink rounded-xl border border-aura-sand/10 p-5">
+        <div className="bg-aura-ink rounded-xl border border-aura-umber p-5">
           <p className="text-sm text-aura-sand/70">Upcoming Classes</p>
           <p className="text-3xl font-bold text-aura-cream">{upcoming.length}</p>
         </div>
-        <div className="bg-aura-ink rounded-xl border border-aura-sand/10 p-5">
+        <div className="bg-aura-ink rounded-xl border border-aura-umber p-5">
           <p className="text-sm text-aura-sand/70">Total Students This Month</p>
           <p className="text-3xl font-bold text-aura-cream">
             {classes.reduce((sum, c) => sum + c.bookings.length, 0)}
           </p>
         </div>
-        <div className="bg-aura-ink rounded-xl border border-aura-sand/10 p-5">
+        <div className="bg-aura-ink rounded-xl border border-aura-umber p-5">
           <p className="text-sm text-aura-sand/70">Avg Class Size</p>
           <p className="text-3xl font-bold text-aura-cream">
             {classes.length ? Math.round(classes.reduce((sum, c) => sum + c.bookings.length, 0) / classes.length) : 0}
@@ -83,7 +83,7 @@ const InstructorDashboard: React.FC = () => {
           <p className="text-aura-sand/70">No classes assigned yet.</p>
         ) : (
           classes.map(cls => (
-            <div key={cls.id} className="bg-aura-ink rounded-xl border border-aura-sand/10 p-5">
+            <div key={cls.id} className="bg-aura-ink rounded-xl border border-aura-umber p-5">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                 <div>
                   <h3 className="text-lg font-semibold text-aura-cream">{cls.name}</h3>
@@ -96,11 +96,11 @@ const InstructorDashboard: React.FC = () => {
                 </div>
               </div>
               {cls.bookings.length > 0 && (
-                <div className="mt-4 border-t border-aura-sand/10 pt-3">
+                <div className="mt-4 border-t border-aura-umber pt-3">
                   <p className="text-xs text-aura-sand/70 uppercase tracking-wider mb-2">Student Roster</p>
                   <div className="flex flex-wrap gap-2">
                     {cls.bookings.map((b, idx) => (
-                      <span key={idx} className="px-2 py-1 rounded bg-aura-bark text-aura-cream text-xs border border-aura-sand/10">
+                      <span key={idx} className="px-2 py-1 rounded bg-aura-bark text-aura-cream text-xs border border-aura-umber">
                         {b.user.name}
                       </span>
                     ))}

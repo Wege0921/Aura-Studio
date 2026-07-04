@@ -98,7 +98,7 @@ const PaymentHistory: React.FC = () => {
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="block w-full sm:w-auto px-3 py-2 border border-aura-sand/20 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+            className="block w-full sm:w-auto px-3 py-2 border border-aura-umber rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
           >
             <option value="all">All Payments</option>
             <option value="PENDING">Pending</option>

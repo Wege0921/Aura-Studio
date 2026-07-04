@@ -8,6 +8,7 @@ import fs from 'fs';
 import authRoutes from './routes/auth';
 import classesRoutes from './routes/classes';
 import bookingsRoutes from './routes/bookings';
+import guestBookingRoutes from './routes/guestBookings';
 import packagesRoutes from './routes/packages';
 import paymentsRoutes from './routes/payments';
 import adminRoutes from './routes/admin';
@@ -17,6 +18,8 @@ import waitlistRoutes from './routes/waitlist';
 import contactRoutes from './routes/contact';
 import reviewsRoutes from './routes/reviews';
 import newsletterRoutes from './routes/newsletter';
+import siteContentRoutes from './routes/site-content';
+import sitemapRoutes from './routes/sitemap';
 
 dotenv.config();
 
@@ -85,6 +88,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/classes', classesRoutes);
 app.use('/api/bookings', bookingsRoutes);
+app.use('/api/bookings', guestBookingRoutes);
 app.use('/api/packages', packagesRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/admin', adminRoutes);
@@ -94,6 +98,8 @@ app.use('/api/waitlist', waitlistRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/reviews', reviewsRoutes);
+app.use('/api/site-content', siteContentRoutes);
+app.use('/', sitemapRoutes);
 
 // Basic route
 app.get('/', (req, res) => {

@@ -40,8 +40,10 @@ const MobileBottomTabs: React.FC = () => {
     }
   };
 
+  const isLandingPage = location.pathname === '/' || location.pathname === '/home';
+
   return (
-    <nav className="mobile-bottom-tabs">
+    <nav className={`mobile-bottom-tabs ${isLandingPage ? 'mbt-landing' : ''}`}>
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const active = isActive(tab.path);

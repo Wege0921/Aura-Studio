@@ -353,7 +353,7 @@ const PackageManagement: React.FC = () => {
                     value={formData.classType}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+                    className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
                   >
                     <option value="">Select Class Type</option>
                     {CLASS_TYPES.map(type => (
@@ -369,7 +369,7 @@ const PackageManagement: React.FC = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+                    className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
                   >
                     <option value="">Select Package</option>
                     {formData.classType && PACKAGE_DEFINITIONS[formData.classType]?.map(pkg => (
@@ -385,7 +385,7 @@ const PackageManagement: React.FC = () => {
                     name="sessionsCount"
                     value={formData.sessionsCount}
                     readOnly
-                    className="w-full px-3 py-2 bg-aura-bark/50 text-aura-sand border border-aura-sand/20 rounded-md focus:outline-none cursor-not-allowed"
+                    className="w-full px-3 py-2 bg-aura-bark/50 text-aura-sand border border-aura-umber rounded-md focus:outline-none cursor-not-allowed"
                   />
                 </div>
 
@@ -396,7 +396,7 @@ const PackageManagement: React.FC = () => {
                     name="validityDays"
                     value={formData.validityDays}
                     readOnly
-                    className="w-full px-3 py-2 bg-aura-bark/50 text-aura-sand border border-aura-sand/20 rounded-md focus:outline-none cursor-not-allowed"
+                    className="w-full px-3 py-2 bg-aura-bark/50 text-aura-sand border border-aura-umber rounded-md focus:outline-none cursor-not-allowed"
                   />
                 </div>
 
@@ -410,7 +410,7 @@ const PackageManagement: React.FC = () => {
                     min="0"
                     step="0.01"
                     required
-                    className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+                    className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
                   />
                 </div>
               </div>
@@ -422,7 +422,7 @@ const PackageManagement: React.FC = () => {
                   value={formData.description}
                   onChange={handleInputChange}
                   rows={3}
-                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
                 />
               </div>
 
@@ -430,7 +430,7 @@ const PackageManagement: React.FC = () => {
                 <button
                   type="button"
                   onClick={cancelForm}
-                  className="px-4 py-2 border border-aura-sand/20 rounded-md text-aura-sand hover:bg-aura-umber/30"
+                  className="px-4 py-2 border border-aura-umber rounded-md text-aura-sand hover:bg-aura-umber/30"
                 >
                   Cancel
                 </button>
@@ -516,7 +516,7 @@ const PackageManagement: React.FC = () => {
                         <EllipsisVerticalIcon className="w-5 h-5" />
                       </button>
                       {openDropdown === pkg.id && (
-                        <div className="absolute right-0 mt-1 w-40 bg-aura-ink border border-aura-sand/20 rounded-md shadow-lg z-50 py-1">
+                        <div className="absolute right-0 mt-1 w-40 bg-aura-ink border border-aura-umber rounded-md shadow-lg z-50 py-1">
                           <button
                             onClick={() => { handleEdit(pkg); setOpenDropdown(null); }}
                             className="flex items-center w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30"
@@ -554,19 +554,19 @@ const PackageManagement: React.FC = () => {
 
         {/* Pagination */}
         {packages.length > ITEMS_PER_PAGE && (
-          <div className="bg-aura-ink px-4 py-3 flex items-center justify-between border-t border-aura-sand/10">
+          <div className="bg-aura-ink px-4 py-3 flex items-center justify-between border-t border-aura-umber">
             <div className="flex-1 flex justify-between sm:hidden">
               <button
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-aura-sand/20 text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
               >
                 Previous
               </button>
               <button
                 onClick={() => setCurrentPage(prev => Math.min(Math.ceil(packages.length / ITEMS_PER_PAGE), prev + 1))}
                 disabled={currentPage === Math.ceil(packages.length / ITEMS_PER_PAGE)}
-                className="relative inline-flex items-center px-4 py-2 border border-aura-sand/20 text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
               >
                 Next
               </button>
@@ -582,7 +582,7 @@ const PackageManagement: React.FC = () => {
                   <button
                     onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                     disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-aura-sand/20 bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
                   >
                     Previous
                   </button>
@@ -593,7 +593,7 @@ const PackageManagement: React.FC = () => {
                       className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                         page === currentPage
                           ? 'z-10 bg-purple-600 border-purple-600 text-white'
-                          : 'bg-aura-ink border-aura-sand/20 text-aura-sand hover:bg-aura-umber/30'
+                          : 'bg-aura-ink border-aura-umber text-aura-sand hover:bg-aura-umber/30'
                       }`}
                     >
                       {page}
@@ -602,7 +602,7 @@ const PackageManagement: React.FC = () => {
                   <button
                     onClick={() => setCurrentPage(prev => Math.min(Math.ceil(packages.length / ITEMS_PER_PAGE), prev + 1))}
                     disabled={currentPage === Math.ceil(packages.length / ITEMS_PER_PAGE)}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-aura-sand/20 bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
                   >
                     Next
                   </button>
@@ -629,7 +629,7 @@ const PackageManagement: React.FC = () => {
             <div className="flex justify-end space-x-3">
               <button
                 onClick={closeDeleteModal}
-                className="px-4 py-2 border border-aura-sand/20 rounded-md text-aura-sand hover:bg-aura-umber/30 transition-colors"
+                className="px-4 py-2 border border-aura-umber rounded-md text-aura-sand hover:bg-aura-umber/30 transition-colors"
               >
                 Cancel
               </button>

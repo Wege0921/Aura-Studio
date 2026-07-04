@@ -64,7 +64,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-sand/10 p-6">
+      <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-umber p-6">
         <h1 className="text-2xl font-bold text-aura-cream mb-2">Your Profile</h1>
         <p className="text-aura-sand mb-6">Update your personal information</p>
 
@@ -87,7 +87,7 @@ const ProfilePage: React.FC = () => {
               name="name"
               value={form.name}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-aura-bark border border-aura-sand/30 rounded-lg text-aura-cream focus:outline-none focus:ring-2 focus:ring-aura-sand"
+              className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:ring-2 focus:ring-aura-sand"
               required
             />
           </div>
@@ -98,7 +98,7 @@ const ProfilePage: React.FC = () => {
               name="email"
               value={form.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-aura-bark border border-aura-sand/30 rounded-lg text-aura-cream focus:outline-none focus:ring-2 focus:ring-aura-sand"
+              className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:ring-2 focus:ring-aura-sand"
               required
             />
           </div>
@@ -109,7 +109,7 @@ const ProfilePage: React.FC = () => {
               name="phone"
               value={form.phone}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-aura-bark border border-aura-sand/30 rounded-lg text-aura-cream focus:outline-none focus:ring-2 focus:ring-aura-sand"
+              className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:ring-2 focus:ring-aura-sand"
             />
           </div>
           <button
@@ -122,7 +122,7 @@ const ProfilePage: React.FC = () => {
         </form>
       </div>
 
-      <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-sand/10 p-6">
+      <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-umber p-6">
         <h2 className="text-lg font-semibold text-aura-cream mb-2">Account Info</h2>
         <div className="text-sm text-aura-sand space-y-1">
           <p><span className="text-aura-sand/70">Role:</span> {user?.role}</p>

@@ -172,7 +172,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                   value={method.value}
                   checked={formData.paymentMethod === method.value}
                   onChange={handleInputChange}
-                  className="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-aura-sand/20"
+                  className="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-aura-umber"
                 />
                 <div className="ml-3">
                   <span className="text-sm font-medium text-aura-cream">{method.label}</span>
@@ -185,7 +185,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
         {/* Bank Details for Bank Transfer */}
         {formData.paymentMethod === 'BANK_TRANSFER' && (
-          <div className="bg-aura-umber/30 border border-aura-sand/20 rounded-md p-4">
+          <div className="bg-aura-umber/30 border border-aura-umber rounded-md p-4">
             <h4 className="font-medium text-aura-cream mb-2">Bank Transfer Details</h4>
             <div className="space-y-1 text-sm">
               <p><strong>Account Name:</strong> {bankDetails.accountName}</p>
@@ -201,7 +201,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
         {/* Mobile Money Details */}
         {formData.paymentMethod === 'MOBILE_MONEY' && (
-          <div className="bg-aura-umber/30 border border-aura-sand/20 rounded-md p-4">
+          <div className="bg-aura-umber/30 border border-aura-umber rounded-md p-4">
             <h4 className="font-medium text-aura-cream mb-2">Mobile Money Details</h4>
             <div className="space-y-1 text-sm">
               <p><strong>Telebirr:</strong> +251 900 410 603</p>
@@ -232,7 +232,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             <label className="block text-sm font-medium text-aura-sand mb-2">
               Payment Receipt *
             </label>
-            <div className="border-2 border-dashed border-aura-sand/20 rounded-lg p-4 text-center">
+            <div className="border-2 border-dashed border-aura-umber rounded-lg p-4 text-center">
               <input
                 type="file"
                 id="receipt"

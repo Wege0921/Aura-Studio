@@ -17,7 +17,9 @@ import {
   ProfileIcon,
   WaitlistIcon,
   CalendarIcon,
+  ContentIcon,
 } from './Layout/TabIcons';
+import ThemeToggle from './ThemeToggle';
 
 // Lazy-loaded — each loads only when its tab is first opened
 const UserDashboard = lazy(() => import('./User/UserDashboard'));
@@ -36,8 +38,9 @@ const PackageManagement = lazy(() => import('./Admin/PackageManagement'));
 const PaymentManagement = lazy(() => import('./Admin/PaymentManagement'));
 const InstructorManagement = lazy(() => import('./Admin/InstructorManagement'));
 const Analytics = lazy(() => import('./Admin/Analytics'));
+const SiteContentManagement = lazy(() => import('./Admin/SiteContentManagement'));
 
-type TabType = 'home' | 'classes' | 'packages' | 'bookings' | 'payments' | 'waitlist' | 'profile' | 'calendar' | 'admin-dashboard' | 'admin-classes' | 'admin-users' | 'admin-bookings' | 'admin-packages' | 'admin-payments' | 'admin-instructors' | 'admin-analytics';
+type TabType = 'home' | 'classes' | 'packages' | 'bookings' | 'payments' | 'waitlist' | 'profile' | 'calendar' | 'admin-dashboard' | 'admin-classes' | 'admin-users' | 'admin-bookings' | 'admin-packages' | 'admin-payments' | 'admin-instructors' | 'admin-analytics' | 'admin-content';
 
 interface TabDef {
   id: TabType;
@@ -70,7 +73,7 @@ const DashboardLayout: React.FC = () => {
     if (!user) return;
     const isAdmin = user.role === 'ADMIN';
     const tabMap: Record<string, TabType> = isAdmin
-      ? { home: 'admin-dashboard', dashboard: 'admin-dashboard', classes: 'admin-classes', packages: 'admin-packages', bookings: 'admin-bookings', users: 'admin-users', payments: 'admin-payments', instructors: 'admin-instructors', analytics: 'admin-analytics' }
+      ? { home: 'admin-dashboard', dashboard: 'admin-dashboard', classes: 'admin-classes', packages: 'admin-packages', bookings: 'admin-bookings', users: 'admin-users', payments: 'admin-payments', instructors: 'admin-instructors', analytics: 'admin-analytics', content: 'admin-content' }
       : { home: 'home', classes: 'classes', packages: 'packages', bookings: 'bookings', payments: 'payments', waitlist: 'waitlist', profile: 'profile', calendar: 'calendar' };
     const segments = location.pathname.split('/').filter(Boolean);
     const tab = segments.length > 1 ? segments[1] : null;
@@ -103,6 +106,7 @@ const DashboardLayout: React.FC = () => {
     { id: 'admin-instructors', label: 'Instructors', icon: <InstructorIcon className="w-5 h-5" /> },
     { id: 'admin-payments', label: 'Payments', icon: <PaymentsIcon className="w-5 h-5" /> },
     { id: 'admin-analytics', label: 'Analytics', icon: <AnalyticsIcon className="w-5 h-5" /> },
+    { id: 'admin-content', label: 'Content', icon: <ContentIcon className="w-5 h-5" /> },
   ], []);
 
   // Admin on dashboard should always be in admin mode
@@ -172,6 +176,7 @@ const DashboardLayout: React.FC = () => {
         case 'admin-payments': return <PaymentManagement />;
         case 'admin-instructors': return <InstructorManagement />;
         case 'admin-analytics': return <Analytics />;
+        case 'admin-content': return <SiteContentManagement />;
         default: return isAdmin ? <AdminDashboardPage onTabChange={handleTabChange} /> : <UserDashboard />;
       }
     })();
@@ -187,7 +192,7 @@ const DashboardLayout: React.FC = () => {
 
   return (
     <>
-      <div className="h-screen max-h-screen bg-aura-bark flex overflow-hidden">
+      <div className="aura-dashboard h-screen max-h-screen bg-aura-bark flex overflow-hidden">
         {/* Desktop Sidebar (lg+) */}
         <DesktopSidebar
           tabs={tabs}
@@ -215,20 +220,22 @@ const DashboardLayout: React.FC = () => {
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Mobile Header - only visible on mobile */}
-          <header className="md:hidden bg-aura-bark border-b border-aura-sand/10 sticky top-0 z-40 safe-top">
+          <header className="md:hidden dashboard-header bg-aura-bark border-b border-aura-umber sticky top-0 z-40 safe-top">
             <div className="flex items-center justify-between h-14 px-4">
               <div className="flex items-center gap-3">
                 {isAdmin && (
                   <button
                     onClick={toggleViewMode}
-                    className="text-[10px] font-medium px-2 py-1 rounded bg-aura-sand/10 text-aura-sand border border-aura-sand/20"
+                    className="text-[10px] font-medium px-2 py-1 rounded bg-aura-sand/10 text-aura-sand border border-aura-umber"
                   >
                     {viewMode === 'admin' ? 'Admin' : 'User'}
                   </button>
                 )}
                 <img src="/Aura-header-black.png" alt="AURA" className="h-7 w-auto" />
               </div>
-              <div className="relative">
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <div className="relative">
                 <button
                   onClick={(e) => { e.stopPropagation(); setShowMobileMenu(prev => !prev); }}
                   className="w-8 h-8 rounded-full bg-aura-sand/20 flex items-center justify-center touch-manipulation"
@@ -239,7 +246,7 @@ const DashboardLayout: React.FC = () => {
                   </span>
                 </button>
                 {showMobileMenu && (
-                  <div className="absolute right-0 mt-2 w-40 bg-aura-ink border border-aura-sand/20 rounded-lg shadow-lg z-50 py-1">
+                  <div className="absolute right-0 mt-2 w-40 bg-aura-ink border border-aura-umber rounded-lg shadow-lg z-50 py-1">
                     {isAdmin && (
                       <button
                         onClick={() => { toggleViewMode(); setShowMobileMenu(false); }}
@@ -274,15 +281,15 @@ const DashboardLayout: React.FC = () => {
                   </div>
                 )}
               </div>
+              </div>
             </div>
           </header>
 
-          {/* Mobile Sub-header — hamburger menu below header in admin view */}
-          {isAdmin && viewMode === 'admin' && (
-            <div className="md:hidden bg-aura-bark/80 border-b border-aura-sand/10 px-4 py-2 flex items-center gap-3 z-30">
+          {/* Mobile Sub-header — hamburger menu below header for all users */}
+          <div className="md:hidden dashboard-subheader bg-aura-bark/80 border-b border-aura-umber px-4 py-2 flex items-center gap-3 z-30">
               <button
                 onClick={() => setShowMobileDrawer(true)}
-                className="p-1.5 text-aura-sand hover:text-aura-ivory hover:bg-aura-sand/10 rounded-lg transition-colors touch-manipulation flex items-center gap-2"
+                className="p-1.5 text-aura-cream hover:text-aura-ivory hover:bg-aura-sand/10 rounded-lg transition-colors touch-manipulation flex items-center gap-2"
                 aria-label="Open menu"
                 type="button"
               >
@@ -292,13 +299,12 @@ const DashboardLayout: React.FC = () => {
                 <span className="text-xs font-medium">Menu</span>
               </button>
             </div>
-          )}
 
           {/* Content */}
           <div ref={contentRef} className="flex-1 content-safe-bottom overflow-y-auto overscroll-contain">
             <Suspense fallback={
               <div className="flex items-center justify-center py-20">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-sand"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-umber"></div>
               </div>
             }>
               {renderContent()}
@@ -308,7 +314,7 @@ const DashboardLayout: React.FC = () => {
 
         {/* Mobile Bottom Tab Bar — sidebar-only items excluded on mobile */}
         <MobileBottomNav
-          tabs={tabs.filter((t) => !['admin-instructors', 'admin-analytics', 'admin-users'].includes(t.id))}
+          tabs={tabs.filter((t) => !['classes', 'packages', 'admin-classes', 'admin-packages', 'admin-instructors', 'admin-analytics', 'admin-users'].includes(t.id))}
           activeTab={activeTab}
           onTabChange={handleTabChange}
         />
@@ -321,12 +327,12 @@ const DashboardLayout: React.FC = () => {
             className="flex-1 bg-black/50"
             onClick={() => setShowMobileDrawer(false)}
           />
-          <aside className="w-64 bg-aura-bark border-l border-aura-sand/10 flex flex-col h-full max-h-full">
-            <div className="flex items-center justify-between h-14 px-4 border-b border-aura-sand/10 shrink-0">
+          <aside className="w-64 bg-aura-ink border-l border-aura-umber flex flex-col h-full max-h-full">
+            <div className="flex items-center justify-between h-14 px-4 border-b border-aura-umber shrink-0">
               <h2 className="text-lg font-bold text-aura-ivory font-serif">Menu</h2>
               <button
                 onClick={() => setShowMobileDrawer(false)}
-                className="p-2 text-aura-sand hover:text-aura-ivory hover:bg-aura-sand/10 rounded-lg transition-colors"
+                className="p-2 text-aura-cream hover:text-aura-ivory hover:bg-aura-sand/10 rounded-lg transition-colors"
                 type="button"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -335,15 +341,6 @@ const DashboardLayout: React.FC = () => {
               </button>
             </div>
             <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto overscroll-contain">
-              <button
-                onClick={() => { navigate('/'); setShowMobileDrawer(false); }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium font-sans transition-colors duration-200 min-h-[44px] text-aura-sand hover:bg-aura-umber/40 hover:text-aura-ivory"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-                <span>Home</span>
-              </button>
               {tabs.map((tab) => {
                 const isActive = activeTab === tab.id;
                 return (
@@ -353,7 +350,7 @@ const DashboardLayout: React.FC = () => {
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium font-sans transition-colors duration-200 min-h-[44px] ${
                       isActive
                         ? 'bg-aura-sand/20 text-aura-ivory'
-                        : 'text-aura-sand hover:bg-aura-umber/40 hover:text-aura-ivory'
+                        : 'text-aura-cream hover:bg-aura-umber/40 hover:text-aura-ivory'
                     }`}
                   >
                     {tab.icon}
@@ -362,7 +359,7 @@ const DashboardLayout: React.FC = () => {
                 );
               })}
             </nav>
-            <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-aura-sand/10 shrink-0">
+            <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-aura-umber shrink-0">
               <button
                 onClick={() => { handleLogout(); setShowMobileDrawer(false); }}
                 className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-aura-ivory hover:bg-aura-sand/10 rounded-lg transition-colors min-h-[44px]"

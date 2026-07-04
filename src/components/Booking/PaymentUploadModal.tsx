@@ -144,7 +144,7 @@ const PaymentUploadModal: React.FC<PaymentUploadModalProps> = ({
               <select
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
-                className="w-full px-3 py-2 border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                className="w-full px-3 py-2 border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500"
               >
                 {paymentMethods.map(method => (
                   <option key={method.value} value={method.value}>
@@ -156,7 +156,7 @@ const PaymentUploadModal: React.FC<PaymentUploadModalProps> = ({
 
             {/* Payment Details */}
             {paymentMethod === 'BANK_TRANSFER' && (
-              <div className="bg-aura-umber/30 border border-aura-sand/20 rounded-md p-3">
+              <div className="bg-aura-umber/30 border border-aura-umber rounded-md p-3">
                 <p className="text-xs font-medium text-aura-cream mb-1">Bank Transfer Details</p>
                 <div className="space-y-1 text-xs text-aura-sand/70">
                   <p><strong>Account:</strong> {bankDetails.accountName}</p>
@@ -171,7 +171,7 @@ const PaymentUploadModal: React.FC<PaymentUploadModalProps> = ({
               <label className="block text-sm font-medium text-aura-sand mb-2">
                 Payment Receipt *
               </label>
-              <div className="border-2 border-dashed border-aura-sand/20 rounded-lg p-4 text-center">
+              <div className="border-2 border-dashed border-aura-umber rounded-lg p-4 text-center">
                 <input
                   type="file"
                   id="receipt"

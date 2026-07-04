@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Block admin and dashboard pages from indexing
+Disallow: /admin/
+Disallow: /dashboard/
+
+# Sitemap
+Sitemap: https://aurastudio.et/sitemap.xml

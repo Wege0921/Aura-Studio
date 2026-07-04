@@ -3,11 +3,11 @@ import React from 'react';
 const ContactPage: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-sand/10 p-6 md:p-8">
+      <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-umber p-6 md:p-8">
         <h1 className="text-2xl font-bold text-aura-cream mb-2">Contact Us</h1>
         <p className="text-aura-sand mb-6">Reach out to us directly. We would love to hear from you!</p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Instagram */}
           <a
             href="https://instagram.com/aurastudioet"
@@ -25,6 +25,24 @@ const ContactPage: React.FC = () => {
             <div>
               <h3 className="text-aura-cream font-semibold text-sm">Instagram</h3>
               <p className="text-purple-400 text-xs">@aurastudioet</p>
+            </div>
+          </a>
+
+          {/* TikTok */}
+          <a
+            href="https://tiktok.com/@aurastudioet"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-4 p-5 rounded-xl bg-gradient-to-br from-black/40 to-red-900/20 border border-red-500/20 hover:border-red-500/40 transition-all group"
+          >
+            <div className="w-12 h-12 rounded-full bg-red-600/20 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+              <svg className="w-6 h-6 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-aura-cream font-semibold text-sm">TikTok</h3>
+              <p className="text-red-400 text-xs">@aurastudioet</p>
             </div>
           </a>
 
@@ -48,7 +66,7 @@ const ContactPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-aura-ink rounded-xl border border-aura-sand/10 p-6">
+      <div className="bg-aura-ink rounded-xl border border-aura-umber p-6">
         <h2 className="text-lg font-semibold text-aura-cream mb-3">Studio Info</h2>
         <div className="text-sm text-aura-sand space-y-2">
           <p>📍 Addis Ababa, Ethiopia</p>
@@ -56,6 +74,9 @@ const ContactPage: React.FC = () => {
           <div className="flex gap-4 mt-3">
             <a href="https://instagram.com/aurastudioet" target="_blank" rel="noopener noreferrer" className="text-aura-sand hover:text-aura-cream transition-colors">
               Instagram
+            </a>
+            <a href="https://tiktok.com/@aurastudioet" target="_blank" rel="noopener noreferrer" className="text-aura-sand hover:text-aura-cream transition-colors">
+              TikTok
             </a>
           </div>
         </div>

@@ -2,6 +2,7 @@ import React, { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navigation from './components/Layout/Navigation';
 import PublicHeader from './components/Layout/PublicHeader';
@@ -45,7 +46,7 @@ const queryClient = new QueryClient({
 function PageLoader() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-aura-bark">
-      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-sand"></div>
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-umber"></div>
     </div>
   );
 }
@@ -237,6 +238,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
     <AuthProvider>
       <Router>
         <div className="min-h-screen bg-aura-bark">
@@ -248,6 +250,7 @@ function App() {
         </div>
       </Router>
     </AuthProvider>
+    </ThemeProvider>
     </QueryClientProvider>
   );
 }

@@ -15,7 +15,7 @@ interface MobileBottomNavProps {
 const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ tabs, activeTab, onTabChange }) => {
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 bg-aura-bark border-t border-aura-sand/10 md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-aura-bark border-t border-aura-umber md:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       aria-label="Mobile navigation"
     >

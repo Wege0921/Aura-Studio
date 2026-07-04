@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useSEO } from '../../hooks/useSEO';
 import ClassCard from './ClassCard';
 import BookingModal from '../Booking/BookingModal';
+import GuestBookingModal from '../Booking/GuestBookingModal';
 
 interface Class {
   id: string;
@@ -35,6 +36,8 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [showGuestModal, setShowGuestModal] = useState(false);
+  const [guestBookingRef, setGuestBookingRef] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [filters, setFilters] = useState({
     date: '',
@@ -165,7 +168,11 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
   const handleBookClick = (classId: string) => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/login?returnTo=/classes');
+      const classItem = classes.find(c => c.id === classId);
+      if (classItem && !classItem.isFullyBooked) {
+        setSelectedClass(classItem);
+        setShowGuestModal(true);
+      }
       return;
     }
     const classItem = classes.find(c => c.id === classId);
@@ -173,6 +180,41 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
       setSelectedClass(classItem);
       setShowBookingModal(true);
     }
+  };
+
+  const handleGuestBooking = async (paymentMethod: string, receiptFile?: File) => {
+    if (!selectedClass) return;
+    try {
+      setBookingLoading(true);
+      const formData = new FormData();
+      formData.append('classId', selectedClass.id);
+      formData.append('paymentMethod', paymentMethod);
+      formData.append('paymentAmount', (selectedClass.price || 0).toString());
+      if (receiptFile) {
+        formData.append('paymentReceipt', receiptFile);
+      }
+      const response = await fetch('/api/bookings/guest', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setGuestBookingRef(data.booking?.guestToken?.slice(0, 8) || null);
+        fetchClasses();
+      } else {
+        setError(data.error || 'Booking failed');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setBookingLoading(false);
+    }
+  };
+
+  const handleCloseGuestModal = () => {
+    setShowGuestModal(false);
+    setSelectedClass(null);
+    setGuestBookingRef(null);
   };
 
   const handleConfirmBooking = async (paymentMethod: string, receiptFile?: File, usePackageSession?: boolean) => {
@@ -258,7 +300,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
       {/* Page Title */}
       <div>
         <h1 className="text-2xl font-bold text-aura-cream">{typeLabel}</h1>
-        <p className="text-aura-sand/70">
+        <p className="text-aura-sand">
           {filters.classType
             ? `Book ${filters.classType.toLowerCase()} classes created by our instructors`
             : 'Browse and book classes created by our instructors'}
@@ -286,7 +328,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
       )}
 
       {/* Filters */}
-      <div className="bg-aura-ink p-3 rounded-lg border border-aura-sand/10">
+      <div className="bg-aura-ink p-3 rounded-lg border border-aura-umber">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           <div>
             <label htmlFor="date" className="block text-xs font-medium text-aura-sand/70 mb-0.5">Date</label>
@@ -295,7 +337,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
               id="date"
               value={filters.date}
               onChange={(e) => handleFilterChange('date', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm border border-aura-sand/30 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+              className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
               style={{ colorScheme: 'dark' }}
             />
           </div>
@@ -306,7 +348,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
               id="classType"
               value={filters.classType}
               onChange={(e) => handleFilterChange('classType', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm border border-aura-sand/30 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+              className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
             >
               <option value="">All</option>
               <option value="PILATES">Pilates</option>
@@ -322,7 +364,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
               id="instructor"
               value={filters.instructor}
               onChange={(e) => handleFilterChange('instructor', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm border border-aura-sand/30 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+              className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
             >
               <option value="">All</option>
               {Array.from(new Set(classes.map(c => c.instructor).filter(Boolean))).sort().map(name => (
@@ -337,7 +379,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
               id="class-price"
               value={filters.price}
               onChange={(e) => handleFilterChange('price', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm border border-aura-sand/30 rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+              className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
             >
               <option value="">All</option>
               <option value="under3000">Under ETB 3,000</option>
@@ -377,19 +419,19 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
 
           {/* Pagination */}
           {filteredClasses.length > ITEMS_PER_PAGE && (
-            <div className="bg-aura-ink px-4 py-3 mt-6 flex items-center justify-between border border-aura-sand/10 rounded-lg">
+            <div className="bg-aura-ink px-4 py-3 mt-6 flex items-center justify-between border border-aura-umber rounded-lg">
               <div className="flex-1 flex justify-between sm:hidden">
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-aura-sand/20 text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                  className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
                 >
                   Previous
                 </button>
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredClasses.length / ITEMS_PER_PAGE), prev + 1))}
                   disabled={currentPage === Math.ceil(filteredClasses.length / ITEMS_PER_PAGE)}
-                  className="relative inline-flex items-center px-4 py-2 border border-aura-sand/20 text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                  className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
                 >
                   Next
                 </button>
@@ -405,7 +447,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
                     <button
                       onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                       disabled={currentPage === 1}
-                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-aura-sand/20 bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
                     >
                       Previous
                     </button>
@@ -416,7 +458,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                           page === currentPage
                             ? 'z-10 bg-purple-600 border-purple-600 text-white'
-                            : 'bg-aura-ink border-aura-sand/20 text-aura-sand hover:bg-aura-umber/30'
+                            : 'bg-aura-ink border-aura-umber text-aura-sand hover:bg-aura-umber/30'
                         }`}
                       >
                         {page}
@@ -425,7 +467,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
                     <button
                       onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredClasses.length / ITEMS_PER_PAGE), prev + 1))}
                       disabled={currentPage === Math.ceil(filteredClasses.length / ITEMS_PER_PAGE)}
-                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-aura-sand/20 bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
                     >
                       Next
                     </button>
@@ -452,6 +494,23 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
         } : null}
         loading={bookingLoading}
         activePackages={activePackages}
+      />
+
+      {/* Guest Booking Modal */}
+      <GuestBookingModal
+        isOpen={showGuestModal}
+        onClose={handleCloseGuestModal}
+        onConfirm={handleGuestBooking}
+        classInfo={selectedClass ? {
+          name: selectedClass.name,
+          instructor: selectedClass.instructor,
+          date: selectedClass.date,
+          time: selectedClass.time,
+          duration: selectedClass.duration,
+          price: selectedClass.price,
+        } : null}
+        loading={bookingLoading}
+        bookingReference={guestBookingRef}
       />
     </div>
   );

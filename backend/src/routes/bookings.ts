@@ -78,12 +78,11 @@ router.post('/', authenticateToken, upload.single('paymentReceipt'), [
     }
 
     // Check if user already booked this class
-    const existingBooking = await prisma.booking.findUnique({
+    const existingBooking = await prisma.booking.findFirst({
       where: {
-        userId_classId: {
-          userId,
-          classId,
-        },
+        userId,
+        classId,
+        status: { not: 'CANCELLED' },
       },
     });
 

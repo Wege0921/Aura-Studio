@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import ThemeToggle from '../ThemeToggle';
 import './PublicHeader.css';
 
 const PublicHeader: React.FC = () => {
@@ -136,6 +137,10 @@ const PublicHeader: React.FC = () => {
             <button onClick={handleRegister}>Register</button>
           </>
         )}
+        <div className="ph-drawer-theme">
+          <span>Theme</span>
+          <ThemeToggle />
+        </div>
         <a
           href="https://instagram.com/aurapilates"
           target="_blank"
@@ -150,7 +155,7 @@ const PublicHeader: React.FC = () => {
       {/* Nav Bar */}
       <header className={`ph-nav ${isLandingPage ? 'ph-landing' : ''}`}>
         <button className="ph-logo" onClick={handleLogoClick}>
-          <img src="/Aura-header-black.png" alt="AURA" className="h-8 w-auto" />
+          <img src="/Aura-header-black.png" alt="AURA" className="h-12 w-auto" />
         </button>
         <nav className="ph-links">
           <button onClick={() => handleNav('top')}>Home</button>

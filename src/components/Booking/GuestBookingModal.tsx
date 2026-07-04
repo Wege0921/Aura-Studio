@@ -1,39 +1,40 @@
 import React, { useState } from 'react';
+import { format } from 'date-fns';
 
-interface PackageInfo {
-  id: string;
-  name: string;
-  sessionsCount: number;
-  price: number;
-  validityDays?: number;
-  classType?: string;
-}
-
-interface PurchaseModalProps {
+interface GuestBookingModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (paymentMethod: string, receiptFile?: File) => void;
-  packageInfo: PackageInfo | null;
+  classInfo: {
+    name: string;
+    instructor: string;
+    date: string;
+    time: string;
+    duration: number;
+    price?: number;
+  } | null;
   loading?: boolean;
+  bookingReference?: string | null;
 }
 
-const PurchaseModal: React.FC<PurchaseModalProps> = ({
+const GuestBookingModal: React.FC<GuestBookingModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
-  packageInfo,
+  classInfo,
   loading = false,
+  bookingReference = null,
 }) => {
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('BANK_TRANSFER');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('CASH');
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [uploadError, setUploadError] = useState<string>('');
 
-  if (!isOpen || !packageInfo) return null;
+  if (!isOpen || !classInfo) return null;
 
   const paymentMethods = [
-    { value: 'BANK_TRANSFER', label: 'Bank Transfer', description: 'Transfer to our bank account' },
-    { value: 'MOBILE_MONEY', label: 'Mobile Money', description: 'Telebirr, M-Pesa, or other mobile money' },
     { value: 'CASH', label: 'Cash Payment', description: 'Pay in person at the studio' },
+    { value: 'BANK_TRANSFER', label: 'Bank Transfer', description: 'Transfer to our bank account' },
+    { value: 'MOBILE_MONEY', label: 'Mobile Money', description: 'Telebirr or other mobile money' },
   ];
 
   const bankDetails = {
@@ -62,21 +63,43 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
     }
   };
 
-  const handleConfirm = () => {
-    if (selectedPaymentMethod !== 'CASH' && !receiptFile) {
-      setUploadError('Payment receipt is required for bank transfer and mobile money payments');
-      return;
-    }
-
-    onConfirm(selectedPaymentMethod, receiptFile || undefined);
-  };
+  if (bookingReference) {
+    return (
+      <div className="fixed inset-0 bg-aura-ink/50 overflow-y-auto h-full w-full z-[60] modal-scroll-safe">
+        <div className="relative top-20 mx-auto p-5 border border-aura-umber w-full max-w-md shadow-lg shadow-black/30 rounded-xl bg-[#2c2014]/90 backdrop-blur-sm">
+          <div className="mt-3 text-center">
+            <svg className="mx-auto h-16 w-16 text-green-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 className="text-lg font-medium text-aura-cream mb-2">Booking Confirmed!</h3>
+            <p className="text-sm text-aura-sand mb-4">
+              Your booking has been confirmed. Please save your reference number.
+            </p>
+            <div className="bg-aura-ink/60 rounded-lg p-4 mb-4">
+              <p className="text-xs text-aura-clay mb-1">Booking Reference</p>
+              <p className="text-lg font-mono font-bold text-aura-umber tracking-wider">{bookingReference}</p>
+            </div>
+            <p className="text-xs text-aura-sand/60 mb-4">
+              You can manage this booking from the same device. No account needed.
+            </p>
+            <button
+              onClick={onClose}
+              className="px-6 py-2 bg-aura-bark text-aura-ivory rounded-md hover:bg-aura-umber focus:outline-none focus:ring-2 focus:ring-aura-umber"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-aura-ink/50 overflow-y-auto h-full w-full z-[60] modal-scroll-safe">
       <div className="relative top-20 mx-auto p-5 pb-24 md:pb-5 border border-aura-umber w-full max-w-md shadow-lg shadow-black/30 rounded-xl bg-[#2c2014]/90 backdrop-blur-sm">
         <div className="mt-3">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-aura-cream">Purchase Package</h3>
+            <h3 className="text-lg font-medium text-aura-cream">Quick Booking</h3>
             <button
               onClick={onClose}
               className="text-aura-clay hover:text-aura-cream"
@@ -87,25 +110,25 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
             </button>
           </div>
 
+          <p className="text-xs text-aura-sand/60 mb-4">Booking as a guest — no account required.</p>
+
           <div className="mb-6">
-            <p className="text-sm text-aura-sand mb-4">You are purchasing:</p>
+            <p className="text-sm text-aura-sand mb-4">You're about to book:</p>
             <div className="bg-aura-ink/40 p-4 rounded-lg">
-              <h4 className="font-semibold text-aura-cream mb-2">{packageInfo.name}</h4>
+              <h4 className="font-semibold text-aura-cream mb-2">{classInfo.name}</h4>
               <div className="space-y-1 text-sm text-aura-sand">
-                <p>Sessions: {packageInfo.sessionsCount}</p>
-                {packageInfo.validityDays && (
-                  <p>Validity: {packageInfo.validityDays} days</p>
-                )}
-                {packageInfo.classType && packageInfo.classType !== 'ALL' && (
-                  <p>Type: {packageInfo.classType}</p>
-                )}
-                <p className="text-aura-cream font-medium">Price: ETB {packageInfo.price.toLocaleString()}</p>
+                <p>Instructor: {classInfo.instructor}</p>
+                <p>Date: {format(new Date(classInfo.date), 'MMMM dd, yyyy')}</p>
+                <p>Time: {classInfo.time}</p>
+                <p>Duration: {classInfo.duration} minutes</p>
+                {classInfo.price && <p>Price: ETB {classInfo.price.toLocaleString()}</p>}
               </div>
             </div>
           </div>
 
+          {/* Payment Method Selection */}
           <div className="mb-6">
-            <h4 className="text-sm font-medium text-aura-cream mb-3">Select Payment Method</h4>
+            <h4 className="text-sm font-medium text-aura-cream mb-3">Payment Method</h4>
             <div className="space-y-2">
               {paymentMethods.map(method => (
                 <label key={method.value} className="flex items-start">
@@ -125,6 +148,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
               ))}
             </div>
 
+            {/* Payment Details */}
             {selectedPaymentMethod === 'BANK_TRANSFER' && (
               <div className="mt-3 bg-aura-ink/40 border border-aura-umber rounded-md p-3">
                 <p className="text-xs font-medium text-aura-cream mb-1">Bank Transfer Details</p>
@@ -152,6 +176,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
               </div>
             )}
 
+            {/* Receipt Upload for Non-Cash Payments */}
             {selectedPaymentMethod !== 'CASH' && (
               <div className="mt-4">
                 <label className="block text-sm font-medium text-aura-cream mb-2">
@@ -160,12 +185,12 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
                 <div className="border-2 border-dashed border-aura-umber rounded-lg p-4 text-center">
                   <input
                     type="file"
-                    id="receipt"
+                    id="guest-receipt"
                     accept="image/*,.pdf"
                     onChange={handleFileChange}
                     className="hidden"
                   />
-                  <label htmlFor="receipt" className="cursor-pointer">
+                  <label htmlFor="guest-receipt" className="cursor-pointer">
                     {receiptFile ? (
                       <div className="space-y-2">
                         <svg className="mx-auto h-12 w-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -185,9 +210,11 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
                     )}
                   </label>
                 </div>
+                <p className="text-xs text-aura-clay mt-1">The admin will match your receipt using your booking reference.</p>
               </div>
             )}
 
+            {/* Error Message */}
             {uploadError && (
               <div className="mt-3 bg-red-900/30 border border-red-700/40 text-red-300 px-3 py-2 rounded text-sm">
                 {uploadError}
@@ -203,11 +230,11 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
               Cancel
             </button>
             <button
-              onClick={handleConfirm}
+              onClick={() => onConfirm(selectedPaymentMethod, receiptFile || undefined)}
               disabled={loading || (selectedPaymentMethod !== 'CASH' && !receiptFile)}
               className="px-4 py-2 bg-aura-bark text-aura-ivory rounded-md hover:bg-aura-umber focus:outline-none focus:ring-2 focus:ring-aura-umber disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Processing...' : 'Confirm Purchase'}
+              {loading ? 'Booking...' : 'Confirm Booking'}
             </button>
           </div>
         </div>
@@ -216,4 +243,4 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
   );
 };
 
-export default PurchaseModal;
+export default GuestBookingModal;

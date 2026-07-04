@@ -1,0 +1,371 @@
+.verifier-page {
+  --va-ink: #241a13;
+  --va-bark: #3b2a1d;
+  --va-umber: #5c4530;
+  --va-clay: #a87f5a;
+  --va-sand: #cdab85;
+  --va-cream: #f2ebe0;
+  --va-paper: #eee5d6;
+  --va-ivory: #f8f4ec;
+  --va-line: rgba(242,235,224,0.28);
+  --va-line-dark: rgba(36,26,19,0.12);
+
+  font-family: 'Jost', sans-serif;
+  color: var(--va-ink);
+  background: var(--va-ivory);
+  -webkit-font-smoothing: antialiased;
+}
+
+.verifier-page h1,
+.verifier-page h2,
+.verifier-page h3,
+.verifier-page h4 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+}
+
+.verifier-page a { text-decoration: none; color: inherit; }
+.verifier-page button { font-family: inherit; cursor: pointer; background: none; border: none; }
+
+/* reveal */
+.verifier-page .va-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+.verifier-page .va-reveal.va-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ————— HERO ————— */
+.verifier-page .va-hero {
+  background: linear-gradient(125deg, #1a1f2e 0%, #2a3045 45%, #3d4560 100%);
+  color: #fff;
+  padding: 8rem 3.5rem 6rem;
+  text-align: center;
+}
+.verifier-page .va-hero h1 {
+  font-size: 3.8rem;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  margin-bottom: 0.6rem;
+}
+.verifier-page .va-hero p {
+  font-size: 1rem;
+  max-width: 640px;
+  margin: 0 auto 2rem;
+  opacity: 0.8;
+  line-height: 1.7;
+}
+.verifier-page .va-hero .va-hero-badges {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+.verifier-page .va-hero .va-hero-badges span {
+  display: inline-block;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.18);
+  padding: 0.4rem 1rem;
+  border-radius: 40px;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  font-weight: 400;
+}
+.verifier-page .va-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 0.95rem 2rem;
+  border: 1px solid currentColor;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+.verifier-page .va-btn-primary {
+  background: var(--va-clay);
+  color: #fff;
+  border-color: var(--va-clay);
+}
+.verifier-page .va-btn-primary:hover {
+  background: transparent;
+  color: #fff;
+}
+.verifier-page .va-btn-outline {
+  color: #fff;
+}
+.verifier-page .va-btn-outline:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+/* ————— SECTION COMMON ————— */
+.verifier-page .va-section {
+  padding: 4.5rem 3.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.verifier-page .va-section-sm {
+  padding: 3rem 3.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.verifier-page .va-section-alt {
+  background: var(--va-cream);
+}
+.verifier-page .va-section h2 {
+  font-size: 2.2rem;
+  margin-bottom: 0.3rem;
+  color: var(--va-bark);
+}
+.verifier-page .va-section h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  color: var(--va-umber);
+}
+.verifier-page .va-section .va-subtitle {
+  font-size: 0.88rem;
+  color: var(--va-clay);
+  margin-bottom: 2rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+.verifier-page .va-section p {
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: #4a4a4a;
+  margin-bottom: 1rem;
+}
+.verifier-page .va-eyebrow {
+  font-size: 0.68rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--va-clay);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+/* ————— ENDPOINT GRID ————— */
+.verifier-page .va-endpoints {
+  display: grid;
+  gap: 0.75rem;
+}
+.verifier-page .va-endpoint {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #fff;
+  border: 1px solid var(--va-line-dark);
+  border-radius: 8px;
+  padding: 1rem 1.4rem;
+  transition: box-shadow 0.25s;
+}
+.verifier-page .va-endpoint:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+.verifier-page .va-method {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 0.25rem 0.7rem;
+  border-radius: 4px;
+  min-width: 48px;
+  text-align: center;
+  text-transform: uppercase;
+}
+.verifier-page .va-method-get { background: #d1f5d3; color: #1a6b1a; }
+.verifier-page .va-method-post { background: #d1e0f5; color: #1a3d6b; }
+.verifier-page .va-endpoint-path {
+  font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 0.82rem;
+  font-weight: 500;
+  flex: 1;
+}
+.verifier-page .va-endpoint-auth {
+  font-size: 0.7rem;
+  background: var(--va-paper);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  color: var(--va-umber);
+  white-space: nowrap;
+}
+.verifier-page .va-endpoint-desc {
+  font-size: 0.82rem;
+  color: #666;
+  flex: 0 0 280px;
+  text-align: right;
+}
+
+/* ————— CODE BLOCK ————— */
+.verifier-page .va-code {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border-radius: 8px;
+  padding: 1.2rem 1.4rem;
+  font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 0.78rem;
+  line-height: 1.65;
+  overflow-x: auto;
+  margin: 1.2rem 0;
+  white-space: pre;
+}
+.verifier-page .va-code .va-cmd { color: #89b4fa; }
+.verifier-page .va-code .va-key { color: #cba6f7; }
+.verifier-page .va-code .va-str { color: #a6e3a1; }
+.verifier-page .va-code .va-comment { color: #6c7086; font-style: italic; }
+
+/* ————— INFO CARD ————— */
+.verifier-page .va-info-card {
+  background: #fff;
+  border: 1px solid var(--va-line-dark);
+  border-radius: 8px;
+  padding: 1.6rem 1.8rem;
+  margin: 1.2rem 0;
+}
+.verifier-page .va-info-card h4 {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--va-clay);
+  margin-bottom: 0.6rem;
+}
+.verifier-page .va-info-card p { margin-bottom: 0.4rem; }
+.verifier-page .va-info-card code {
+  font-size: 0.78rem;
+  background: var(--va-paper);
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+  font-family: 'SF Mono', 'Consolas', monospace;
+}
+
+/* ————— BADGE ————— */
+.verifier-page .va-badge {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.65rem;
+  border-radius: 4px;
+}
+.verifier-page .va-badge-admin { background: #fce4d6; color: #a35c2e; }
+.verifier-page .va-badge-free { background: #d1f5d3; color: #1a6b1a; }
+
+/* ————— TABS (Sample Requests) ————— */
+.verifier-page .va-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--va-line-dark);
+  margin-bottom: 1rem;
+}
+.verifier-page .va-tab {
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: #999;
+  border-bottom: 2px solid transparent;
+  transition: color 0.25s, border-color 0.25s;
+}
+.verifier-page .va-tab.va-active {
+  color: var(--va-umber);
+  border-bottom-color: var(--va-clay);
+}
+.verifier-page .va-tab:hover { color: var(--va-ink); }
+
+/* ————— SUPPORT SECTION ————— */
+.verifier-page .va-support-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+.verifier-page .va-support-card {
+  background: #fff;
+  border: 1px solid var(--va-line-dark);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: box-shadow 0.25s;
+}
+.verifier-page .va-support-card:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+.verifier-page .va-support-card h4 {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--va-bark);
+  margin-bottom: 0.5rem;
+}
+.verifier-page .va-support-card p {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0;
+}
+.verifier-page .va-support-card a {
+  color: var(--va-clay);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.verifier-page .va-support-card a:hover { color: var(--va-umber); }
+
+/* ————— FOOTER ————— */
+.verifier-page .va-page-footer {
+  background: var(--va-ink);
+  color: var(--va-ivory);
+  text-align: center;
+  padding: 2.5rem 3.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: rgba(242,235,224,0.55);
+}
+
+/* ————— PROP TABLE ————— */
+.verifier-page .va-prop-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.82rem;
+}
+.verifier-page .va-prop-table th {
+  text-align: left;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  color: var(--va-umber);
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--va-line-dark);
+}
+.verifier-page .va-prop-table td {
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--va-line-dark);
+  color: #555;
+}
+.verifier-page .va-prop-table td:first-child {
+  font-family: 'SF Mono', 'Consolas', monospace;
+  font-weight: 500;
+  color: var(--va-ink);
+}
+.verifier-page .va-prop-table .va-optional { color: #999; font-size: 0.72rem; }
+
+/* ————— RESPONSIVE ————— */
+@media (max-width: 920px) {
+  .verifier-page .va-hero { padding: 6rem 1.8rem 4rem; }
+  .verifier-page .va-hero h1 { font-size: 2.4rem; }
+  .verifier-page .va-section { padding: 3rem 1.8rem; }
+  .verifier-page .va-section-sm { padding: 2rem 1.8rem; }
+  .verifier-page .va-endpoint { flex-wrap: wrap; gap: 0.5rem; }
+  .verifier-page .va-endpoint-desc { flex: 1 1 100%; text-align: left; }
+  .verifier-page .va-support-grid { grid-template-columns: 1fr; }
+  .verifier-page .va-code { font-size: 0.72rem; padding: 1rem; }
+}

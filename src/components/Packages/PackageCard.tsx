@@ -62,7 +62,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
   };
 
   return (
-    <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 p-6 hover:shadow-xl transition-shadow duration-200 border border-aura-sand/10">
+    <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 p-6 hover:shadow-xl transition-shadow duration-200 border border-aura-umber">
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
@@ -109,7 +109,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
         )}
       </div>
 
-      <div className="border-t pt-4">
+      <div className="border-t border-aura-umber pt-4">
         <div className="flex items-center justify-between mb-4">
           <span className="text-2xl font-bold text-aura-cream">
             ETB {pkg.price.toLocaleString()}

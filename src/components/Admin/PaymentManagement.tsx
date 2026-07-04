@@ -180,7 +180,7 @@ const PaymentManagement: React.FC = () => {
       )}
 
       {/* Filters */}
-      <div className="bg-aura-ink p-3 rounded-lg border border-aura-sand/10">
+      <div className="bg-aura-ink p-3 rounded-lg border border-aura-umber">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           <div>
             <label className="block text-xs font-medium text-aura-sand/70 mb-0.5">Status</label>
@@ -188,7 +188,7 @@ const PaymentManagement: React.FC = () => {
               name="status"
               value={filter.status}
               onChange={handleFilterChange}
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
             >
               <option value="">All</option>
               <option value="PENDING">Pending</option>
@@ -203,7 +203,7 @@ const PaymentManagement: React.FC = () => {
               name="paymentMethod"
               value={filter.paymentMethod}
               onChange={handleFilterChange}
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
             >
               <option value="">All</option>
               <option value="BANK_TRANSFER">Bank</option>
@@ -220,14 +220,14 @@ const PaymentManagement: React.FC = () => {
               value={filter.search}
               onChange={handleFilterChange}
               placeholder="Name or email"
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
             />
           </div>
 
           <div className="flex items-end">
             <button
               onClick={() => setFilter({ status: '', paymentMethod: '', search: '' })}
-              className="w-full px-2.5 py-1.5 text-sm border border-aura-sand/20 rounded-md text-aura-sand hover:bg-aura-umber/30"
+              className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md text-aura-sand hover:bg-aura-umber/30"
             >
               Clear
             </button>
@@ -308,7 +308,7 @@ const PaymentManagement: React.FC = () => {
                         <EllipsisVerticalIcon className="w-5 h-5" />
                       </button>
                       {openDropdown === payment.id && (
-                        <div className="absolute right-0 mt-1 w-40 bg-aura-ink border border-aura-sand/20 rounded-md shadow-lg z-50 py-1">
+                        <div className="absolute right-0 mt-1 w-40 bg-aura-ink border border-aura-umber rounded-md shadow-lg z-50 py-1">
                           <button
                             onClick={() => { viewPaymentDetails(payment); setOpenDropdown(null); }}
                             className="flex items-center w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30"
@@ -354,7 +354,7 @@ const PaymentManagement: React.FC = () => {
           <button
             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 border border-aura-sand/20 rounded-md disabled:opacity-50"
+            className="px-3 py-1 border border-aura-umber rounded-md disabled:opacity-50"
           >
             Previous
           </button>
@@ -364,7 +364,7 @@ const PaymentManagement: React.FC = () => {
           <button
             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 border border-aura-sand/20 rounded-md disabled:opacity-50"
+            className="px-3 py-1 border border-aura-umber rounded-md disabled:opacity-50"
           >
             Next
           </button>
@@ -448,7 +448,7 @@ const PaymentManagement: React.FC = () => {
               )}
               <button
                 onClick={closeModal}
-                className="px-4 py-2 border border-aura-sand/20 rounded-md text-aura-sand hover:bg-aura-umber/30"
+                className="px-4 py-2 border border-aura-umber rounded-md text-aura-sand hover:bg-aura-umber/30"
               >
                 Close
               </button>

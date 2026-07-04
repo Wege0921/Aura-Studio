@@ -17,6 +17,19 @@
   -webkit-font-smoothing: antialiased;
 }
 
+[data-theme="light"] .landing-page {
+  --lp-ink: #241a13;
+  --lp-bark: #3b2a1d;
+  --lp-umber: #5c4530;
+  --lp-clay: #a87f5a;
+  --lp-sand: #cdab85;
+  --lp-cream: #f2ebe0;
+  --lp-paper: #eee5d6;
+  --lp-ivory: #f8f4ec;
+  --lp-line: rgba(242,235,224,0.28);
+  --lp-line-dark: rgba(36,26,19,0.14);
+}
+
 .landing-page h1,
 .landing-page h2,
 .landing-page h3,

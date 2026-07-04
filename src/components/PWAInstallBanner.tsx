@@ -150,7 +150,7 @@ const PWAInstallBanner: React.FC = () => {
 
             <button
               onClick={handleDismiss}
-              className="w-full py-3 rounded-xl border border-aura-sand/20 text-sm text-aura-sand/60 hover:text-aura-sand active:bg-aura-sand/10 transition-colors"
+              className="w-full py-3 rounded-xl border border-aura-umber text-sm text-aura-sand/60 hover:text-aura-sand active:bg-aura-sand/10 transition-colors"
             >
               Maybe Later
             </button>
@@ -169,7 +169,7 @@ const PWAInstallBanner: React.FC = () => {
       {!isDesktop && (
         <div className="fixed bottom-0 left-0 right-0 z-[60] md:hidden">
           <div
-            className="bg-aura-ink border-t border-aura-sand/10 shadow-lg px-4 py-3 flex items-center justify-between"
+            className="bg-aura-ink border-t border-aura-umber shadow-lg px-4 py-3 flex items-center justify-between"
             style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
           >
             <div className="flex items-center gap-3 min-w-0">
@@ -197,14 +197,14 @@ const PWAInstallBanner: React.FC = () => {
       {/* Desktop — top-right card */}
       {isDesktop && (
         <div className="fixed top-4 right-4 z-[60]">
-          <div className="bg-aura-ink border border-aura-sand/10 shadow-2xl rounded-2xl p-4 w-80">
+          <div className="bg-aura-ink border border-aura-umber shadow-2xl rounded-2xl p-4 w-80">
             <div className="flex items-start gap-3">
               <img src="/web-app-manifest-192x192.png" alt="AURA" className="w-11 h-11 rounded-xl flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-aura-cream">Install AURA App</p>
                 <p className="text-xs text-aura-sand/50 mt-0.5 leading-relaxed">Install for a faster, app-like experience on your desktop.</p>
                 <div className="flex items-center gap-2 mt-3">
-                  <button onClick={handleDismiss} className="text-xs text-aura-sand/50 hover:text-aura-sand px-3 py-1.5 rounded-lg border border-aura-sand/20 min-h-[32px]">
+                  <button onClick={handleDismiss} className="text-xs text-aura-sand/50 hover:text-aura-sand px-3 py-1.5 rounded-lg border border-aura-umber min-h-[32px]">
                     Not now
                   </button>
                   <button

@@ -61,8 +61,9 @@ model Class {
 
 model Booking {
   id          String    @id @default(cuid())
-  userId      String
+  userId      String?
   classId     String
+  guestToken  String?   @unique
   status      String    @default("CONFIRMED")
   cancelledAt DateTime?
   paymentStatus String  @default("PENDING") // PENDING, PAID, FAILED
@@ -76,15 +77,15 @@ model Booking {
   userPackageId String?
 
   // Relations
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
   class      Class       @relation(fields: [classId], references: [id], onDelete: Cascade)
   userPackage UserPackage? @relation(fields: [userPackageId], references: [id], onDelete: SetNull)
 
-  @@unique([userId, classId])
   @@index([createdAt])
   @@index([status])
   @@index([userId])
   @@index([classId])
+  @@index([guestToken])
   @@map("bookings")
 }
 
@@ -221,4 +222,12 @@ model NewsletterSubscriber {
   createdAt DateTime @default(now())
 
   @@map("newsletter_subscribers")
+}
+
+model SiteContent {
+  section   String   @id
+  data      Json
+  updatedAt DateTime @updatedAt
+
+  @@map("site_content")
 }

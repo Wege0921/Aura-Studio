@@ -138,7 +138,7 @@ const BookingHistory: React.FC = () => {
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="block w-full sm:w-auto px-3 py-2 border border-aura-sand/30 rounded-md bg-aura-bark text-aura-cream focus:outline-none focus:ring-aura-sand focus:border-aura-sand"
+            className="block w-full sm:w-auto px-3 py-2 border border-aura-umber rounded-md bg-aura-bark text-aura-cream focus:outline-none focus:ring-aura-sand focus:border-aura-umber"
           >
             <option value="all">All Bookings</option>
             <option value="CONFIRMED">Confirmed</option>
@@ -169,7 +169,7 @@ const BookingHistory: React.FC = () => {
       ) : (
         <div className="space-y-4">
           {bookings.map((booking) => (
-            <div key={booking.id} className="bg-aura-ink shadow-lg shadow-black/20 rounded-xl border border-aura-sand/10 p-4 sm:p-6">
+            <div key={booking.id} className="bg-aura-ink shadow-lg shadow-black/20 rounded-xl border border-aura-umber p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-3 sm:mb-0">

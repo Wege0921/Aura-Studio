@@ -80,7 +80,7 @@ const MyWaitlist: React.FC = () => {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-aura-cream">My Waitlist</h1>
       {entries.length === 0 ? (
-        <div className="bg-aura-ink rounded-xl border border-aura-sand/10 p-8 text-center">
+        <div className="bg-aura-ink rounded-xl border border-aura-umber p-8 text-center">
           <p className="text-aura-sand">You are not on any waitlists.</p>
         </div>
       ) : (
@@ -88,7 +88,7 @@ const MyWaitlist: React.FC = () => {
           {entries.map(entry => (
             <div
               key={entry.id}
-              className="bg-aura-ink rounded-xl border border-aura-sand/10 p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+              className="bg-aura-ink rounded-xl border border-aura-umber p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
             >
               <div>
                 <h3 className="text-lg font-semibold text-aura-cream">{entry.class.name}</h3>

@@ -78,7 +78,7 @@ const Login: React.FC = () => {
           type="button"
           onClick={handleGoogleSignIn}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-aura-sand/20 rounded-xl bg-white/5 text-aura-cream hover:bg-white/10 transition-colors text-base font-medium disabled:opacity-50 shadow-lg"
+          className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-aura-umber rounded-xl bg-white/5 text-aura-cream hover:bg-white/10 transition-colors text-base font-medium disabled:opacity-50 shadow-lg"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -91,7 +91,7 @@ const Login: React.FC = () => {
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-aura-sand/20" />
+            <div className="w-full border-t border-aura-umber" />
           </div>
         </div>
 
@@ -115,7 +115,7 @@ const Login: React.FC = () => {
                   type="email"
                   autoComplete="email"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-aura-sand/20 placeholder:text-aura-sand/50 text-aura-cream rounded-t-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand focus:z-10 sm:text-sm bg-aura-ink/40"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-aura-umber placeholder:text-aura-sand/50 text-aura-cream rounded-t-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber focus:z-10 sm:text-sm bg-aura-ink/40"
                   placeholder="Email address"
                   value={formData.email}
                   onChange={handleChange}
@@ -129,7 +129,7 @@ const Login: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border border-aura-sand/20 placeholder:text-aura-sand/50 text-aura-cream rounded-b-md focus:outline-none focus:ring-aura-sand focus:border-aura-sand focus:z-10 sm:text-sm bg-aura-ink/40"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border border-aura-umber placeholder:text-aura-sand/50 text-aura-cream rounded-b-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber focus:z-10 sm:text-sm bg-aura-ink/40"
                   placeholder="Password"
                   value={formData.password}
                   onChange={handleChange}
@@ -162,7 +162,7 @@ const Login: React.FC = () => {
               </Link>
               <Link
                 to="/register"
-                className="text-sm text-aura-sand hover:text-aura-cream"
+                className="text-sm text-aura-cream hover:text-aura-ivory"
               >
                 Don't have an account? Sign up
               </Link>
@@ -171,9 +171,9 @@ const Login: React.FC = () => {
         )}
 
         {!showEmailForm && (
-          <p className="text-center text-xs text-aura-sand/50">
+          <p className="text-center text-sm text-aura-cream">
             Don't have an account?{' '}
-            <Link to="/register" className="text-aura-sand hover:text-aura-cream underline">
+            <Link to="/register" className="text-aura-sand hover:text-aura-ivory underline font-medium">
               Sign up
             </Link>
           </p>

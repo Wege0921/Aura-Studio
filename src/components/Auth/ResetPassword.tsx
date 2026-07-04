@@ -109,7 +109,7 @@ const ResetPassword: React.FC = () => {
                 name="password"
                 type="password"
                 required
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-aura-sand/20 placeholder:text-aura-sand/50 text-aura-cream focus:outline-none focus:ring-aura-sand focus:border-aura-sand focus:z-10 sm:text-sm bg-aura-ink/40"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-aura-umber placeholder:text-aura-sand/50 text-aura-cream focus:outline-none focus:ring-aura-sand focus:border-aura-umber focus:z-10 sm:text-sm bg-aura-ink/40"
                 placeholder="New password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -122,7 +122,7 @@ const ResetPassword: React.FC = () => {
                 name="confirmPassword"
                 type="password"
                 required
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-aura-sand/20 placeholder:text-aura-sand/50 text-aura-cream focus:outline-none focus:ring-aura-sand focus:border-aura-sand focus:z-10 sm:text-sm bg-aura-ink/40"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-aura-umber placeholder:text-aura-sand/50 text-aura-cream focus:outline-none focus:ring-aura-sand focus:border-aura-umber focus:z-10 sm:text-sm bg-aura-ink/40"
                 placeholder="Confirm new password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}

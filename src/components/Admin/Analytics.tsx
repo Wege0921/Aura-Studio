@@ -90,7 +90,7 @@ const Analytics: React.FC = () => {
           { label: 'Payments (30d)', value: data.recentActivity.payments30d, color: 'text-purple-400' },
           { label: 'Revenue (30d)', value: `ETB ${data.recentActivity.revenue30d.toLocaleString()}`, color: 'text-aura-sand' },
         ].map((card) => (
-          <div key={card.label} className="bg-aura-ink p-4 rounded-lg border border-aura-sand/10">
+          <div key={card.label} className="bg-aura-ink p-4 rounded-lg border border-aura-umber">
             <p className="text-xs text-aura-sand/60 uppercase tracking-wider">{card.label}</p>
             <p className={`text-2xl font-bold mt-1 ${card.color}`}>{card.value}</p>
           </div>
@@ -100,7 +100,7 @@ const Analytics: React.FC = () => {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue Chart */}
-        <div className="bg-aura-ink p-5 rounded-lg border border-aura-sand/10">
+        <div className="bg-aura-ink p-5 rounded-lg border border-aura-umber">
           <h3 className="text-lg font-semibold text-aura-cream mb-4">Revenue Trend (6 Months)</h3>
           <div className="flex items-end gap-3 h-48">
             {data.revenueByMonth.labels.map((label, i) => {
@@ -123,7 +123,7 @@ const Analytics: React.FC = () => {
         </div>
 
         {/* User Growth Chart */}
-        <div className="bg-aura-ink p-5 rounded-lg border border-aura-sand/10">
+        <div className="bg-aura-ink p-5 rounded-lg border border-aura-umber">
           <h3 className="text-lg font-semibold text-aura-cream mb-4">User Growth (6 Months)</h3>
           <div className="flex items-end gap-3 h-48">
             {data.usersByMonth.labels.map((label, i) => {
@@ -147,7 +147,7 @@ const Analytics: React.FC = () => {
       </div>
 
       {/* Bookings by Status */}
-      <div className="bg-aura-ink p-5 rounded-lg border border-aura-sand/10">
+      <div className="bg-aura-ink p-5 rounded-lg border border-aura-umber">
         <h3 className="text-lg font-semibold text-aura-cream mb-4">Bookings by Status</h3>
         <div className="flex flex-wrap gap-4">
           {data.bookingsByStatus.map((b) => (
@@ -176,8 +176,8 @@ const Analytics: React.FC = () => {
       {/* Tables Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Classes */}
-        <div className="bg-aura-ink rounded-lg border border-aura-sand/10 overflow-hidden">
-          <div className="px-5 py-4 border-b border-aura-sand/10">
+        <div className="bg-aura-ink rounded-lg border border-aura-umber overflow-hidden">
+          <div className="px-5 py-4 border-b border-aura-umber">
             <h3 className="text-lg font-semibold text-aura-cream">Top Classes</h3>
           </div>
           <div className="p-4 space-y-3">
@@ -199,8 +199,8 @@ const Analytics: React.FC = () => {
         </div>
 
         {/* Package Popularity */}
-        <div className="bg-aura-ink rounded-lg border border-aura-sand/10 overflow-hidden">
-          <div className="px-5 py-4 border-b border-aura-sand/10">
+        <div className="bg-aura-ink rounded-lg border border-aura-umber overflow-hidden">
+          <div className="px-5 py-4 border-b border-aura-umber">
             <h3 className="text-lg font-semibold text-aura-cream">Popular Packages</h3>
           </div>
           <div className="p-4 space-y-3">

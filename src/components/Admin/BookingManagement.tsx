@@ -244,14 +244,14 @@ const BookingManagement: React.FC = () => {
       )}
 
       {/* Filters */}
-      <div className="bg-aura-ink p-3 rounded-lg border border-aura-sand/10">
+      <div className="bg-aura-ink p-3 rounded-lg border border-aura-umber">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           <div>
             <label className="block text-xs font-medium text-aura-sand/70 mb-0.5">Status</label>
             <select
               value={filter.status}
               onChange={(e) => handleFilterChange('status', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
             >
               <option value="">All</option>
               {statusOptions.map(status => (
@@ -265,7 +265,7 @@ const BookingManagement: React.FC = () => {
             <select
               value={filter.classId}
               onChange={(e) => handleFilterChange('classId', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
             >
               <option value="">All</option>
               {classes.map(cls => (
@@ -280,7 +280,7 @@ const BookingManagement: React.FC = () => {
               type="date"
               value={filter.date}
               onChange={(e) => handleFilterChange('date', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
             />
           </div>
 
@@ -291,7 +291,7 @@ const BookingManagement: React.FC = () => {
               value={filter.search}
               onChange={(e) => handleFilterChange('search', e.target.value)}
               placeholder="Name or email"
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
             />
           </div>
         </div>
@@ -373,7 +373,7 @@ const BookingManagement: React.FC = () => {
                         <EllipsisVerticalIcon className="w-5 h-5" />
                       </button>
                       {openDropdown === booking.id && (
-                        <div className="absolute right-0 mt-1 w-48 bg-aura-ink border border-aura-sand/20 rounded-md shadow-lg z-50 py-1">
+                        <div className="absolute right-0 mt-1 w-48 bg-aura-ink border border-aura-umber rounded-md shadow-lg z-50 py-1">
                           <button
                             onClick={() => { viewBookingDetails(booking); setOpenDropdown(null); }}
                             className="flex items-center w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30"
@@ -384,7 +384,7 @@ const BookingManagement: React.FC = () => {
                             <select
                               value={booking.status}
                               onChange={(e) => { handleStatusUpdate(booking.id, e.target.value); setOpenDropdown(null); }}
-                              className="text-sm border border-aura-sand/20 rounded px-2 py-1 w-full bg-aura-bark text-aura-cream"
+                              className="text-sm border border-aura-umber rounded px-2 py-1 w-full bg-aura-bark text-aura-cream"
                             >
                               {statusOptions.map(status => (
                                 <option key={status} value={status}>{status}</option>
@@ -415,19 +415,19 @@ const BookingManagement: React.FC = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="bg-aura-ink px-4 py-3 flex items-center justify-between border-t border-aura-sand/10">
+          <div className="bg-aura-ink px-4 py-3 flex items-center justify-between border-t border-aura-umber">
             <div className="flex-1 flex justify-between sm:hidden">
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-aura-sand/20 text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
               >
                 Previous
               </button>
               <button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
-                className="relative inline-flex items-center px-4 py-2 border border-aura-sand/20 text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
               >
                 Next
               </button>
@@ -443,7 +443,7 @@ const BookingManagement: React.FC = () => {
                   <button
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-aura-sand/20 bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
                   >
                     Previous
                   </button>
@@ -454,7 +454,7 @@ const BookingManagement: React.FC = () => {
                       className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                         page === currentPage
                           ? 'z-10 bg-purple-600 border-purple-600 text-white'
-                          : 'bg-aura-ink border-aura-sand/20 text-aura-sand hover:bg-aura-umber/30'
+                          : 'bg-aura-ink border-aura-umber text-aura-sand hover:bg-aura-umber/30'
                       }`}
                     >
                       {page}
@@ -463,7 +463,7 @@ const BookingManagement: React.FC = () => {
                   <button
                     onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                     disabled={currentPage === totalPages}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-aura-sand/20 bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
                   >
                     Next
                   </button>
@@ -488,7 +488,7 @@ const BookingManagement: React.FC = () => {
             <div className="flex justify-end space-x-3">
               <button
                 onClick={closeDeleteModal}
-                className="px-4 py-2 border border-aura-sand/20 rounded-md text-aura-sand hover:bg-aura-umber/30 transition-colors"
+                className="px-4 py-2 border border-aura-umber rounded-md text-aura-sand hover:bg-aura-umber/30 transition-colors"
               >
                 Cancel
               </button>

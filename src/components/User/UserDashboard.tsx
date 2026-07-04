@@ -45,7 +45,7 @@ const QuickActionCard = ({
 }) => (
   <button
     onClick={onClick}
-    className={`w-full text-left p-5 rounded-xl border border-aura-sand/10 bg-aura-ink hover:bg-aura-bark transition-all duration-200 group`}
+    className={`w-full text-left p-5 rounded-xl border border-aura-umber bg-aura-ink hover:bg-aura-bark transition-all duration-200 group`}
   >
     <div className={`w-10 h-10 rounded-lg ${color} flex items-center justify-center mb-3 group-hover:scale-105 transition-transform`}>
       {icon}
@@ -124,7 +124,7 @@ const UserDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="relative bg-gradient-to-br from-purple-900/40 to-aura-ink rounded-2xl shadow-lg shadow-black/20 border border-aura-sand/10 p-6 overflow-hidden">
+      <div className="relative bg-gradient-to-br from-purple-900/40 to-aura-ink rounded-2xl shadow-lg shadow-black/20 border border-aura-umber p-6 overflow-hidden">
         <div className="relative z-10">
           <h1 className="text-2xl md:text-3xl font-bold text-aura-cream mb-2">
             Welcome back, {user?.name}!
@@ -212,21 +212,21 @@ const UserDashboard: React.FC = () => {
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-aura-ink rounded-xl border border-aura-sand/10 p-4">
+        <div className="bg-aura-ink rounded-xl border border-aura-umber p-4">
           <p className="text-aura-sand/70 text-xs uppercase tracking-wider mb-1">Active Packages</p>
           <p className="text-2xl font-bold text-aura-cream">{activePkgs.length}</p>
         </div>
-        <div className="bg-aura-ink rounded-xl border border-aura-sand/10 p-4">
+        <div className="bg-aura-ink rounded-xl border border-aura-umber p-4">
           <p className="text-aura-sand/70 text-xs uppercase tracking-wider mb-1">Total Sessions</p>
           <p className="text-2xl font-bold text-aura-cream">
             {activePkgs.reduce((sum, up) => sum + (up.remainingSessions || 0), 0)}
           </p>
         </div>
-        <div className="bg-aura-ink rounded-xl border border-aura-sand/10 p-4">
+        <div className="bg-aura-ink rounded-xl border border-aura-umber p-4">
           <p className="text-aura-sand/70 text-xs uppercase tracking-wider mb-1">Upcoming</p>
           <p className="text-2xl font-bold text-aura-cream">{upcomingBookings.length}</p>
         </div>
-        <div className="bg-aura-ink rounded-xl border border-aura-sand/10 p-4">
+        <div className="bg-aura-ink rounded-xl border border-aura-umber p-4">
           <p className="text-aura-sand/70 text-xs uppercase tracking-wider mb-1">Member Since</p>
           <p className="text-sm font-semibold text-aura-cream mt-1">
             {user?.createdAt ? format(new Date(user.createdAt), 'MMM yyyy') : 'N/A'}
@@ -237,7 +237,7 @@ const UserDashboard: React.FC = () => {
       {/* Two Column: Packages + Bookings */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Your Packages */}
-        <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-sand/10 p-6">
+        <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-umber p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-aura-cream">Your Packages</h2>
             <button onClick={goToPackages} className="text-xs text-purple-400 hover:text-purple-300">
@@ -257,7 +257,7 @@ const UserDashboard: React.FC = () => {
               </div>
             ) : (
               userPackages.slice(0, 3).map((up) => (
-                <div key={up.id} className="flex items-center justify-between p-3 rounded-lg bg-aura-bark/40 border border-aura-sand/5">
+                <div key={up.id} className="flex items-center justify-between p-3 rounded-lg bg-aura-bark/40 border border-aura-umber">
                   <div>
                     <p className="text-sm font-medium text-aura-cream">{up.package.name}</p>
                     <p className="text-xs text-aura-sand">
@@ -279,7 +279,7 @@ const UserDashboard: React.FC = () => {
         </div>
 
         {/* Upcoming Classes */}
-        <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-sand/10 p-6">
+        <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-umber p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-aura-cream">Upcoming Classes</h2>
           </div>
@@ -290,7 +290,7 @@ const UserDashboard: React.FC = () => {
               </div>
             ) : (
               upcomingBookings.map((booking) => (
-                <div key={booking.id} className="flex items-center gap-3 p-3 rounded-lg bg-aura-bark/40 border border-aura-sand/5">
+                <div key={booking.id} className="flex items-center gap-3 p-3 rounded-lg bg-aura-bark/40 border border-aura-umber">
                   <div className="w-10 h-10 rounded-lg bg-purple-600/20 flex items-center justify-center flex-shrink-0">
                     <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />

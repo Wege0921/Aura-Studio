@@ -46,7 +46,7 @@ const Navigation: React.FC = () => {
                     {item.name}
                   </a>
                 ))}
-                <div className="flex items-center space-x-3 ml-4 pl-4 border-l border-aura-sand/10">
+                <div className="flex items-center space-x-3 ml-4 pl-4 border-l border-aura-umber">
                   <span className="text-sm text-aura-sand/70">Welcome, {user.name}</span>
                   <button
                     onClick={handleLogout}
@@ -83,10 +83,10 @@ const Navigation: React.FC = () => {
       {/* Mobile menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-aura-bark border-t border-aura-sand/10">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-aura-bark border-t border-aura-umber">
             {user && (
               <>
-                <div className="px-3 py-2 border-b border-aura-sand/10">
+                <div className="px-3 py-2 border-b border-aura-umber">
                   <p className="text-sm font-medium text-aura-ivory">Welcome, {user.name}</p>
                   <p className="text-xs text-aura-sand/50">{user.email}</p>
                 </div>

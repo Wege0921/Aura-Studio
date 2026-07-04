@@ -46,7 +46,7 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
   };
 
   return (
-    <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 p-6 hover:shadow-xl transition-shadow duration-200 border border-aura-sand/10">
+    <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 p-6 hover:shadow-xl transition-shadow duration-200 border border-aura-umber">
       {/* Header — like PackageCard */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
@@ -96,7 +96,7 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
       </div>
 
       {/* Price + CTA — like PackageCard */}
-      <div className="border-t border-aura-sand/10 pt-4">
+      <div className="border-t border-aura-umber pt-4">
         <div className="flex items-center justify-between mb-4">
           <span className="text-2xl font-bold text-aura-cream">
             {classItem.price ? `ETB ${classItem.price.toLocaleString()}` : 'Free'}

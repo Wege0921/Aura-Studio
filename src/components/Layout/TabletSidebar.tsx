@@ -38,13 +38,13 @@ const TabletSidebar: React.FC<TabletSidebarProps> = ({
 
   return (
     <aside
-      className="hidden md:flex lg:hidden flex-col h-screen sticky top-0 bg-aura-bark border-r border-aura-sand/10 z-40 transition-all duration-300"
+      className="dashboard-sidebar hidden md:flex lg:hidden flex-col h-screen sticky top-0 bg-aura-bark border-r border-aura-umber z-40 transition-all duration-300"
       style={{ width: expanded ? 200 : 72 }}
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
     >
       {/* Logo */}
-      <div className="flex items-center justify-center h-16 border-b border-aura-sand/10 px-3">
+      <div className="flex items-center justify-center h-16 border-b border-aura-umber px-3">
         <img src="/Aura-header-black.png" alt="AURA" className="h-8 w-auto" />
       </div>
 
@@ -74,7 +74,7 @@ const TabletSidebar: React.FC<TabletSidebarProps> = ({
       </nav>
 
       {/* Profile Dropdown */}
-      <div className="p-2 border-t border-aura-sand/10 relative">
+      <div className="p-2 border-t border-aura-umber relative">
         <button
           onClick={(e) => { e.stopPropagation(); setShowProfileMenu(prev => !prev); }}
           className="w-full flex items-center justify-center gap-2 px-2.5 py-2 hover:bg-aura-sand/10 rounded-lg transition-colors"
@@ -88,7 +88,7 @@ const TabletSidebar: React.FC<TabletSidebarProps> = ({
           {expanded && <span className="text-sm text-aura-sand truncate">{userName}</span>}
         </button>
         {showProfileMenu && (
-          <div className={`absolute bottom-full mb-2 bg-aura-ink border border-aura-sand/20 rounded-lg shadow-lg z-50 py-1 ${expanded ? 'left-2 right-2' : 'left-2 min-w-[170px]'}`}>
+          <div className={`absolute bottom-full mb-2 bg-aura-ink border border-aura-umber rounded-lg shadow-lg z-50 py-1 ${expanded ? 'left-2 right-2' : 'left-2 min-w-[170px]'}`}>
             {isAdmin && onToggleViewMode && (
               <button
                 onClick={() => { onToggleViewMode(); setShowProfileMenu(false); }}

@@ -298,7 +298,7 @@ const UserManagement: React.FC = () => {
       )}
 
       {/* Filters */}
-      <div className="bg-aura-ink p-3 rounded-lg border border-aura-sand/10">
+      <div className="bg-aura-ink p-3 rounded-lg border border-aura-umber">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <div>
             <label className="block text-xs font-medium text-aura-sand/70 mb-0.5">Search</label>
@@ -307,7 +307,7 @@ const UserManagement: React.FC = () => {
               value={filter.search}
               onChange={(e) => handleFilterChange('search', e.target.value)}
               placeholder="Name or email"
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
             />
           </div>
 
@@ -316,7 +316,7 @@ const UserManagement: React.FC = () => {
             <select
               value={filter.role}
               onChange={(e) => handleFilterChange('role', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
             >
               <option value="">All</option>
               {roles.map(role => (
@@ -396,7 +396,7 @@ const UserManagement: React.FC = () => {
                         <EllipsisVerticalIcon className="w-5 h-5" />
                       </button>
                       {openDropdown === user.id && (
-                        <div className="absolute right-0 mt-1 w-40 bg-aura-ink border border-aura-sand/20 rounded-md shadow-lg z-50 py-1">
+                        <div className="absolute right-0 mt-1 w-40 bg-aura-ink border border-aura-umber rounded-md shadow-lg z-50 py-1">
                           <button
                             onClick={() => { viewUserDetails(user); setOpenDropdown(null); }}
                             className="flex items-center w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30"
@@ -439,19 +439,19 @@ const UserManagement: React.FC = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="bg-aura-ink px-4 py-3 flex items-center justify-between border-t border-aura-sand/10">
+          <div className="bg-aura-ink px-4 py-3 flex items-center justify-between border-t border-aura-umber">
             <div className="flex-1 flex justify-between sm:hidden">
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-aura-sand/20 text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
               >
                 Previous
               </button>
               <button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
-                className="relative inline-flex items-center px-4 py-2 border border-aura-sand/20 text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
               >
                 Next
               </button>
@@ -467,7 +467,7 @@ const UserManagement: React.FC = () => {
                   <button
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-aura-sand/20 bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
                   >
                     Previous
                   </button>
@@ -478,7 +478,7 @@ const UserManagement: React.FC = () => {
                       className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                         page === currentPage
                           ? 'z-10 bg-purple-600 border-purple-600 text-white'
-                          : 'bg-aura-ink border-aura-sand/20 text-aura-sand hover:bg-aura-umber/30'
+                          : 'bg-aura-ink border-aura-umber text-aura-sand hover:bg-aura-umber/30'
                       }`}
                     >
                       {page}
@@ -487,7 +487,7 @@ const UserManagement: React.FC = () => {
                   <button
                     onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                     disabled={currentPage === totalPages}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-aura-sand/20 bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
                   >
                     Next
                   </button>
@@ -562,7 +562,7 @@ const UserManagement: React.FC = () => {
             <div className="flex justify-end space-x-3">
               <button
                 onClick={closeDeleteModal}
-                className="px-4 py-2 border border-aura-sand/20 rounded-md text-aura-sand hover:bg-aura-umber/30 transition-colors"
+                className="px-4 py-2 border border-aura-umber rounded-md text-aura-sand hover:bg-aura-umber/30 transition-colors"
               >
                 Cancel
               </button>
@@ -590,7 +590,7 @@ const UserManagement: React.FC = () => {
                   type="text"
                   value={editForm.name}
                   onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
                 />
               </div>
 
@@ -600,7 +600,7 @@ const UserManagement: React.FC = () => {
                   type="email"
                   value={editForm.email}
                   onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
                 />
               </div>
 
@@ -609,7 +609,7 @@ const UserManagement: React.FC = () => {
                 <select
                   value={editForm.role}
                   onChange={(e) => setEditForm(prev => ({ ...prev, role: e.target.value }))}
-                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
                 >
                   {roles.map(role => (
                     <option key={role} value={role}>{role}</option>
@@ -621,7 +621,7 @@ const UserManagement: React.FC = () => {
             <div className="flex justify-end space-x-3 mt-6">
               <button
                 onClick={() => setShowEditForm(false)}
-                className="px-4 py-2 border border-aura-sand/20 rounded-md text-aura-sand hover:bg-aura-umber/30"
+                className="px-4 py-2 border border-aura-umber rounded-md text-aura-sand hover:bg-aura-umber/30"
               >
                 Cancel
               </button>
@@ -651,7 +651,7 @@ const UserManagement: React.FC = () => {
               type="text"
               value={instructorForm.name}
               onChange={(e) => setInstructorForm(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
               placeholder="Enter instructor name"
             />
           </div>
@@ -662,7 +662,7 @@ const UserManagement: React.FC = () => {
               type="email"
               value={instructorForm.email}
               onChange={(e) => setInstructorForm(prev => ({ ...prev, email: e.target.value }))}
-              className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
               placeholder="Enter instructor email"
             />
           </div>
@@ -673,7 +673,7 @@ const UserManagement: React.FC = () => {
               type="password"
               value={instructorForm.password}
               onChange={(e) => setInstructorForm(prev => ({ ...prev, password: e.target.value }))}
-              className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
               placeholder="Enter instructor password"
             />
           </div>
@@ -684,7 +684,7 @@ const UserManagement: React.FC = () => {
               type="tel"
               value={instructorForm.phone}
               onChange={(e) => setInstructorForm(prev => ({ ...prev, phone: e.target.value }))}
-              className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
               placeholder="Enter instructor phone"
             />
           </div>
@@ -693,7 +693,7 @@ const UserManagement: React.FC = () => {
         <div className="flex justify-end space-x-3 mt-6">
           <button
             onClick={() => setShowInstructorForm(false)}
-            className="px-4 py-2 border border-aura-sand/20 rounded-md text-aura-sand hover:bg-aura-umber/30"
+            className="px-4 py-2 border border-aura-umber rounded-md text-aura-sand hover:bg-aura-umber/30"
           >
             Cancel
           </button>

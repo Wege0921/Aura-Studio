@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ThemeToggle from '../ThemeToggle';
 
 interface NavItem {
   id: string;
@@ -36,10 +37,16 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
   }, []);
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 h-screen sticky top-0 bg-aura-bark border-r border-aura-sand/10 z-40">
+    <aside className="dashboard-sidebar hidden lg:flex flex-col w-64 h-screen sticky top-0 bg-aura-bark border-r border-aura-umber z-40">
       {/* Logo */}
-      <div className="flex items-center h-16 px-6 border-b border-aura-sand/10">
+      <div className="flex items-center h-16 px-6 border-b border-aura-umber">
         <img src="/Aura-header-black.png" alt="AURA" className="h-8 w-auto" />
+      </div>
+
+      {/* Theme Toggle */}
+      <div className="px-4 py-3 flex items-center justify-between shrink-0 border-b border-aura-umber">
+        <span className="text-xs font-medium text-aura-sand">Theme</span>
+        <ThemeToggle />
       </div>
 
       {/* Navigation */}
@@ -68,7 +75,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
       </nav>
 
       {/* Profile Dropdown */}
-      <div className="p-4 border-t border-aura-sand/10 relative">
+      <div className="p-4 border-t border-aura-umber relative">
         <button
           onClick={(e) => { e.stopPropagation(); setShowProfileMenu(prev => !prev); }}
           className="flex items-center gap-3 w-full hover:bg-aura-sand/10 rounded-lg p-2 transition-colors"
@@ -81,7 +88,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
           <span className="text-sm font-medium text-aura-sand truncate">{userName}</span>
         </button>
         {showProfileMenu && (
-          <div className="absolute left-4 right-4 bottom-full mb-2 bg-aura-ink border border-aura-sand/20 rounded-lg shadow-lg z-50 py-1">
+          <div className="absolute left-4 right-4 bottom-full mb-2 bg-aura-ink border border-aura-umber rounded-lg shadow-lg z-50 py-1">
             {isAdmin && onToggleViewMode && (
               <button
                 onClick={() => { onToggleViewMode(); setShowProfileMenu(false); }}

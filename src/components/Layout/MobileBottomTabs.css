@@ -5,9 +5,16 @@
   left: 0;
   right: 0;
   z-index: 400;
-  background: #241a13;
-  border-top: 1px solid rgba(242, 235, 224, 0.12);
+  background: var(--mbt-bg, #241a13);
+  border-top: 1px solid var(--mbt-border, rgba(242, 235, 224, 0.12));
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+[data-theme="light"] .mobile-bottom-tabs {
+  --mbt-bg: #eee5d6;
+  --mbt-border: rgba(36, 26, 19, 0.12);
+  --mbt-inactive: rgba(36, 26, 19, 0.55);
+  --mbt-active: #241a13;
 }
 
 .mbt-tab {
@@ -20,14 +27,30 @@
   padding: 8px 0 10px;
   background: none;
   border: none;
-  color: rgba(242, 235, 224, 0.55);
+  color: var(--mbt-inactive, rgba(242, 235, 224, 0.55));
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
 .mbt-tab:hover,
 .mbt-tab.mbt-active {
-  color: #f2ebe0;
+  color: var(--mbt-active, #f2ebe0);
+}
+
+[data-theme="light"] .mbt-tab {
+  color: var(--mbt-inactive, rgba(36, 26, 19, 0.55));
+}
+
+[data-theme="light"] .mbt-tab:hover,
+[data-theme="light"] .mbt-tab.mbt-active {
+  color: var(--mbt-active, #241a13);
+}
+
+[data-theme="light"] .mobile-bottom-tabs.mbt-landing {
+  --mbt-bg: #241a13;
+  --mbt-border: rgba(242, 235, 224, 0.12);
+  --mbt-inactive: rgba(242, 235, 224, 0.55);
+  --mbt-active: #f2ebe0;
 }
 
 .mbt-icon {

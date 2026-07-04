@@ -198,7 +198,7 @@ const InstructorManagement: React.FC = () => {
             <div className="flex justify-end space-x-3">
               <button
                 onClick={closeDeleteModal}
-                className="px-4 py-2 border border-aura-sand/20 rounded-md text-aura-sand hover:bg-aura-umber/30 transition-colors"
+                className="px-4 py-2 border border-aura-umber rounded-md text-aura-sand hover:bg-aura-umber/30 transition-colors"
               >
                 Cancel
               </button>
@@ -228,7 +228,7 @@ const InstructorManagement: React.FC = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
                   placeholder="Enter instructor name"
                 />
               </div>
@@ -240,7 +240,7 @@ const InstructorManagement: React.FC = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
                   placeholder="Enter instructor email"
                 />
               </div>
@@ -252,7 +252,7 @@ const InstructorManagement: React.FC = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
                   placeholder="Enter instructor password"
                 />
               </div>
@@ -264,7 +264,7 @@ const InstructorManagement: React.FC = () => {
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-sand/20 rounded-md focus:outline-none focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
                   placeholder="Enter instructor phone"
                 />
               </div>
@@ -273,7 +273,7 @@ const InstructorManagement: React.FC = () => {
                 <button
                   type="button"
                   onClick={cancelForm}
-                  className="px-4 py-2 border border-aura-sand/20 rounded-md text-aura-sand hover:bg-aura-umber/30"
+                  className="px-4 py-2 border border-aura-umber rounded-md text-aura-sand hover:bg-aura-umber/30"
                 >
                   Cancel
                 </button>
@@ -346,7 +346,7 @@ const InstructorManagement: React.FC = () => {
                         <EllipsisVerticalIcon className="w-5 h-5" />
                       </button>
                       {openDropdown === instructor.id && (
-                        <div className="absolute right-0 mt-1 w-40 bg-aura-ink border border-aura-sand/20 rounded-md shadow-lg z-50 py-1">
+                        <div className="absolute right-0 mt-1 w-40 bg-aura-ink border border-aura-umber rounded-md shadow-lg z-50 py-1">
                           <button
                             onClick={() => { openDeleteModal(instructor.id); setOpenDropdown(null); }}
                             className="flex items-center w-full px-4 py-2 text-sm text-red-400 hover:bg-aura-umber/30"
@@ -371,19 +371,19 @@ const InstructorManagement: React.FC = () => {
 
         {/* Pagination */}
         {instructors.length > ITEMS_PER_PAGE && (
-          <div className="bg-aura-ink px-4 py-3 flex items-center justify-between border-t border-aura-sand/10">
+          <div className="bg-aura-ink px-4 py-3 flex items-center justify-between border-t border-aura-umber">
             <div className="flex-1 flex justify-between sm:hidden">
               <button
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-aura-sand/20 text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
               >
                 Previous
               </button>
               <button
                 onClick={() => setCurrentPage(prev => Math.min(Math.ceil(instructors.length / ITEMS_PER_PAGE), prev + 1))}
                 disabled={currentPage === Math.ceil(instructors.length / ITEMS_PER_PAGE)}
-                className="relative inline-flex items-center px-4 py-2 border border-aura-sand/20 text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
               >
                 Next
               </button>
@@ -399,7 +399,7 @@ const InstructorManagement: React.FC = () => {
                   <button
                     onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                     disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-aura-sand/20 bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
                   >
                     Previous
                   </button>
@@ -410,7 +410,7 @@ const InstructorManagement: React.FC = () => {
                       className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                         page === currentPage
                           ? 'z-10 bg-purple-600 border-purple-600 text-white'
-                          : 'bg-aura-ink border-aura-sand/20 text-aura-sand hover:bg-aura-umber/30'
+                          : 'bg-aura-ink border-aura-umber text-aura-sand hover:bg-aura-umber/30'
                       }`}
                     >
                       {page}
@@ -419,7 +419,7 @@ const InstructorManagement: React.FC = () => {
                   <button
                     onClick={() => setCurrentPage(prev => Math.min(Math.ceil(instructors.length / ITEMS_PER_PAGE), prev + 1))}
                     disabled={currentPage === Math.ceil(instructors.length / ITEMS_PER_PAGE)}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-aura-sand/20 bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
                   >
                     Next
                   </button>

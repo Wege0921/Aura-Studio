@@ -174,7 +174,7 @@ const LandingPage: React.FC = () => {
         <div className="lp-footer-top">
           <div>
             <div className="lp-footer-logo">
-              <img src="/images/Aura-footers-head.jpg" alt="Aura Studio" className="lp-footer-logo-img" />
+              <img src="/Aura-header-black.png" alt="Aura Studio" className="lp-footer-logo-img" />
             </div>
           </div>
           <div>

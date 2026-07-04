@@ -236,7 +236,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Bookings */}
         <div className="bg-aura-ink rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-aura-sand/10">
+          <div className="px-6 py-4 border-b border-aura-umber">
             <h2 className="text-lg font-medium text-aura-cream">Recent Bookings</h2>
           </div>
           <div className="p-6">
@@ -265,7 +265,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
 
         {/* Recent Payments */}
         <div className="bg-aura-ink rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-aura-sand/10">
+          <div className="px-6 py-4 border-b border-aura-umber">
             <h2 className="text-lg font-medium text-aura-cream">Recent Payments</h2>
           </div>
           <div className="p-6">
