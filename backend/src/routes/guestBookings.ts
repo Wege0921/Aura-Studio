@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import rateLimit from 'express-rate-limit';
 import { body, validationResult } from 'express-validator';
 import multer from 'multer';
 import crypto from 'crypto';
@@ -8,6 +9,22 @@ import { promoteNextForClass } from '../services/waitlistService';
 import { uploadToSupabase } from '../lib/upload';
 
 const router = express.Router();
+
+const guestBookingLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Too many booking attempts, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const guestCancelLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { error: 'Too many cancellation attempts, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -28,7 +45,7 @@ const upload = multer({
 });
 
 // Create a booking as a guest (no authentication required)
-router.post('/guest', upload.single('paymentReceipt'), [
+router.post('/guest', guestBookingLimiter, upload.single('paymentReceipt'), [
   body('classId').notEmpty().withMessage('Class ID is required'),
   body('paymentMethod').isIn(['BANK_TRANSFER', 'MOBILE_MONEY', 'CASH']).withMessage('Invalid payment method'),
 ], async (req: Request, res: Response) => {
@@ -173,7 +190,7 @@ router.get('/guest/:token', async (req: Request, res: Response) => {
 });
 
 // Cancel a guest booking by token
-router.patch('/guest/:token/cancel', async (req: Request, res: Response) => {
+router.patch('/guest/:token/cancel', guestCancelLimiter, async (req: Request, res: Response) => {
   try {
     const { token } = req.params;
 

@@ -78,8 +78,8 @@ app.use(cors({
   credentials: true,
 }));
 
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '5mb' }));
+app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -114,6 +114,16 @@ app.get('/health', async (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString(), database: 'connected' });
   } catch {
     res.status(503).json({ status: 'DEGRADED', timestamp: new Date().toISOString(), database: 'disconnected' });
+  }
+});
+
+// Global error handler — prevents stack trace leaks in production
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error('Unhandled error:', err);
+  if (process.env.NODE_ENV === 'production') {
+    res.status(500).json({ error: 'Internal server error' });
+  } else {
+    res.status(500).json({ error: err.message || 'Internal server error' });
   }
 });
 

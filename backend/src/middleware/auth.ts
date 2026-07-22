@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { prisma } from '../lib/prisma';
 import { supabase } from '../lib/supabase';
+import { ensureUserProfile } from '../lib/userProfile';
 
 interface AuthUser {
   id: string;
@@ -42,44 +42,11 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
       return res.status(403).json({ error: 'Invalid token' });
     }
 
-    // Look up app profile in Prisma
-    const select = { id: true, email: true, role: true };
-    let user = await prisma.user.findUnique({
-      where: { id: authData.user.id },
-      select,
-    });
+    // Use shared utility to find or create the Prisma user profile
+    const user = await ensureUserProfile(authData.user);
 
-    // Fall back to email lookup (handles seeded profiles with hardcoded ids)
-    if (!user) {
-      const email = authData.user.email || '';
-      if (email) {
-        const byEmail = await prisma.user.findUnique({ where: { email }, select });
-        if (byEmail) {
-          user = await prisma.user.update({
-            where: { email },
-            data: { id: authData.user.id },
-            select,
-          });
-        }
-      }
-    }
-
-    // If still not found, create a new profile from Supabase metadata
-    if (!user) {
-      const metadata = authData.user.user_metadata || {};
-      user = await prisma.user.create({
-        data: {
-          id: authData.user.id,
-          email: authData.user.email || metadata.email || '',
-          name: metadata.name || metadata.full_name || 'User',
-          phone: metadata.phone || null,
-          role: metadata.role || 'USER',
-        },
-        select,
-      });
-    }
-
-    req.user = user;
+    // Return only the fields needed for auth (id, email, role)
+    req.user = { id: user.id, email: user.email, role: user.role };
 
     // Cache the verified user for subsequent requests with the same token
     tokenCache.set(token, { user, expiresAt: Date.now() + TOKEN_CACHE_TTL_MS });

@@ -4,6 +4,7 @@ import { body, validationResult } from 'express-validator';
 import { prisma } from '../lib/prisma';
 import { supabase, supabaseAuth } from '../lib/supabase';
 import { authenticateToken } from '../middleware/auth';
+import { ensureUserProfile } from '../lib/userProfile';
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -23,45 +24,6 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
-
-// Helper: ensure Prisma user profile exists for a Supabase auth user
-async function ensureUserProfile(authUser: { id: string; email?: string | null; user_metadata?: any }) {
-  const select = { id: true, email: true, name: true, phone: true, role: true, createdAt: true };
-
-  // 1. Look up by Supabase UUID
-  let user = await prisma.user.findUnique({ where: { id: authUser.id }, select });
-  if (user) return user;
-
-  // 2. Fall back to email lookup (handles seeded/hardcoded-id profiles)
-  const email = authUser.email || '';
-  if (email) {
-    const byEmail = await prisma.user.findUnique({ where: { email }, select });
-    if (byEmail) {
-      // Update the profile's id to the real Supabase UUID so future lookups work
-      user = await prisma.user.update({
-        where: { email },
-        data: { id: authUser.id },
-        select,
-      });
-      return user;
-    }
-  }
-
-  // 3. Create a brand-new profile (always USER — admin only set manually or via seed)
-  const meta = authUser.user_metadata || {};
-  user = await prisma.user.create({
-    data: {
-      id: authUser.id,
-      email,
-      name: meta.name || meta.full_name || 'User',
-      phone: meta.phone || null,
-      role: 'USER',
-    },
-    select,
-  });
-
-  return user;
-}
 
 // Register
 router.post('/register', authLimiter, [
@@ -164,26 +126,24 @@ router.post('/login', authLimiter, [
   }
 });
 
-// Get current user
-router.get('/me', async (req: Request, res: Response) => {
+// Get current user (uses authenticateToken middleware with token cache)
+router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    // The middleware already verified the token and loaded the user profile.
+    // Fetch the full profile to include all fields the frontend expects.
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.id },
+      select: { id: true, email: true, name: true, phone: true, role: true, createdAt: true },
+    });
 
-    if (!token) {
-      return res.status(401).json({ error: 'Access token required' });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
 
-    const { data: authData, error: authError } = await supabase.auth.getUser(token);
-
-    if (authError || !authData.user) {
-      return res.status(401).json({ error: 'Invalid token' });
-    }
-
-    const user = await ensureUserProfile(authData.user);
     res.json({ user });
   } catch (error) {
-    res.status(403).json({ error: 'Invalid token' });
+    console.error('Get current user error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
 import Navigation from './components/Layout/Navigation';
 import PublicHeader from './components/Layout/PublicHeader';
 import OfflineIndicator from './components/OfflineIndicator';
@@ -240,6 +241,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
     <ThemeProvider>
     <AuthProvider>
+      <ErrorBoundary>
       <Router>
         <div className="min-h-screen bg-aura-bark">
           <NetworkStatusBar />
@@ -249,6 +251,7 @@ function App() {
           <MobileBottomTabs />
         </div>
       </Router>
+      </ErrorBoundary>
     </AuthProvider>
     </ThemeProvider>
     </QueryClientProvider>
