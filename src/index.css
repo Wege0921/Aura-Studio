@@ -88,6 +88,13 @@
   background-color: #c4b49a;
 }
 
+/* Logo images on dashboard/admin/profile pages in light mode */
+[data-theme="light"] .dashboard-sidebar img[src*="Aura-header-black"],
+[data-theme="light"] .dashboard-header img[src*="Aura-header-black"],
+[data-theme="light"] nav img[src*="Aura-header-black"] {
+  filter: brightness(0) opacity(0.9);
+}
+
 /* Hover states for colored links on dark cards */
 [data-theme="light"] .hover\:text-purple-300:hover { color: #6b21a8 !important; }
 [data-theme="light"] .hover\:text-pink-300:hover { color: #be185d !important; }

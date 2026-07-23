@@ -142,13 +142,13 @@ const PublicHeader: React.FC = () => {
           <ThemeToggle />
         </div>
         <a
-          href="https://instagram.com/aurapilates"
+          href="https://tiktok.com/@aurastudioet"
           target="_blank"
           rel="noopener noreferrer"
           className="ph-drawer-insta"
           onClick={closeMenu}
         >
-          @aurapilates
+          @aurastudioet
         </a>
       </div>
 

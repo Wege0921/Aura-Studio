@@ -12,15 +12,32 @@
 }
 
 [data-theme="light"] .public-header {
-  --ph-ink: #f8f4ec;
-  --ph-bark: #c4b49a;
-  --ph-umber: #cdab85;
-  --ph-clay: #5c4530;
+  --ph-ink: #241a13;
+  --ph-bark: #d4c4a4;
+  --ph-umber: #5c4530;
+  --ph-clay: #a87f5a;
   --ph-sand: #5c4530;
   --ph-cream: #241a13;
-  --ph-paper: #3b2a1d;
+  --ph-paper: #d4c4a4;
   --ph-ivory: #241a13;
   --ph-line: rgba(36,26,19,0.18);
+}
+
+[data-theme="light"] .public-header .ph-drawer {
+  background: #d4c4a4;
+  --ph-ink: #241a13;
+  --ph-sand: #5c4530;
+  --ph-cream: #241a13;
+  --ph-ivory: #241a13;
+  --ph-line: rgba(36,26,19,0.18);
+}
+
+[data-theme="light"] .public-header .ph-nav:not(.ph-landing) .ph-logo img {
+  filter: brightness(0) opacity(0.9);
+}
+
+[data-theme="light"] .public-header .ph-nav:not(.ph-landing) .ph-burger span {
+  background: #241a13;
 }
 
 [data-theme="light"] .public-header .ph-nav.ph-landing {
