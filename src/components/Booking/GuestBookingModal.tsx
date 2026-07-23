@@ -66,7 +66,7 @@ const GuestBookingModal: React.FC<GuestBookingModalProps> = ({
   if (bookingReference) {
     return (
       <div className="fixed inset-0 bg-aura-ink/50 overflow-y-auto h-full w-full z-[60] modal-scroll-safe">
-        <div className="relative top-20 mx-auto p-5 border border-aura-umber w-full max-w-md shadow-lg shadow-black/30 rounded-xl bg-[#2c2014]/90 backdrop-blur-sm">
+        <div className="relative top-20 mx-auto p-5 border border-aura-umber w-full max-w-md shadow-lg shadow-black/30 rounded-xl bg-aura-bark">
           <div className="mt-3 text-center">
             <svg className="mx-auto h-16 w-16 text-green-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -96,7 +96,7 @@ const GuestBookingModal: React.FC<GuestBookingModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-aura-ink/50 overflow-y-auto h-full w-full z-[60] modal-scroll-safe">
-      <div className="relative top-20 mx-auto p-5 pb-24 md:pb-5 border border-aura-umber w-full max-w-md shadow-lg shadow-black/30 rounded-xl bg-[#2c2014]/90 backdrop-blur-sm">
+      <div className="relative top-20 mx-auto p-5 pb-24 md:pb-5 border border-aura-umber w-full max-w-md shadow-lg shadow-black/30 rounded-xl bg-aura-bark">
         <div className="mt-3">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-medium text-aura-cream">Quick Booking</h3>
