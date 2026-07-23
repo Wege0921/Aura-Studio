@@ -79,7 +79,7 @@ const GuestBookingModal: React.FC<GuestBookingModalProps> = ({
               <p className="text-xs text-aura-clay mb-1">Booking Reference</p>
               <p className="text-lg font-mono font-bold text-aura-umber tracking-wider">{bookingReference}</p>
             </div>
-            <p className="text-xs text-aura-sand/60 mb-4">
+            <p className="text-xs text-aura-sand mb-4">
               You can manage this booking from the same device. No account needed.
             </p>
             <button
@@ -110,7 +110,7 @@ const GuestBookingModal: React.FC<GuestBookingModalProps> = ({
             </button>
           </div>
 
-          <p className="text-xs text-aura-sand/60 mb-4">Booking as a guest — no account required.</p>
+          <p className="text-xs text-aura-sand mb-4">Booking as a guest — no account required.</p>
 
           <div className="mb-6">
             <p className="text-sm text-aura-sand mb-4">You're about to book:</p>
