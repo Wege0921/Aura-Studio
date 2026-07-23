@@ -146,7 +146,13 @@ router.delete('/bookings/:id', authenticateToken, requireAdmin, async (req: Auth
 // Get all classes for admin management
 router.get('/classes', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const classes = await prisma.class.findMany({
+      where: {
+        date: { gte: today },
+      },
       include: {
         _count: {
           select: {
@@ -157,7 +163,14 @@ router.get('/classes', authenticateToken, requireAdmin, async (req: Authenticate
       orderBy: { createdAt: 'desc' },
     });
 
-    res.json(classes);
+    // Filter out classes whose date+time has already passed
+    const now = new Date();
+    const upcomingClasses = classes.filter(cls => {
+      const classDateTime = new Date(`${cls.date.toISOString().split('T')[0]}T${cls.time}`);
+      return classDateTime > now;
+    });
+
+    res.json(upcomingClasses);
   } catch (error) {
     console.error('Error fetching classes:', error);
     res.status(500).json({ error: 'Internal server error' });

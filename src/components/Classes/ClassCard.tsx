@@ -39,8 +39,11 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
     MEDITATION: 'bg-purple-500/15 text-aura-cream',
   };
 
+  const classDateTime = new Date(`${classItem.date.split('T')[0]}T${classItem.time}`);
+  const isPast = classDateTime < new Date();
+
   const handleBookClick = () => {
-    if (onBook && !classItem.isFullyBooked) {
+    if (onBook && !classItem.isFullyBooked && !isPast) {
       onBook(classItem.id);
     }
   };
@@ -60,8 +63,8 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
             <p className="text-aura-sand text-sm">{classItem.description}</p>
           )}
         </div>
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${classItem.isFullyBooked ? 'bg-red-900/30 text-red-300' : 'bg-green-900/30 text-green-300'}`}>
-          {classItem.isFullyBooked ? 'Full' : 'Open'}
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isPast ? 'bg-gray-700/50 text-gray-400' : classItem.isFullyBooked ? 'bg-red-900/30 text-red-300' : 'bg-green-900/30 text-green-300'}`}>
+          {isPast ? 'Past' : classItem.isFullyBooked ? 'Full' : 'Open'}
         </span>
       </div>
 
@@ -106,7 +109,14 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
           </span>
         </div>
 
-        {classItem.isFullyBooked ? (
+        {isPast ? (
+          <button
+            disabled
+            className="w-full px-4 py-2 rounded-lg text-sm font-medium bg-gray-700/50 text-gray-400 cursor-not-allowed"
+          >
+            Past Class
+          </button>
+        ) : classItem.isFullyBooked ? (
           <button
             onClick={() => onJoinWaitlist && !onWaitlist && onJoinWaitlist(classItem.id)}
             disabled={onWaitlist}

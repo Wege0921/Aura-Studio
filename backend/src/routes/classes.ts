@@ -22,6 +22,13 @@ router.get('/', [
       const nextDay = new Date(filterDate);
       nextDay.setDate(nextDay.getDate() + 1);
       
+      // Don't return past dates even when explicitly requested
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (filterDate < today) {
+        return res.json([]);
+      }
+      
       where.date = {
         gte: filterDate,
         lt: nextDay,
@@ -64,8 +71,15 @@ router.get('/', [
       },
     });
 
+    // Filter out classes whose date+time has already passed
+    const now = new Date();
+    const upcomingClasses = classes.filter(cls => {
+      const classDateTime = new Date(`${cls.date.toISOString().split('T')[0]}T${cls.time}`);
+      return classDateTime > now;
+    });
+
     // Calculate available spots for each class
-    const classesWithAvailability = classes.map(cls => ({
+    const classesWithAvailability = upcomingClasses.map(cls => ({
       ...cls,
       availableSpots: cls.capacity - cls.bookings.length,
       isFullyBooked: cls.capacity <= cls.bookings.length,
@@ -174,7 +188,13 @@ router.get('/instructor/my-classes', authenticateToken, async (req: Request, res
         },
       },
     });
-    const result = classes.map(cls => ({
+    // Filter out classes whose date+time has already passed
+    const now = new Date();
+    const upcomingClasses = classes.filter(cls => {
+      const classDateTime = new Date(`${cls.date.toISOString().split('T')[0]}T${cls.time}`);
+      return classDateTime > now;
+    });
+    const result = upcomingClasses.map(cls => ({
       ...cls,
       availableSpots: cls.capacity - cls.bookings.length,
     }));

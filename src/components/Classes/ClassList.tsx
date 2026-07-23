@@ -336,6 +336,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
               type="date"
               id="date"
               value={filters.date}
+              min={new Date().toISOString().split('T')[0]}
               onChange={(e) => handleFilterChange('date', e.target.value)}
               className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
               style={{ colorScheme: 'dark' }}
