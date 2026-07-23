@@ -105,6 +105,7 @@
 .public-header .ph-btn-outline { color: var(--ph-sand); border-color: var(--ph-sand); }
 .public-header .ph-btn-outline:hover { background: var(--ph-sand); color: var(--ph-bark); }
 .public-header .ph-auth-btns { display: flex; gap: 0.6rem; align-items: center; }
+.public-header .ph-desktop-actions { display: flex; align-items: center; gap: 0.75rem; }
 
 /* ---------- BURGER ---------- */
 .public-header .ph-burger {
@@ -259,4 +260,5 @@
   .public-header .ph-links { display: none; }
   .public-header .ph-burger { display: flex; }
   .public-header .ph-nav .ph-btn { display: none; }
+  .public-header .ph-desktop-actions { display: none; }
 }

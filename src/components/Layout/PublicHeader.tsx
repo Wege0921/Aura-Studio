@@ -164,27 +164,30 @@ const PublicHeader: React.FC = () => {
           <button onClick={() => handleNav('approach')}>About</button>
           <button onClick={handleContact}>Contact</button>
         </nav>
-        {user ? (
-          <div className="ph-auth-btns">
-            {isAdmin && (
-              <button className="ph-btn ph-btn-light" onClick={handleDashboard}>
-                Admin
+        <div className="ph-desktop-actions">
+          <ThemeToggle className="hidden md:inline-flex" />
+          {user ? (
+            <div className="ph-auth-btns">
+              {isAdmin && (
+                <button className="ph-btn ph-btn-light" onClick={handleDashboard}>
+                  Admin
+                </button>
+              )}
+              <button className="ph-btn ph-btn-outline" onClick={handleLogout}>
+                Logout
               </button>
-            )}
-            <button className="ph-btn ph-btn-outline" onClick={handleLogout}>
-              Logout
-            </button>
-          </div>
-        ) : (
-          <div className="ph-auth-btns">
-            <button className="ph-btn ph-btn-outline" onClick={handleLogin}>
-              Login
-            </button>
-            <button className="ph-btn ph-btn-light" onClick={handleBook}>
-              View Packages
-            </button>
-          </div>
-        )}
+            </div>
+          ) : (
+            <div className="ph-auth-btns">
+              <button className="ph-btn ph-btn-outline" onClick={handleLogin}>
+                Login
+              </button>
+              <button className="ph-btn ph-btn-light" onClick={handleBook}>
+                View Packages
+              </button>
+            </div>
+          )}
+        </div>
         <button
           className={`ph-burger ${menuOpen ? 'ph-open' : ''}`}
           aria-label="Menu"
