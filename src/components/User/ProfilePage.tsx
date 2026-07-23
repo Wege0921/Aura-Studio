@@ -10,7 +10,7 @@ interface ProfileData {
 
 const ProfilePage: React.FC = () => {
   const { user, updateUser } = useAuth();
-  useSEO({ title: 'Your Profile — AURA Studio' });
+  useSEO({ title: 'Your Profile — AURA Studio', canonicalPath: '/dashboard' });
   const [form, setForm] = useState<ProfileData>({ name: '', email: '', phone: '' });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');

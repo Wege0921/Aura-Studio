@@ -40,8 +40,8 @@ const ClassDetail: React.FC = () => {
 
   useSEO(
     cls
-      ? { title: `${cls.name} — AURA Studio`, description: cls.description || 'Join this class at AURA Studio' }
-      : { title: 'Class Details — AURA Studio', description: 'Join this class at AURA Studio' }
+      ? { title: `${cls.name} — AURA Studio`, description: cls.description || 'Join this class at AURA Studio', canonicalPath: `/classes/${id}` }
+      : { title: 'Class Details — AURA Studio', description: 'Join this class at AURA Studio', canonicalPath: `/classes/${id}` }
   );
 
   const fetchClass = useCallback(async () => {

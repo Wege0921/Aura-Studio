@@ -25,7 +25,7 @@ interface ClassListProps {
 }
 
 const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
-  useSEO({ title: 'Classes — AURA Studio' });
+  useSEO({ title: 'Classes — AURA Studio', canonicalPath: '/classes' });
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const urlClassType = searchParams.get('classType') || '';

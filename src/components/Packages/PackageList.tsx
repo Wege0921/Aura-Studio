@@ -37,7 +37,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) => {
-  useSEO({ title: 'Packages — AURA Studio' });
+  useSEO({ title: 'Packages — AURA Studio', canonicalPath: '/packages' });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();

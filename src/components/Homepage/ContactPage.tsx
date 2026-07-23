@@ -1,6 +1,8 @@
 import React from 'react';
+import { useSEO } from '../../hooks/useSEO';
 
 const ContactPage: React.FC = () => {
+  useSEO({ title: 'Contact — AURA Studio', description: 'Contact AURA Studio in Addis Ababa. Reach us via phone, Telegram, or TikTok.', canonicalPath: '/contact' });
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-umber p-6 md:p-8">

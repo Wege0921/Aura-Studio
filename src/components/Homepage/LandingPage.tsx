@@ -6,7 +6,7 @@ import './LandingPage.css';
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  useSEO();
+  useSEO({ canonicalPath: '/' });
 
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');

@@ -21,7 +21,7 @@ const ADMIN_ENDPOINTS = [
 ];
 
 const VerifierAPIDocs: React.FC = () => {
-  useSEO({ title: 'Verifier API — Payment Verification for Ethiopia' });
+  useSEO({ title: 'Verifier API — Payment Verification for Ethiopia', canonicalPath: '/verify' });
 
   const [activeTab, setActiveTab] = useState(0);
 
