@@ -89,6 +89,15 @@ const TabletSidebar: React.FC<TabletSidebarProps> = ({
         </button>
         {showProfileMenu && (
           <div className={`absolute bottom-full mb-2 bg-aura-ink border border-aura-umber rounded-lg shadow-lg z-50 py-1 ${expanded ? 'left-2 right-2' : 'left-2 min-w-[170px]'}`}>
+            <button
+              onClick={() => { onTabChange('profile'); setShowProfileMenu(false); }}
+              className="flex items-center w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30"
+            >
+              <svg className="w-4 h-4 mr-2 text-aura-sand flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              Profile
+            </button>
             {isAdmin && onToggleViewMode && (
               <button
                 onClick={() => { onToggleViewMode(); setShowProfileMenu(false); }}

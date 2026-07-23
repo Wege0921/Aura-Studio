@@ -168,11 +168,9 @@ const PublicHeader: React.FC = () => {
           <ThemeToggle className="hidden md:inline-flex" />
           {user ? (
             <div className="ph-auth-btns">
-              {isAdmin && (
-                <button className="ph-btn ph-btn-light" onClick={handleDashboard}>
-                  Admin
-                </button>
-              )}
+              <button className="ph-btn ph-btn-light" onClick={handleDashboard}>
+                Dashboard
+              </button>
               <button className="ph-btn ph-btn-outline" onClick={handleLogout}>
                 Logout
               </button>
