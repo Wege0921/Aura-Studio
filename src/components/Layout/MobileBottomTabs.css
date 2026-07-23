@@ -47,10 +47,10 @@
 }
 
 [data-theme="light"] .mobile-bottom-tabs.mbt-landing {
-  --mbt-bg: #241a13;
-  --mbt-border: rgba(242, 235, 224, 0.12);
-  --mbt-inactive: rgba(242, 235, 224, 0.55);
-  --mbt-active: #f2ebe0;
+  --mbt-bg: #eee5d6;
+  --mbt-border: rgba(36, 26, 19, 0.12);
+  --mbt-inactive: rgba(36, 26, 19, 0.55);
+  --mbt-active: #241a13;
 }
 
 .mbt-icon {

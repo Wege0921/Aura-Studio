@@ -19,14 +19,14 @@
 
 [data-theme="light"] .landing-page {
   --lp-ink: #241a13;
-  --lp-bark: #3b2a1d;
+  --lp-bark: #c4b49a;
   --lp-umber: #5c4530;
   --lp-clay: #a87f5a;
-  --lp-sand: #cdab85;
-  --lp-cream: #f2ebe0;
+  --lp-sand: #5c4530;
+  --lp-cream: #f8f4ec;
   --lp-paper: #eee5d6;
-  --lp-ivory: #f8f4ec;
-  --lp-line: rgba(242,235,224,0.28);
+  --lp-ivory: #241a13;
+  --lp-line: rgba(36,26,19,0.18);
   --lp-line-dark: rgba(36,26,19,0.14);
 }
 
@@ -67,6 +67,8 @@
 }
 .landing-page .lp-btn-light { color: var(--lp-ivory); }
 .landing-page .lp-btn-light:hover { background: var(--lp-ivory); color: var(--lp-bark); }
+[data-theme="light"] .landing-page .lp-btn-light { color: #f2ebe0; border-color: #f2ebe0; }
+[data-theme="light"] .landing-page .lp-btn-light:hover { background: #f2ebe0; color: #3b2a1d; }
 .landing-page .lp-btn-dark { color: var(--lp-ink); }
 .landing-page .lp-btn-dark:hover { background: var(--lp-ink); color: var(--lp-ivory); }
 
@@ -294,11 +296,17 @@
   grid-template-columns: 1fr 1fr;
   overflow: hidden;
 }
+[data-theme="light"] .landing-page .lp-hero {
+  background: linear-gradient(125deg, #8a6a48 0%, #6b5238 45%, #523e2a 100%);
+}
 .landing-page .lp-hero-content {
   align-self: center;
   padding: 0 4rem 0 3.6rem;
   color: var(--lp-ivory);
   z-index: 2;
+}
+[data-theme="light"] .landing-page .lp-hero-content {
+  color: #f2ebe0;
 }
 .landing-page .lp-hero-content .lp-eyebrow {
   margin-bottom: 1.4rem;
@@ -316,6 +324,9 @@
   text-transform: uppercase;
   opacity: 0.8;
   margin-bottom: 2.6rem;
+}
+[data-theme="light"] .landing-page .lp-hero-content .lp-subhead {
+  opacity: 0.7;
 }
 .landing-page .lp-hero-art {
   position: relative;
@@ -335,6 +346,9 @@
   background: var(--lp-cream);
   padding: 6.5rem 3.5rem 7rem;
   text-align: center;
+}
+[data-theme="light"] .landing-page .lp-offerings {
+  background: #f8f4ec;
 }
 .landing-page .lp-offerings .lp-eyebrow {
   color: var(--lp-umber);
@@ -379,6 +393,7 @@
   margin-bottom: 0.8rem;
   color: var(--lp-bark);
 }
+[data-theme="light"] .landing-page .lp-card h3 { color: #3b2a1d; }
 .landing-page .lp-card p {
   font-size: 0.88rem;
   line-height: 1.65;
@@ -386,6 +401,7 @@
   margin-bottom: 1.3rem;
   max-width: 30ch;
 }
+[data-theme="light"] .landing-page .lp-card p { color: #5c4530; }
 .landing-page .lp-card .lp-learn {
   font-size: 0.66rem;
   letter-spacing: 0.18em;
@@ -396,6 +412,7 @@
   display: inline-block;
   transition: opacity 0.3s ease;
 }
+[data-theme="light"] .landing-page .lp-card .lp-learn { color: #3b2a1d; border-color: #5c4530; }
 .landing-page .lp-card .lp-learn:hover { opacity: 0.6; }
 
 /* ---------- APPROACH ---------- */
@@ -406,6 +423,10 @@
   grid-template-columns: 1fr 1fr;
   align-items: stretch;
 }
+[data-theme="light"] .landing-page .lp-approach {
+  background: linear-gradient(125deg, #d4c4a8 0%, #c4b49a 45%, #b8a282 100%);
+  color: #3b2a1d;
+}
 .landing-page .lp-approach-text {
   align-self: center;
   padding: 5rem 4rem 5rem 3.5rem;
@@ -414,12 +435,14 @@
   color: var(--lp-sand);
   margin-bottom: 1.4rem;
 }
+[data-theme="light"] .landing-page .lp-approach-text .lp-eyebrow { color: #3b2a1d; }
 .landing-page .lp-approach-text h2 {
   font-size: 2.6rem;
   line-height: 1.18;
   font-weight: 500;
   margin-bottom: 1.6rem;
 }
+[data-theme="light"] .landing-page .lp-approach-text h2 { color: #241a13; }
 .landing-page .lp-approach-text p {
   font-size: 0.92rem;
   line-height: 1.75;
@@ -427,6 +450,7 @@
   max-width: 38ch;
   margin-bottom: 2.4rem;
 }
+[data-theme="light"] .landing-page .lp-approach-text p { color: rgba(36,26,19,0.8); }
 .landing-page .lp-approach-art {
   position: relative;
   min-height: 480px;
@@ -445,6 +469,10 @@
 .landing-page .lp-footer {
   background: var(--lp-ink);
   color: var(--lp-ivory);
+}
+[data-theme="light"] .landing-page .lp-footer {
+  background: linear-gradient(125deg, #8a6a48 0%, #6b5238 45%, #523e2a 100%);
+  color: #f2ebe0;
 }
 .landing-page .lp-footer-top {
   display: grid;
@@ -481,6 +509,7 @@
   color: var(--lp-sand);
   margin-bottom: 1.1rem;
 }
+[data-theme="light"] .landing-page .lp-footer-top h4 { color: #cdab85; }
 .landing-page .lp-footer-top a,
 .landing-page .lp-footer-top button {
   display: block;
@@ -496,12 +525,17 @@
 }
 .landing-page .lp-footer-top a:hover,
 .landing-page .lp-footer-top button:hover { color: var(--lp-ivory); }
+[data-theme="light"] .landing-page .lp-footer-top a,
+[data-theme="light"] .landing-page .lp-footer-top button { color: rgba(242,235,224,0.82); }
+[data-theme="light"] .landing-page .lp-footer-top a:hover,
+[data-theme="light"] .landing-page .lp-footer-top button:hover { color: #f2ebe0; }
 .landing-page .lp-footer-top p {
   font-size: 0.82rem;
   line-height: 1.6;
   color: rgba(242,235,224,0.65);
   margin-bottom: 1.1rem;
 }
+[data-theme="light"] .landing-page .lp-footer-top p { color: rgba(242,235,224,0.65); }
 .landing-page .lp-subscribe {
   display: flex;
   border-bottom: 1px solid var(--lp-line);
@@ -517,7 +551,11 @@
   outline: none;
 }
 .landing-page .lp-subscribe input::placeholder { color: rgba(242,235,224,0.45); }
+[data-theme="light"] .landing-page .lp-subscribe input { color: #f2ebe0; }
+[data-theme="light"] .landing-page .lp-subscribe input::placeholder { color: rgba(242,235,224,0.45); }
+[data-theme="light"] .landing-page .lp-subscribe { border-color: rgba(242,235,224,0.28); }
 .landing-page .lp-subscribe button { color: var(--lp-sand); font-size: 1rem; }
+[data-theme="light"] .landing-page .lp-subscribe button { color: #cdab85; }
 .landing-page .lp-newsletter-feedback {
   font-size: 0.78rem;
   margin-top: 0.6rem;
@@ -535,6 +573,10 @@
   color: rgba(242,235,224,0.5);
   max-width: 1300px;
   margin: 0 auto;
+}
+[data-theme="light"] .landing-page .lp-footer-bottom {
+  border-color: rgba(242,235,224,0.28);
+  color: rgba(242,235,224,0.5);
 }
 
 /* ---------- RESPONSIVE ---------- */
@@ -571,6 +613,9 @@
     inset: 0;
     background: rgba(36, 26, 19, 0.55);
     z-index: 1;
+  }
+  [data-theme="light"] .landing-page .lp-hero-art::after {
+    background: rgba(82, 62, 42, 0.55);
   }
   .landing-page .lp-hero-art .lp-hero-img {
     position: absolute;
@@ -614,6 +659,9 @@
     inset: 0;
     background: rgba(36, 26, 19, 0.55);
     z-index: 1;
+  }
+  [data-theme="light"] .landing-page .lp-approach-art::after {
+    background: rgba(82, 62, 42, 0.55);
   }
   .landing-page .lp-approach-art .lp-approach-img {
     object-position: 85% center;
