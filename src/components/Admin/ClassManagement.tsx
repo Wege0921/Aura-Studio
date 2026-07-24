@@ -273,7 +273,7 @@ const ClassManagement: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-aura-cream">Class Management</h1>
-          <p className="text-aura-sand/70">Create and manage pilates classes</p>
+          <p className="text-aura-sand">Create and manage pilates classes</p>
         </div>
           <button
           onClick={() => setShowForm(true)}
@@ -494,19 +494,19 @@ const ClassManagement: React.FC = () => {
           <table className="min-w-full divide-y divide-aura-sand/10">
             <thead className="bg-aura-umber/30">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Class Details
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Schedule
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Capacity
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -517,22 +517,22 @@ const ClassManagement: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-aura-cream">{classItem.name}</div>
-                      <div className="text-sm text-aura-sand/50">{classItem.instructor}</div>
-                      <div className="text-xs text-aura-sand/40">{classItem.classType}</div>
+                      <div className="text-sm text-aura-sand/80">{classItem.instructor}</div>
+                      <div className="text-xs text-aura-sand/70">{classItem.classType}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-aura-cream">
-                      {format(new Date(classItem.date), 'MMM dd, yyyy')}
+                      {classItem.date ? format(new Date(classItem.date), 'MMM dd, yyyy') : 'N/A'}
                     </div>
-                    <div className="text-sm text-aura-sand/50">{classItem.time}</div>
-                    <div className="text-xs text-aura-sand/40">{classItem.duration} min</div>
+                    <div className="text-sm text-aura-sand/80">{classItem.time}</div>
+                    <div className="text-xs text-aura-sand/70">{classItem.duration} min</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-aura-cream">
-                      {classItem._count.bookings}/{classItem.capacity}
+                      {classItem._count?.bookings ?? 0}/{classItem.capacity}
                     </div>
-                    <div className="text-xs text-aura-sand/40">
+                    <div className="text-xs text-aura-sand/70">
                       {classItem.price && `ETB ${classItem.price}`}
                     </div>
                   </td>
@@ -586,7 +586,7 @@ const ClassManagement: React.FC = () => {
         
         {classes.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-aura-sand/50">No classes found. Create your first class!</p>
+            <p className="text-aura-sand/80">No classes found. Create your first class!</p>
           </div>
         )}
 

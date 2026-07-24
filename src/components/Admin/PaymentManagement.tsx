@@ -162,7 +162,7 @@ const PaymentManagement: React.FC = () => {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-aura-cream">Payment Management</h1>
-        <p className="text-aura-sand/70">Review and verify payment transactions</p>
+        <p className="text-aura-sand">Review and verify payment transactions</p>
       </div>
 
       {/* Messages */}
@@ -183,7 +183,7 @@ const PaymentManagement: React.FC = () => {
       <div className="bg-aura-ink p-3 rounded-lg border border-aura-umber">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           <div>
-            <label className="block text-xs font-medium text-aura-sand/70 mb-0.5">Status</label>
+            <label className="block text-xs font-medium text-aura-sand mb-0.5">Status</label>
             <select
               name="status"
               value={filter.status}
@@ -198,7 +198,7 @@ const PaymentManagement: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-aura-sand/70 mb-0.5">Method</label>
+            <label className="block text-xs font-medium text-aura-sand mb-0.5">Method</label>
             <select
               name="paymentMethod"
               value={filter.paymentMethod}
@@ -213,7 +213,7 @@ const PaymentManagement: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-aura-sand/70 mb-0.5">Search</label>
+            <label className="block text-xs font-medium text-aura-sand mb-0.5">Search</label>
             <input
               type="text"
               name="search"
@@ -241,25 +241,25 @@ const PaymentManagement: React.FC = () => {
           <table className="min-w-full divide-y divide-aura-sand/10">
             <thead className="bg-aura-umber/30">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Method
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Package
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -269,16 +269,16 @@ const PaymentManagement: React.FC = () => {
                 <tr key={payment.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <div className="text-sm font-medium text-aura-cream">{payment.user.name}</div>
-                      <div className="text-sm text-aura-sand/50">{payment.user.email}</div>
+                      <div className="text-sm font-medium text-aura-cream">{payment.user?.name || 'Unknown'}</div>
+                      <div className="text-sm text-aura-sand/80">{payment.user?.email || ''}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-aura-cream">ETB {payment.amount.toLocaleString()}</div>
+                    <div className="text-sm font-medium text-aura-cream">ETB {(payment.amount ?? 0).toLocaleString()}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPaymentMethodColor(payment.paymentMethod)}`}>
-                      {payment.paymentMethod.replace('_', ' ')}
+                      {(payment.paymentMethod || '').replace('_', ' ')}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -293,10 +293,10 @@ const PaymentManagement: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-aura-cream">
-                      {format(new Date(payment.createdAt), 'MMM dd, yyyy')}
+                      {payment.createdAt ? format(new Date(payment.createdAt), 'MMM dd, yyyy') : ''}
                     </div>
-                    <div className="text-xs text-aura-sand/50">
-                      {format(new Date(payment.createdAt), 'HH:mm')}
+                    <div className="text-xs text-aura-sand/80">
+                      {payment.createdAt ? format(new Date(payment.createdAt), 'HH:mm') : ''}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -343,7 +343,7 @@ const PaymentManagement: React.FC = () => {
         
         {payments.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-aura-sand/50">No payments found</p>
+            <p className="text-aura-sand/80">No payments found</p>
           </div>
         )}
       </div>
@@ -381,30 +381,30 @@ const PaymentManagement: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="font-medium text-aura-cream">User Information</h3>
-                  <p className="text-sm text-aura-sand/70">{selectedPayment.user.name}</p>
-                  <p className="text-sm text-aura-sand/70">{selectedPayment.user.email}</p>
+                  <p className="text-sm text-aura-sand">{selectedPayment.user?.name || 'N/A'}</p>
+                  <p className="text-sm text-aura-sand">{selectedPayment.user?.email || 'N/A'}</p>
                 </div>
                 
                 <div>
                   <h3 className="font-medium text-aura-cream">Payment Information</h3>
-                  <p className="text-sm text-aura-sand/70">Amount: ETB {selectedPayment.amount.toLocaleString()}</p>
-                  <p className="text-sm text-aura-sand/70">Method: {selectedPayment.paymentMethod.replace('_', ' ')}</p>
-                  <p className="text-sm text-aura-sand/70">Status: {selectedPayment.status}</p>
+                  <p className="text-sm text-aura-sand">Amount: ETB {(selectedPayment.amount ?? 0).toLocaleString()}</p>
+                  <p className="text-sm text-aura-sand">Method: {(selectedPayment.paymentMethod || '').replace('_', ' ')}</p>
+                  <p className="text-sm text-aura-sand">Status: {selectedPayment.status}</p>
                 </div>
               </div>
               
               {selectedPayment.package && (
                 <div>
                   <h3 className="font-medium text-aura-cream">Package Information</h3>
-                  <p className="text-sm text-aura-sand/70">{selectedPayment.package.name}</p>
+                  <p className="text-sm text-aura-sand">{selectedPayment.package?.name || 'N/A'}</p>
                 </div>
               )}
               
               <div>
                 <h3 className="font-medium text-aura-cream">Timeline</h3>
-                <p className="text-sm text-aura-sand/70">Created: {format(new Date(selectedPayment.createdAt), 'MMM dd, yyyy HH:mm')}</p>
+                <p className="text-sm text-aura-sand">Created: {selectedPayment.createdAt ? format(new Date(selectedPayment.createdAt), 'MMM dd, yyyy HH:mm') : 'N/A'}</p>
                 {selectedPayment.verifiedAt && (
-                  <p className="text-sm text-aura-sand/70">Verified: {format(new Date(selectedPayment.verifiedAt), 'MMM dd, yyyy HH:mm')}</p>
+                  <p className="text-sm text-aura-sand">Verified: {format(new Date(selectedPayment.verifiedAt), 'MMM dd, yyyy HH:mm')}</p>
                 )}
               </div>
               

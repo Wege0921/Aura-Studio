@@ -79,7 +79,7 @@ const Analytics: React.FC = () => {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-aura-cream">Analytics</h1>
-        <p className="text-aura-sand/70">Insights and trends for your studio</p>
+        <p className="text-aura-sand">Insights and trends for your studio</p>
       </div>
 
       {/* 30-day Summary Cards */}
@@ -88,10 +88,10 @@ const Analytics: React.FC = () => {
           { label: 'Bookings (30d)', value: data.recentActivity.bookings30d, color: 'text-blue-400' },
           { label: 'Completed', value: data.recentActivity.completed30d, color: 'text-green-400' },
           { label: 'Payments (30d)', value: data.recentActivity.payments30d, color: 'text-purple-400' },
-          { label: 'Revenue (30d)', value: `ETB ${data.recentActivity.revenue30d.toLocaleString()}`, color: 'text-aura-sand' },
+          { label: 'Revenue (30d)', value: `ETB ${(data.recentActivity.revenue30d ?? 0).toLocaleString()}`, color: 'text-aura-sand' },
         ].map((card) => (
           <div key={card.label} className="bg-aura-ink p-4 rounded-lg border border-aura-umber">
-            <p className="text-xs text-aura-sand/60 uppercase tracking-wider">{card.label}</p>
+            <p className="text-xs text-aura-sand uppercase tracking-wider">{card.label}</p>
             <p className={`text-2xl font-bold mt-1 ${card.color}`}>{card.value}</p>
           </div>
         ))}
@@ -115,7 +115,7 @@ const Analytics: React.FC = () => {
                       title={`ETB ${val.toLocaleString()}`}
                     />
                   </div>
-                  <span className="text-[10px] text-aura-sand/60">{label}</span>
+                  <span className="text-[10px] text-aura-sand/80">{label}</span>
                 </div>
               );
             })}
@@ -138,7 +138,7 @@ const Analytics: React.FC = () => {
                       title={`${val} users`}
                     />
                   </div>
-                  <span className="text-[10px] text-aura-sand/60">{label}</span>
+                  <span className="text-[10px] text-aura-sand/80">{label}</span>
                 </div>
               );
             })}
@@ -155,7 +155,7 @@ const Analytics: React.FC = () => {
               <div className={`w-3 h-3 rounded-full ${statusColors[b.status] || 'bg-gray-500'}`} />
               <span className="text-sm text-aura-sand">{b.status}</span>
               <span className="text-sm font-bold text-aura-cream">{b.count}</span>
-              <span className="text-xs text-aura-sand/50">
+              <span className="text-xs text-aura-sand/80">
                 ({totalBookings > 0 ? Math.round((b.count / totalBookings) * 100) : 0}%)
               </span>
             </div>

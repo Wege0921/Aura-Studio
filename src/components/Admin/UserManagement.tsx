@@ -273,12 +273,12 @@ const UserManagement: React.FC = () => {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-aura-cream">User Management</h1>
-        <p className="text-aura-sand/70">Manage and monitor all users</p>
+        <p className="text-aura-sand">Manage and monitor all users</p>
       </div>
 
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-aura-cream">Users</h2>
-        <span className="text-sm text-aura-sand/50">
+        <span className="text-sm text-aura-sand/80">
           Showing {users.length} users
         </span>
       </div>
@@ -301,7 +301,7 @@ const UserManagement: React.FC = () => {
       <div className="bg-aura-ink p-3 rounded-lg border border-aura-umber">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <div>
-            <label className="block text-xs font-medium text-aura-sand/70 mb-0.5">Search</label>
+            <label className="block text-xs font-medium text-aura-sand mb-0.5">Search</label>
             <input
               type="text"
               value={filter.search}
@@ -312,7 +312,7 @@ const UserManagement: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-aura-sand/70 mb-0.5">Role</label>
+            <label className="block text-xs font-medium text-aura-sand mb-0.5">Role</label>
             <select
               value={filter.role}
               onChange={(e) => handleFilterChange('role', e.target.value)}
@@ -340,19 +340,19 @@ const UserManagement: React.FC = () => {
           <table className="min-w-full divide-y divide-aura-sand/10">
             <thead className="bg-aura-umber/30">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Role
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Activity
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Joined
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -363,7 +363,7 @@ const UserManagement: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-aura-cream">{user.name}</div>
-                      <div className="text-sm text-aura-sand/50">{user.email}</div>
+                      <div className="text-sm text-aura-sand/80">{user.email}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -373,18 +373,18 @@ const UserManagement: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-aura-cream">
-                      {user._count.bookings} bookings
+                      {user._count?.bookings ?? 0} bookings
                     </div>
-                    <div className="text-sm text-aura-sand/50">
-                      {user._count.payments} payments
+                    <div className="text-sm text-aura-sand/80">
+                      {user._count?.payments ?? 0} payments
                     </div>
-                    <div className="text-xs text-aura-sand/40">
-                      {user._count.userPackages} packages
+                    <div className="text-xs text-aura-sand/70">
+                      {user._count?.userPackages ?? 0} packages
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-aura-cream">
-                      {format(new Date(user.createdAt), 'MMM dd, yyyy')}
+                      {user.createdAt ? format(new Date(user.createdAt), 'MMM dd, yyyy') : ''}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -433,7 +433,7 @@ const UserManagement: React.FC = () => {
 
         {users.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-aura-sand/50">No users found matching your criteria.</p>
+            <p className="text-aura-sand/80">No users found matching your criteria.</p>
           </div>
         )}
 
@@ -508,18 +508,18 @@ const UserManagement: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="font-semibold text-aura-cream">Basic Information</h3>
-                  <p className="text-sm text-aura-sand/70">Name: {selectedUser.name}</p>
-                  <p className="text-sm text-aura-sand/70">Email: {selectedUser.email}</p>
-                  <p className="text-sm text-aura-sand/70">Role: {selectedUser.role}</p>
+                  <p className="text-sm text-aura-sand">Name: {selectedUser.name}</p>
+                  <p className="text-sm text-aura-sand">Email: {selectedUser.email}</p>
+                  <p className="text-sm text-aura-sand">Role: {selectedUser.role}</p>
                 </div>
                 
                 <div>
                   <h3 className="font-semibold text-aura-cream">Account Information</h3>
-                  <p className="text-sm text-aura-sand/70">
-                    Joined: {format(new Date(selectedUser.createdAt), 'MMMM dd, yyyy')}
+                  <p className="text-sm text-aura-sand">
+                    Joined: {selectedUser.createdAt ? format(new Date(selectedUser.createdAt), 'MMMM dd, yyyy') : 'N/A'}
                   </p>
-                  <p className="text-sm text-aura-sand/70">
-                    Updated: {format(new Date(selectedUser.updatedAt), 'MMMM dd, yyyy')}
+                  <p className="text-sm text-aura-sand">
+                    Updated: {selectedUser.updatedAt ? format(new Date(selectedUser.updatedAt), 'MMMM dd, yyyy') : 'N/A'}
                   </p>
                 </div>
               </div>
@@ -527,10 +527,10 @@ const UserManagement: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="font-semibold text-aura-cream">Activity Summary</h3>
-                  <p className="text-sm text-aura-sand/70">Total Bookings: {selectedUser._count.bookings}</p>
-                  <p className="text-sm text-aura-sand/70">Total Payments: {selectedUser._count.payments}</p>
-                  <p className="text-sm text-aura-sand/70">
-                    Total Packages: {selectedUser._count.userPackages}
+                  <p className="text-sm text-aura-sand">Total Bookings: {selectedUser._count?.bookings ?? 0}</p>
+                  <p className="text-sm text-aura-sand">Total Payments: {selectedUser._count?.payments ?? 0}</p>
+                  <p className="text-sm text-aura-sand">
+                    Total Packages: {selectedUser._count?.userPackages ?? 0}
                   </p>
                 </div>
               </div>

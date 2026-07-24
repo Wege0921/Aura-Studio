@@ -160,7 +160,7 @@ const InstructorManagement: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-aura-cream">Instructor Management</h1>
-          <p className="text-aura-sand/70">Manage and monitor all instructors</p>
+          <p className="text-aura-sand">Manage and monitor all instructors</p>
         </div>
         <button
           onClick={() => setShowForm(true)}
@@ -295,19 +295,19 @@ const InstructorManagement: React.FC = () => {
           <table className="min-w-full divide-y divide-aura-sand/10">
             <thead className="bg-aura-umber/30">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Instructor
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Contact
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Activity
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Joined
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -318,7 +318,7 @@ const InstructorManagement: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-aura-cream">{instructor.name}</div>
-                      <div className="text-sm text-aura-sand/50">{instructor.email}</div>
+                      <div className="text-sm text-aura-sand/80">{instructor.email}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -328,13 +328,13 @@ const InstructorManagement: React.FC = () => {
                     <div className="text-sm text-aura-cream">
                       {instructor._count?.classes || 0} classes
                     </div>
-                    <div className="text-xs text-aura-sand/40">
+                    <div className="text-xs text-aura-sand/70">
                       {instructor._count?.bookings || 0} bookings
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-aura-cream">
-                      {format(new Date(instructor.createdAt), 'MMM dd, yyyy')}
+                      {instructor.createdAt ? format(new Date(instructor.createdAt), 'MMM dd, yyyy') : ''}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -365,7 +365,7 @@ const InstructorManagement: React.FC = () => {
 
         {instructors.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-aura-sand/50">No instructors found. Add your first instructor!</p>
+            <p className="text-aura-sand/80">No instructors found. Add your first instructor!</p>
           </div>
         )}
 

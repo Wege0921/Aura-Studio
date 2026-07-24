@@ -226,7 +226,7 @@ const BookingManagement: React.FC = () => {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-aura-cream">Booking Management</h1>
-        <p className="text-aura-sand/70">Manage and monitor all class bookings</p>
+        <p className="text-aura-sand">Manage and monitor all class bookings</p>
       </div>
 
       {/* Messages */}
@@ -247,7 +247,7 @@ const BookingManagement: React.FC = () => {
       <div className="bg-aura-ink p-3 rounded-lg border border-aura-umber">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           <div>
-            <label className="block text-xs font-medium text-aura-sand/70 mb-0.5">Status</label>
+            <label className="block text-xs font-medium text-aura-sand mb-0.5">Status</label>
             <select
               value={filter.status}
               onChange={(e) => handleFilterChange('status', e.target.value)}
@@ -261,7 +261,7 @@ const BookingManagement: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-aura-sand/70 mb-0.5">Class</label>
+            <label className="block text-xs font-medium text-aura-sand mb-0.5">Class</label>
             <select
               value={filter.classId}
               onChange={(e) => handleFilterChange('classId', e.target.value)}
@@ -275,7 +275,7 @@ const BookingManagement: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-aura-sand/70 mb-0.5">Date</label>
+            <label className="block text-xs font-medium text-aura-sand mb-0.5">Date</label>
             <input
               type="date"
               value={filter.date}
@@ -285,7 +285,7 @@ const BookingManagement: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-aura-sand/70 mb-0.5">Search</label>
+            <label className="block text-xs font-medium text-aura-sand mb-0.5">Search</label>
             <input
               type="text"
               value={filter.search}
@@ -310,22 +310,22 @@ const BookingManagement: React.FC = () => {
           <table className="min-w-full divide-y divide-aura-sand/10">
             <thead className="bg-aura-umber/30">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Class
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Schedule
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Booked
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/50 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -335,34 +335,34 @@ const BookingManagement: React.FC = () => {
                 <tr key={booking.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <div className="text-sm font-medium text-aura-cream">{booking.user.name}</div>
-                      <div className="text-sm text-aura-sand/50">{booking.user.email}</div>
-                      <div className="text-xs text-aura-sand/40">{booking.user.phone}</div>
+                      <div className="text-sm font-medium text-aura-cream">{booking.user?.name || 'Unknown'}</div>
+                      <div className="text-sm text-aura-sand/80">{booking.user?.email || ''}</div>
+                      <div className="text-xs text-aura-sand/70">{booking.user?.phone || ''}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <div className="text-sm font-medium text-aura-cream">{booking.class.name}</div>
-                      <div className="text-sm text-aura-sand/50">{booking.class.instructor}</div>
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full mt-1 ${getClassTypeColor(booking.class.classType)}`}>
-                        {booking.class.classType}
+                      <div className="text-sm font-medium text-aura-cream">{booking.class?.name || 'N/A'}</div>
+                      <div className="text-sm text-aura-sand/80">{booking.class?.instructor || ''}</div>
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full mt-1 ${getClassTypeColor(booking.class?.classType || '')}`}>
+                        {booking.class?.classType || ''}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-aura-cream">
-                      {format(new Date(booking.class.date), 'MMM dd, yyyy')}
+                      {booking.class?.date ? format(new Date(booking.class.date), 'MMM dd, yyyy') : 'N/A'}
                     </div>
-                    <div className="text-sm text-aura-sand/50">{booking.class.time}</div>
-                    <div className="text-xs text-aura-sand/40">{booking.class.duration} min</div>
+                    <div className="text-sm text-aura-sand/80">{booking.class?.time || ''}</div>
+                    <div className="text-xs text-aura-sand/70">{booking.class?.duration ? `${booking.class.duration} min` : ''}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(booking.status)}`}>
                       {booking.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-aura-sand/50">
-                    {format(new Date(booking.createdAt), 'MMM dd, yyyy')}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-aura-sand/80">
+                    {booking.createdAt ? format(new Date(booking.createdAt), 'MMM dd, yyyy') : ''}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="relative">
@@ -409,7 +409,7 @@ const BookingManagement: React.FC = () => {
 
         {bookings.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-aura-sand/50">No bookings found matching your criteria.</p>
+            <p className="text-aura-sand/80">No bookings found matching your criteria.</p>
           </div>
         )}
 
@@ -513,34 +513,34 @@ const BookingManagement: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="font-semibold text-aura-cream">User Information</h3>
-                  <p className="text-sm text-aura-sand/70">Name: {selectedBooking.user.name}</p>
-                  <p className="text-sm text-aura-sand/70">Email: {selectedBooking.user.email}</p>
-                  <p className="text-sm text-aura-sand/70">Phone: {selectedBooking.user.phone}</p>
+                  <p className="text-sm text-aura-sand">Name: {selectedBooking.user?.name || 'N/A'}</p>
+                  <p className="text-sm text-aura-sand">Email: {selectedBooking.user?.email || 'N/A'}</p>
+                  <p className="text-sm text-aura-sand">Phone: {selectedBooking.user?.phone || 'N/A'}</p>
                 </div>
                 
                 <div>
                   <h3 className="font-semibold text-aura-cream">Class Information</h3>
-                  <p className="text-sm text-aura-sand/70">Class: {selectedBooking.class.name}</p>
-                  <p className="text-sm text-aura-sand/70">Instructor: {selectedBooking.class.instructor}</p>
-                  <p className="text-sm text-aura-sand/70">Type: {selectedBooking.class.classType}</p>
+                  <p className="text-sm text-aura-sand">Class: {selectedBooking.class?.name || 'N/A'}</p>
+                  <p className="text-sm text-aura-sand">Instructor: {selectedBooking.class?.instructor || 'N/A'}</p>
+                  <p className="text-sm text-aura-sand">Type: {selectedBooking.class?.classType || 'N/A'}</p>
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="font-semibold text-aura-cream">Schedule</h3>
-                  <p className="text-sm text-aura-sand/70">
-                    Date: {format(new Date(selectedBooking.class.date), 'MMMM dd, yyyy')}
+                  <p className="text-sm text-aura-sand">
+                    Date: {selectedBooking.class?.date ? format(new Date(selectedBooking.class.date), 'MMMM dd, yyyy') : 'N/A'}
                   </p>
-                  <p className="text-sm text-aura-sand/70">Time: {selectedBooking.class.time}</p>
-                  <p className="text-sm text-aura-sand/70">Duration: {selectedBooking.class.duration} minutes</p>
+                  <p className="text-sm text-aura-sand">Time: {selectedBooking.class?.time || 'N/A'}</p>
+                  <p className="text-sm text-aura-sand">Duration: {selectedBooking.class?.duration ? `${selectedBooking.class.duration} minutes` : 'N/A'}</p>
                 </div>
                 
                 <div>
                   <h3 className="font-semibold text-aura-cream">Booking Status</h3>
-                  <p className="text-sm text-aura-sand/70">Status: {selectedBooking.status}</p>
-                  <p className="text-sm text-aura-sand/70">
-                    Booked on: {format(new Date(selectedBooking.createdAt), 'MMMM dd, yyyy')}
+                  <p className="text-sm text-aura-sand">Status: {selectedBooking.status}</p>
+                  <p className="text-sm text-aura-sand">
+                    Booked on: {selectedBooking.createdAt ? format(new Date(selectedBooking.createdAt), 'MMMM dd, yyyy') : 'N/A'}
                   </p>
                 </div>
               </div>

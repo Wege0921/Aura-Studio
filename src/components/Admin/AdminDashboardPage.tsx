@@ -249,7 +249,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
                     <div>
                       <p className="text-sm font-medium text-aura-cream">{booking.user?.name || 'Unknown'}</p>
                       <p className="text-sm text-aura-sand/70">{booking.class?.name || ''}</p>
-                      <p className="text-xs text-aura-sand/50">
+                      <p className="text-xs text-aura-sand/80">
                         {booking.class?.date ? format(new Date(booking.class.date), 'MMM dd') : ''} at {booking.class?.time || ''}
                       </p>
                     </div>
@@ -278,7 +278,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
                     <div>
                       <p className="text-sm font-medium text-aura-cream">{payment.user?.name || 'Unknown'}</p>
                       <p className="text-sm text-aura-sand/70">ETB {(payment.amount ?? 0).toLocaleString()}</p>
-                      <p className="text-xs text-aura-sand/50">
+                      <p className="text-xs text-aura-sand/80">
                         {payment.createdAt ? format(new Date(payment.createdAt), 'MMM dd, yyyy') : ''}
                       </p>
                     </div>
