@@ -230,7 +230,12 @@ function App() {
       },
       onUpdate: (registration) => {
         console.log('Service worker updated');
-        if (window.confirm('New version available! Reload to update?')) {
+        // Auto-reload in PWA context where confirm dialogs may not show
+        if (navigator.serviceWorker.controller) {
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            window.location.reload();
+          });
+        } else {
           window.location.reload();
         }
       }

@@ -1,6 +1,6 @@
-const CACHE_NAME = 'aura-studio-v2';
-const STATIC_CACHE = 'aura-studio-static-v2';
-const API_CACHE = 'aura-studio-api-v2';
+const CACHE_NAME = 'aura-studio-v3';
+const STATIC_CACHE = 'aura-studio-static-v3';
+const API_CACHE = 'aura-studio-api-v3';
 
 const staticUrlsToCache = [
   '/',
@@ -52,25 +52,19 @@ self.addEventListener('fetch', (event) => {
 
 async function handleStaticRequest(request) {
   const cache = await caches.open(STATIC_CACHE);
-  const cached = await cache.match(request);
-
-  if (cached) {
-    // Refresh cache in background
-    fetch(request).then(response => {
-      if (response && response.ok) {
-        cache.put(request, response.clone());
-      }
-    }).catch(() => {});
-    return cached;
-  }
 
   try {
+    // Network-first: fetch from network, fall back to cache
     const response = await fetch(request);
     if (response && response.ok) {
       cache.put(request, response.clone());
     }
     return response;
   } catch (error) {
+    // Offline: serve from cache
+    const cached = await cache.match(request);
+    if (cached) return cached;
+
     // Offline fallback for navigation requests
     if (request.mode === 'navigate') {
       const offlinePage = await cache.match('/offline.html');
