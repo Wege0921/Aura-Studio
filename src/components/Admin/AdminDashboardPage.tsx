@@ -111,7 +111,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-aura-sand">Total Users</p>
-                <p className="text-2xl font-bold text-aura-cream">{stats.totalUsers}</p>
+                <p className="text-2xl font-bold text-aura-cream">{stats.totalUsers ?? 0}</p>
               </div>
               <div className="bg-blue-100 p-3 rounded-full">
                 <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,7 +125,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-aura-sand">Total Classes</p>
-                <p className="text-2xl font-bold text-aura-cream">{stats.totalClasses}</p>
+                <p className="text-2xl font-bold text-aura-cream">{stats.totalClasses ?? 0}</p>
               </div>
               <div className="bg-purple-100 p-3 rounded-full">
                 <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,7 +139,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-aura-sand">Total Bookings</p>
-                <p className="text-2xl font-bold text-aura-cream">{stats.totalBookings}</p>
+                <p className="text-2xl font-bold text-aura-cream">{stats.totalBookings ?? 0}</p>
               </div>
               <div className="bg-green-900/40 p-3 rounded-full">
                 <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,7 +153,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-aura-sand">Total Revenue</p>
-                <p className="text-2xl font-bold text-aura-cream">ETB {stats.totalRevenue.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-aura-cream">ETB {(stats.totalRevenue ?? 0).toLocaleString()}</p>
               </div>
               <div className="bg-amber-900/40 p-3 rounded-full">
                 <svg className="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,7 +167,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-aura-sand">Active Packages</p>
-                <p className="text-2xl font-bold text-aura-cream">{stats.activePackages}</p>
+                <p className="text-2xl font-bold text-aura-cream">{stats.activePackages ?? 0}</p>
               </div>
               <div className="bg-indigo-100 p-3 rounded-full">
                 <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,7 +181,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-aura-sand">Pending Payments</p>
-                <p className="text-2xl font-bold text-aura-cream">{stats.pendingPayments}</p>
+                <p className="text-2xl font-bold text-aura-cream">{stats.pendingPayments ?? 0}</p>
               </div>
               <div className="bg-red-900/40 p-3 rounded-full">
                 <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -247,10 +247,10 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
                 {recentBookings.map((booking) => (
                   <div key={booking.id} className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-aura-cream">{booking.user.name}</p>
-                      <p className="text-sm text-aura-sand/70">{booking.class.name}</p>
+                      <p className="text-sm font-medium text-aura-cream">{booking.user?.name || 'Unknown'}</p>
+                      <p className="text-sm text-aura-sand/70">{booking.class?.name || ''}</p>
                       <p className="text-xs text-aura-sand/50">
-                        {format(new Date(booking.class.date), 'MMM dd')} at {booking.class.time}
+                        {booking.class?.date ? format(new Date(booking.class.date), 'MMM dd') : ''} at {booking.class?.time || ''}
                       </p>
                     </div>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(booking.status)}`}>
@@ -276,10 +276,10 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
                 {recentPayments.map((payment) => (
                   <div key={payment.id} className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-aura-cream">{payment.user.name}</p>
-                      <p className="text-sm text-aura-sand/70">ETB {payment.amount.toLocaleString()}</p>
+                      <p className="text-sm font-medium text-aura-cream">{payment.user?.name || 'Unknown'}</p>
+                      <p className="text-sm text-aura-sand/70">ETB {(payment.amount ?? 0).toLocaleString()}</p>
                       <p className="text-xs text-aura-sand/50">
-                        {format(new Date(payment.createdAt), 'MMM dd, yyyy')}
+                        {payment.createdAt ? format(new Date(payment.createdAt), 'MMM dd, yyyy') : ''}
                       </p>
                     </div>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(payment.status)}`}>
