@@ -258,7 +258,7 @@ const TextField: React.FC<{
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={3}
-        className="w-full px-3 py-2 bg-aura-bg-card border border-aura-umber rounded-lg text-aura-text focus:outline-none focus:ring-2 focus:ring-aura-sand text-sm"
+        className="w-full px-3 py-2 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream placeholder:text-aura-sand/50 focus:outline-none focus:ring-2 focus:ring-aura-sand text-sm"
       />
     ) : (
       <input
@@ -266,7 +266,7 @@ const TextField: React.FC<{
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-3 py-2 bg-aura-bg-card border border-aura-umber rounded-lg text-aura-text focus:outline-none focus:ring-2 focus:ring-aura-sand text-sm"
+        className="w-full px-3 py-2 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream placeholder:text-aura-sand/50 focus:outline-none focus:ring-2 focus:ring-aura-sand text-sm"
       />
     )}
   </div>
@@ -350,14 +350,14 @@ const FooterForm: React.FC<{
               value={link.label || ''}
               onChange={(e) => updateQuickLink(idx, 'label', e.target.value)}
               placeholder="Label"
-              className="flex-1 px-3 py-1.5 bg-aura-bg-card border border-aura-umber rounded-lg text-aura-text text-sm focus:outline-none focus:ring-2 focus:ring-aura-sand"
+              className="flex-1 px-3 py-1.5 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream placeholder:text-aura-sand/50 text-sm focus:outline-none focus:ring-2 focus:ring-aura-sand"
             />
             <input
               type="text"
               value={link.sectionId || ''}
               onChange={(e) => updateQuickLink(idx, 'sectionId', e.target.value)}
               placeholder="Section ID (e.g. approach)"
-              className="flex-1 px-3 py-1.5 bg-aura-bg-card border border-aura-umber rounded-lg text-aura-text text-sm focus:outline-none focus:ring-2 focus:ring-aura-sand"
+              className="flex-1 px-3 py-1.5 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream placeholder:text-aura-sand/50 text-sm focus:outline-none focus:ring-2 focus:ring-aura-sand"
             />
             <button onClick={() => removeQuickLink(idx)} className="text-red-400 hover:text-red-300 px-2 py-1 text-sm">Remove</button>
           </div>
@@ -375,21 +375,21 @@ const FooterForm: React.FC<{
               value={link.platform || ''}
               onChange={(e) => updateSocial(idx, 'platform', e.target.value)}
               placeholder="Platform (e.g. Instagram)"
-              className="flex-1 px-3 py-1.5 bg-aura-bg-card border border-aura-umber rounded-lg text-aura-text text-sm focus:outline-none focus:ring-2 focus:ring-aura-sand"
+              className="flex-1 px-3 py-1.5 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream placeholder:text-aura-sand/50 text-sm focus:outline-none focus:ring-2 focus:ring-aura-sand"
             />
             <input
               type="text"
               value={link.url || ''}
               onChange={(e) => updateSocial(idx, 'url', e.target.value)}
               placeholder="URL"
-              className="flex-1 px-3 py-1.5 bg-aura-bg-card border border-aura-umber rounded-lg text-aura-text text-sm focus:outline-none focus:ring-2 focus:ring-aura-sand"
+              className="flex-1 px-3 py-1.5 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream placeholder:text-aura-sand/50 text-sm focus:outline-none focus:ring-2 focus:ring-aura-sand"
             />
             <input
               type="text"
               value={link.label || ''}
               onChange={(e) => updateSocial(idx, 'label', e.target.value)}
               placeholder="Link text"
-              className="flex-1 px-3 py-1.5 bg-aura-bg-card border border-aura-umber rounded-lg text-aura-text text-sm focus:outline-none focus:ring-2 focus:ring-aura-sand"
+              className="flex-1 px-3 py-1.5 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream placeholder:text-aura-sand/50 text-sm focus:outline-none focus:ring-2 focus:ring-aura-sand"
             />
             <button onClick={() => removeSocial(idx)} className="text-red-400 hover:text-red-300 px-2 py-1 text-sm">Remove</button>
           </div>
