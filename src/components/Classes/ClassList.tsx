@@ -18,6 +18,8 @@ interface Class {
   availableSpots: number;
   isFullyBooked: boolean;
   price?: number;
+  hideInstructor?: boolean;
+  hideSpots?: boolean;
 }
 
 interface ClassListProps {

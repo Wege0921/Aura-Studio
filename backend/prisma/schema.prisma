@@ -45,6 +45,8 @@ model Class {
   price       Float?
   imageUrl    String?
   isActive    Boolean  @default(true)
+  hideInstructor Boolean @default(false)
+  hideSpots      Boolean @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

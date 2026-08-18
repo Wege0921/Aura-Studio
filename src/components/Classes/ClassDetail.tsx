@@ -19,6 +19,8 @@ interface ClassDetailData {
   imageUrl?: string;
   availableSpots: number;
   isFullyBooked: boolean;
+  hideInstructor?: boolean;
+  hideSpots?: boolean;
   bookings: { id: string; user: { name: string } }[];
 }
 
@@ -267,16 +269,30 @@ const ClassDetail: React.FC = () => {
               <p className="text-xs text-aura-sand/70 uppercase tracking-wider">Duration</p>
               <p className="text-aura-cream font-medium">{cls.duration} min</p>
             </div>
-            <div className="bg-aura-bark rounded-lg p-4 border border-aura-umber">
-              <p className="text-xs text-aura-sand/70 uppercase tracking-wider">Instructor</p>
-              <p className="text-aura-cream font-medium">{cls.instructor}</p>
-            </div>
+            {(!cls.hideInstructor || !cls.hideSpots) && (
+              <>
+                {!cls.hideInstructor && (
+                  <div className="bg-aura-bark rounded-lg p-4 border border-aura-umber">
+                    <p className="text-xs text-aura-sand/70 uppercase tracking-wider">Instructor</p>
+                    <p className="text-aura-cream font-medium">{cls.instructor}</p>
+                  </div>
+                )}
+                {!cls.hideSpots && (
+                  <div className="bg-aura-bark rounded-lg p-4 border border-aura-umber">
+                    <p className="text-xs text-aura-sand/70 uppercase tracking-wider">Availability</p>
+                    <p className="text-aura-cream font-medium">{cls.availableSpots} of {cls.capacity} spots</p>
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-4">
-            <span className="text-sm text-aura-sand">
-              {cls.availableSpots} of {cls.capacity} spots available
-            </span>
+            {!cls.hideSpots && (
+              <span className="text-sm text-aura-sand">
+                {cls.availableSpots} of {cls.capacity} spots available
+              </span>
+            )}
             {cls.isFullyBooked && (
               <span className="px-2 py-1 rounded bg-red-900/40 text-red-200 text-xs font-medium">Fully Booked</span>
             )}

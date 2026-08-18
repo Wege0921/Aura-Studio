@@ -191,6 +191,8 @@ router.post('/classes', authenticateToken, requireAdmin, async (req: Authenticat
       classType,
       price,
       isActive,
+      hideInstructor,
+      hideSpots,
     } = req.body;
 
     const newClass = await prisma.class.create({
@@ -205,6 +207,8 @@ router.post('/classes', authenticateToken, requireAdmin, async (req: Authenticat
         classType: classType || 'PILATES',
         price: price !== undefined ? Number(price) : undefined,
         isActive: isActive !== undefined ? Boolean(isActive) : true,
+        hideInstructor: hideInstructor !== undefined ? Boolean(hideInstructor) : false,
+        hideSpots: hideSpots !== undefined ? Boolean(hideSpots) : false,
       },
       include: {
         _count: {
@@ -237,6 +241,8 @@ router.put('/classes/:id', authenticateToken, requireAdmin, async (req: Authenti
       classType,
       price,
       isActive,
+      hideInstructor,
+      hideSpots,
     } = req.body;
 
     const updateData: any = {};
@@ -250,6 +256,8 @@ router.put('/classes/:id', authenticateToken, requireAdmin, async (req: Authenti
     if (classType !== undefined) updateData.classType = classType;
     if (price !== undefined) updateData.price = Number(price);
     if (isActive !== undefined) updateData.isActive = Boolean(isActive);
+    if (hideInstructor !== undefined) updateData.hideInstructor = Boolean(hideInstructor);
+    if (hideSpots !== undefined) updateData.hideSpots = Boolean(hideSpots);
 
     const updatedClass = await prisma.class.update({
       where: { id },

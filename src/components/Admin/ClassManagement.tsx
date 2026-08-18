@@ -15,6 +15,8 @@ interface Class {
   price?: number;
   imageUrl?: string;
   isActive: boolean;
+  hideInstructor: boolean;
+  hideSpots: boolean;
   createdAt: string;
   updatedAt: string;
   _count: {
@@ -33,6 +35,8 @@ interface ClassFormData {
   classType: string;
   price?: number;
   imageUrl?: string;
+  hideInstructor: boolean;
+  hideSpots: boolean;
 }
 
 const ClassManagement: React.FC = () => {
@@ -58,6 +62,8 @@ const ClassManagement: React.FC = () => {
     classType: 'PILATES',
     price: 0,
     imageUrl: '',
+    hideInstructor: false,
+    hideSpots: false,
   });
 
   const classTypes = ['PILATES', 'PRENATAL', 'POSTPARTUM', 'MEDITATION'];
@@ -112,10 +118,15 @@ const ClassManagement: React.FC = () => {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
+    const target = e.target;
+    const name = target.name;
+    const value = target.value;
+    const type = target.type;
+    const isCheckbox = type === 'checkbox';
+    const checked = isCheckbox ? (target as HTMLInputElement).checked : false;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'number' ? Number(value) : value,
+      [name]: isCheckbox ? checked : type === 'number' ? Number(value) : value,
     }));
   };
 
@@ -171,6 +182,8 @@ const ClassManagement: React.FC = () => {
       classType: classItem.classType,
       price: classItem.price || 0,
       imageUrl: classItem.imageUrl || '',
+      hideInstructor: classItem.hideInstructor || false,
+      hideSpots: classItem.hideSpots || false,
     });
     setShowForm(true);
   };
@@ -249,6 +262,8 @@ const ClassManagement: React.FC = () => {
       classType: 'PILATES',
       price: 0,
       imageUrl: '',
+      hideInstructor: false,
+      hideSpots: false,
     });
   };
 
@@ -457,7 +472,30 @@ const ClassManagement: React.FC = () => {
                 </div>
               </div>
 
-              <div>
+              <div className="md:col-span-2 flex gap-6 pt-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="hideInstructor"
+                    checked={formData.hideInstructor}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 rounded border-aura-umber text-purple-600 focus:ring-purple-500"
+                  />
+                  <span className="text-sm text-aura-sand">Hide instructor on class cards</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="hideSpots"
+                    checked={formData.hideSpots}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 rounded border-aura-umber text-purple-600 focus:ring-purple-500"
+                  />
+                  <span className="text-sm text-aura-sand">Hide spots left on class cards</span>
+                </label>
+              </div>
+
+              <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-aura-sand mb-1">Description</label>
                 <textarea
                   name="description"

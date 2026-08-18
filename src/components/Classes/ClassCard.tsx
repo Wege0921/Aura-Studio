@@ -15,6 +15,8 @@ interface Class {
   availableSpots: number;
   isFullyBooked: boolean;
   price?: number;
+  hideInstructor?: boolean;
+  hideSpots?: boolean;
 }
 
 interface ClassCardProps {
@@ -70,10 +72,12 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
 
       {/* Details — flex rows like PackageCard */}
       <div className="space-y-2 mb-4">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-aura-sand">Instructor:</span>
-          <span className="text-sm font-medium text-aura-cream">{classItem.instructor}</span>
-        </div>
+        {!classItem.hideInstructor && (
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-aura-sand">Instructor:</span>
+            <span className="text-sm font-medium text-aura-cream">{classItem.instructor}</span>
+          </div>
+        )}
 
         <div className="flex items-center justify-between">
           <span className="text-sm text-aura-sand">Date:</span>
@@ -90,12 +94,14 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
           <span className="text-sm font-medium text-aura-cream">{classItem.duration} min</span>
         </div>
 
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-aura-sand">Spots:</span>
-          <span className={`text-sm font-medium ${classItem.isFullyBooked ? 'text-red-400' : 'text-aura-cream'}`}>
-            {classItem.availableSpots} / {classItem.capacity}
-          </span>
-        </div>
+        {!classItem.hideSpots && (
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-aura-sand">Spots:</span>
+            <span className={`text-sm font-medium ${classItem.isFullyBooked ? 'text-red-400' : 'text-aura-cream'}`}>
+              {classItem.availableSpots} / {classItem.capacity}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Price + CTA — like PackageCard */}
@@ -104,9 +110,11 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
           <span className="text-2xl font-bold text-aura-cream">
             {classItem.price ? `ETB ${classItem.price.toLocaleString()}` : 'Free'}
           </span>
-          <span className="text-sm text-aura-sand">
-            {classItem.isFullyBooked ? 'Waitlist available' : `${classItem.availableSpots} spots left`}
-          </span>
+          {!classItem.hideSpots && (
+            <span className="text-sm text-aura-sand">
+              {classItem.isFullyBooked ? 'Waitlist available' : `${classItem.availableSpots} spots left`}
+            </span>
+          )}
         </div>
 
         {isPast ? (

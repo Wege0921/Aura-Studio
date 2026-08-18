@@ -20,6 +20,8 @@ interface ClassItem {
   availableSpots: number;
   isFullyBooked: boolean;
   price?: number;
+  hideInstructor?: boolean;
+  hideSpots?: boolean;
 }
 
 const classTypeLabels: Record<string, string> = {
@@ -238,13 +240,15 @@ const Homepage: React.FC = () => {
                     <h3>{cls.name}</h3>
                     <p>{cls.description || 'Join us for this class.'}</p>
                     <div className="class-card-meta">
-                      <span>🧘 {cls.instructor}</span>
+                      {!cls.hideInstructor && <span>🧘 {cls.instructor}</span>}
                       <span>📅 {new Date(cls.date).toLocaleDateString()} at {cls.time}</span>
                     </div>
                     <div className="class-card-meta">
-                      <span className={cls.isFullyBooked ? 'text-red-500' : ''}>
-                        {cls.isFullyBooked ? '🔴 Fully Booked' : `🏃‍♀️ ${cls.availableSpots} spots left`}
-                      </span>
+                      {!cls.hideSpots && (
+                        <span className={cls.isFullyBooked ? 'text-red-500' : ''}>
+                          {cls.isFullyBooked ? '🔴 Fully Booked' : `🏃‍♀️ ${cls.availableSpots} spots left`}
+                        </span>
+                      )}
                     </div>
                     <button
                       className="class-book-btn"
