@@ -62,8 +62,8 @@ const ClassManagement: React.FC = () => {
     classType: 'PILATES',
     price: 0,
     imageUrl: '',
-    hideInstructor: false,
-    hideSpots: false,
+    hideInstructor: true,
+    hideSpots: true,
   });
 
   const classTypes = ['PILATES', 'PRENATAL', 'POSTPARTUM', 'MEDITATION'];
@@ -262,8 +262,8 @@ const ClassManagement: React.FC = () => {
       classType: 'PILATES',
       price: 0,
       imageUrl: '',
-      hideInstructor: false,
-      hideSpots: false,
+      hideInstructor: true,
+      hideSpots: true,
     });
   };
 
