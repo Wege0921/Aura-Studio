@@ -62,6 +62,13 @@
       "description": "Purchase class packages",
       "url": "/packages",
       "icons": [{ "src": "web-app-manifest-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Shop",
+      "short_name": "Shop",
+      "description": "Browse and purchase studio products",
+      "url": "/shop",
+      "icons": [{ "src": "web-app-manifest-192x192.png", "sizes": "192x192" }]
     }
   ]
 }

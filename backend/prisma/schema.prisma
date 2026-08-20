@@ -28,6 +28,8 @@ model User {
   reviews                 Review[]
   pushSubscriptions       PushSubscription[]
   notificationPreference  NotificationPreference?
+  shopOrders              ShopOrder[]
+  wishlist                Wishlist[]
 
   @@map("users")
 }
@@ -232,4 +234,176 @@ model SiteContent {
   updatedAt DateTime @updatedAt
 
   @@map("site_content")
+}
+
+// ============================================================
+// SHOP MODULE — additive, does not touch existing tables
+// ============================================================
+
+model ProductCategory {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  imageUrl    String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products    Product[]
+
+  @@map("shop_categories")
+}
+
+model Product {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  name         String
+  description  String?
+  categoryId   String
+  basePrice    Float
+  salePrice    Float?
+  sku          String?  @unique
+  status       String   @default("ACTIVE") // ACTIVE, DRAFT, ARCHIVED, OUT_OF_STOCK
+  isFeatured   Boolean  @default(false)
+  weightGrams  Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  category     ProductCategory   @relation(fields: [categoryId], references: [id])
+  variants     ProductVariant[]
+  images       ProductImage[]
+  orderItems   ShopOrderItem[]
+  wishlist     Wishlist[]
+
+  @@index([categoryId])
+  @@index([status])
+  @@index([isFeatured])
+  @@map("shop_products")
+}
+
+model ProductVariant {
+  id           String   @id @default(cuid())
+  productId    String
+  size         String?
+  color        String?
+  style        String?
+  sku          String?  @unique
+  priceDelta   Float    @default(0)
+  stock        Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  product      Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems   ShopOrderItem[]
+
+  @@index([productId])
+  @@map("shop_product_variants")
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String
+  url       String
+  altText   String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@map("shop_product_images")
+}
+
+model ShopOrder {
+  id               String    @id @default(cuid())
+  orderNumber      String    @unique
+  userId           String?
+  guestToken       String?   @unique
+  status           String    @default("PENDING") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED
+  subtotal         Float
+  shippingCost     Float     @default(0)
+  discount         Float     @default(0)
+  total            Float
+  paymentMethod    String?   // BANK_TRANSFER, MOBILE_MONEY, CASH_ON_DELIVERY
+  paymentReceiptUrl String?
+  paymentStatus    String    @default("PENDING") // PENDING, VERIFIED, REJECTED
+  paidAt           DateTime?
+  notes            String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  user             User?                    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items            ShopOrderItem[]
+  shippingAddress  ShippingAddress?
+  statusHistory    ShopOrderStatusHistory[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("shop_orders")
+}
+
+model ShopOrderItem {
+  id           String   @id @default(cuid())
+  orderId      String
+  productId    String
+  variantId    String?
+  name         String   // snapshot at purchase time
+  variantLabel String?  // "M / Black"
+  unitPrice    Float    // snapshot
+  quantity     Int
+  lineTotal    Float
+
+  order        ShopOrder         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product      Product           @relation(fields: [productId], references: [id])
+  variant      ProductVariant?   @relation(fields: [variantId], references: [id])
+
+  @@index([orderId])
+  @@map("shop_order_items")
+}
+
+model ShippingAddress {
+  id         String   @id @default(cuid())
+  orderId    String   @unique
+  fullName   String
+  phone      String
+  region     String
+  city       String
+  address    String
+  postalCode String?
+  notes      String?
+
+  order      ShopOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("shop_shipping_addresses")
+}
+
+model ShopOrderStatusHistory {
+  id        String   @id @default(cuid())
+  orderId   String
+  status    String
+  note      String?
+  changedBy String?
+  createdAt DateTime @default(now())
+
+  order     ShopOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("shop_order_status_history")
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("shop_wishlist")
 }

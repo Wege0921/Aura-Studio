@@ -20,6 +20,8 @@ import reviewsRoutes from './routes/reviews';
 import newsletterRoutes from './routes/newsletter';
 import siteContentRoutes from './routes/site-content';
 import sitemapRoutes from './routes/sitemap';
+import shopRoutes from './routes/shop';
+import adminShopRoutes from './routes/adminShop';
 
 dotenv.config();
 
@@ -99,6 +101,8 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/reviews', reviewsRoutes);
 app.use('/api/site-content', siteContentRoutes);
+app.use('/api/shop', shopRoutes);
+app.use('/api/admin/shop', adminShopRoutes);
 app.use('/', sitemapRoutes);
 
 // Basic route

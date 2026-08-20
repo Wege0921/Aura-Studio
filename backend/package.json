@@ -11,7 +11,8 @@
     "generate": "prisma generate",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "seed": "ts-node src/seed.ts"
+    "seed": "ts-node src/seed.ts",
+    "seed:shop": "ts-node src/seedShop.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.7.1",

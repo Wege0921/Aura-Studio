@@ -1,0 +1,256 @@
+# AURA Studio — Shop Feature Proposal
+
+**Prepared for:** AURA Studio
+**Prepared by:** Development Team
+**Date:** August 2026
+
+---
+
+## 1. Overview
+
+AURA Studio's web app is already live and successfully handling class bookings and package purchases at **aurastudio.et**. This proposal outlines a plan to add an **online shop** to the existing app so the studio can sell physical products directly to its community — without rebuilding or disrupting anything that already works.
+
+The shop will sell five product categories:
+
+1. **Outfits** (activewear / studio wear)
+2. **Cups** (branded drinkware)
+3. **Bags** (tote / gym bags)
+4. **Grip socks**
+5. **Hair accessories**
+
+The goal is for the shop to feel like a **natural extension of AURA Studio** — the same look, the same login, the same familiar experience customers already trust. Not a separate website.
+
+---
+
+## 2. Why This Approach
+
+The existing app is already in production and serving real customers. The safest and most cost-effective path is to **add the shop on top of the existing platform** rather than start a new website.
+
+This means:
+
+- Customers keep their **existing accounts** — no re-registration.
+- The shop uses the **same design, colors, and fonts** as the rest of AURA Studio.
+- The studio's **existing payment process** (bank transfer, mobile money, cash) is reused, so there is no need to introduce a new payment provider or change how money is collected today.
+- The **admin dashboard** the studio already uses gains new "Shop" sections — no separate admin tool to learn.
+- The existing booking and package features **continue working exactly as they do now**.
+
+In short: the shop is an **addition**, not a replacement.
+
+---
+
+## 3. What Customers Will Experience
+
+The shopping experience is designed to match how customers already use AURA Studio.
+
+### Browsing the Shop
+
+- A new **"Shop"** link appears in the website menu, next to Classes and Packages.
+- The shop landing page shows the five product categories and a selection of featured products.
+- Customers can browse a category (for example, "Grip Socks") and see all products in a clean grid.
+- Each product card shows the image, name, price, and a quick "Add to Cart" button.
+
+### Product Pages
+
+Clicking a product opens a detail page with:
+
+- Multiple product photos
+- Full description
+- Price (and sale price, when applicable)
+- Available **variants** — for example, size, color, or style
+- Stock availability ("In Stock" / "Out of Stock")
+- An **"Add to Cart"** button
+
+### Cart
+
+- Customers can review their cart, change quantities, or remove items.
+- The cart is saved on the customer's device, so it stays even if they close the browser and come back later.
+
+### Checkout
+
+At checkout the customer provides:
+
+- **Shipping address** (name, phone, region, city, address)
+- **Payment method** — the same options already used on AURA Studio:
+  - Bank Transfer (upload receipt)
+  - Mobile Money (upload receipt)
+  - Cash on Delivery (pay when the order arrives)
+- An optional order note.
+
+After placing the order, the customer sees an **order confirmation** with a unique order number (for example, `AURA-2026-00001`).
+
+### Order Tracking
+
+- Logged-in customers can view **"My Orders"** from their dashboard.
+- Each order shows its current status:
+  - **Pending** — order placed, awaiting payment confirmation
+  - **Confirmed** — payment verified, order being prepared
+  - **Processing** — being packed
+  - **Shipped** — on its way to the customer
+  - **Delivered** — order complete
+  - **Cancelled / Refunded** — if applicable
+- Customers receive **email notifications** when their order status changes.(not included for this phase)
+
+---
+
+## 4. What the Studio Admin Can Do
+
+The shop is managed from the **same admin dashboard** the studio already uses. New sections will appear for admin users:
+
+### Products
+
+- Add, edit, or remove products.
+- Upload multiple product images per product.
+- Set the product name, description, price, and optional sale price.
+- Organize products into the five categories.
+- Mark products as **Featured** (shown on the shop landing page) or **Out of Stock**.
+- Track stock quantity for each product variant (size, color, style).
+
+### Categories
+
+- Manage the five product categories (name, image, display order).
+- Categories can be enabled or disabled without being deleted.
+
+### Orders
+
+- View all incoming orders with customer details, items, and shipping address.
+- View the uploaded payment receipt for bank transfer / mobile money orders.
+- **Verify or reject** payments — exactly like the existing package payment process.
+- Update the order status (Confirmed → Processing → Shipped → Delivered).
+- Cancel or refund orders when needed (cancelled stock is automatically returned to inventory).
+
+### Inventory
+
+- See current stock levels for every product and variant.
+- Spot low-stock items at a glance.
+- Adjust stock manually when needed (for example, after an in-studio sale).
+
+### Sales Reporting
+
+- View total shop revenue (from verified orders).
+- See best-selling products.
+- See orders grouped by status.
+- Filter by date range.
+
+---
+
+## 5. How Payments Will Work
+
+The shop will use the **same payment methods AURA Studio already uses** for class and package purchases. This keeps the experience consistent for customers and avoids the cost and complexity of adding a new payment provider.
+
+| Method | How it works |
+|---|---|
+| **Bank Transfer** | Customer transfers money to the studio's bank account and uploads a photo of the receipt. The studio admin verifies the payment in the dashboard, then the order is confirmed. |
+| **Mobile Money** | Customer pays via mobile money and uploads a screenshot of the transaction. The admin verifies it, then the order is confirmed. |
+| **Cash on Delivery** | Customer pays in cash when the order is delivered. No receipt upload needed. The admin marks the order as paid once delivery is confirmed. |
+
+This matches how the studio already operates, so there is **no new payment provider to set up, no new fees, and no disruption** to the existing payment workflow.
+
+> **Optional future enhancement:** If the studio later wants to accept automatic online payments (for example, Telebirr or another local provider), this can be added as a separate project without rebuilding the shop.
+
+---
+
+## 6. Shipping & Delivery
+
+Because the studio is selling physical goods (not classes), each order requires a delivery address. The shop will:
+
+- Collect a full shipping address at checkout (region, city, address, phone).
+- Let the admin record a shipping note or tracking reference when marking an order as "Shipped".
+- Allow the studio to set a **shipping cost** per order (initially a flat fee that the admin can adjust; automatic shipping-rate calculation can be added later if desired).
+
+The studio remains responsible for the actual delivery (courier, in-person drop-off, or pickup at the studio). The system tracks the order status so both the customer and the studio always know where things stand.
+
+---
+
+## 7. Rollout Plan
+
+The work is broken into **four phases** so the shop can launch safely and grow over time. Each phase builds on the previous one.
+
+### Phase 1 — Foundation (behind the scenes)
+
+- Set up the product and order database.
+- Build the admin tools to add products, categories, and manage inventory.
+- Upload the first batch of products and images.
+- *No visible change to customers yet.* The shop stays hidden until Phase 2.
+
+### Phase 2 — Shop Launch (customer-facing)
+
+- Add the "Shop" link to the website menu.
+- Customers can browse products, add to cart, and place orders.
+- Checkout with shipping address and payment (bank transfer / mobile money / cash on delivery).
+- Order confirmation and "My Orders" in the customer dashboard.
+- Admin can view and manage incoming orders.
+
+### Phase 3 — Fulfillment & Notifications
+
+- Full order status tracking (Confirmed → Processing → Shipped → Delivered).
+- Automatic email notifications to customers at each step.
+- Admin notifications (via the existing Telegram and email alerts) for new orders and payments.
+
+### Phase 4 — Enhancements
+
+- Product search and advanced filters (by size, color, price).
+- Wishlist / favorites.
+- "Recommended products" on each product page.
+- Improved sales analytics and reporting.
+- Search engine optimization so products can be found via Google.
+
+---
+
+## 8. What Stays the Same
+
+It is important to be clear about what **will not change**:
+
+- **Class bookings and packages** continue working exactly as they do today.
+- **Customer accounts and logins** are unchanged.
+- **The website address** (aurastudio.et) stays the same.
+- **The mobile app experience** (PWA / "Add to Home Screen") stays the same — the shop is part of the same app.
+- **Existing admin features** (classes, bookings, users, payments, analytics) are untouched.
+- **The current payment process** is reused, not replaced.
+
+The shop is purely **additive** — everything that works today keeps working.
+
+---
+
+## 9. Key Benefits
+
+- **One platform, one login** — customers book classes and buy products in the same place.
+- **Consistent brand experience** — the shop looks and feels like AURA Studio, not a third-party store.
+- **No new payment provider needed** — reuses the studio's existing bank / mobile money / cash process.
+- **Familiar admin tools** — managed from the same dashboard the studio already uses.
+- **Low risk** — the existing app is not rebuilt or disrupted.
+- **Grows over time** — search, wishlists, analytics, and online payments can be added later without starting over.
+
+---
+
+## 10. What We Need From the Studio
+
+To prepare the shop launch, we will need:
+
+1. **Product information** for each of the five categories:
+   - Product name and description
+   - Price (in ETB)
+   - Available sizes / colors / styles (where applicable)
+   - Starting stock quantity per variant
+2. **Product photos** — ideally 2–4 images per product, in JPG or PNG format.
+3. **Shipping policy decisions**:
+   - Flat shipping fee, or free pickup at the studio?
+   - Which regions do you deliver to?
+   - Estimated delivery time?
+4. **Confirmation** that the three payment methods (Bank Transfer, Mobile Money, Cash on Delivery) are acceptable for the shop.
+5. **Any branding preferences** for the shop landing page (hero image, tagline, featured products to highlight).
+
+Once these are provided, Phase 1 can begin immediately.
+
+---
+
+## 11. Summary
+
+AURA Studio already has a trusted, working platform. This proposal adds a shop **on top of it** — same brand, same login, same payment process, same admin dashboard — so the studio can start selling outfits, cups, bags, grip socks, and hair accessories to its community with minimal risk and no disruption to the existing class-booking business.
+
+The shop launches in stages, beginning with behind-the-scenes setup, then a customer-facing storefront, then full order tracking and notifications, and finally optional enhancements like search, wishlists, and analytics.
+
+We're ready to begin as soon as the product information and shipping decisions above are confirmed.
+
+---
+
+*Prepared for AURA Studio. This document describes the proposed shop feature and is intended for review and approval before development begins.*

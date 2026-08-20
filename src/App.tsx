@@ -2,6 +2,7 @@ import React, { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
+import { ShopCartProvider } from './contexts/ShopCartContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -32,6 +33,20 @@ const BookingManagement = lazy(() => import('./components/Admin/BookingManagemen
 const PackageManagement = lazy(() => import('./components/Admin/PackageManagement'));
 const Analytics = lazy(() => import('./components/Admin/Analytics'));
 const MarketingDashboard = lazy(() => import('./components/Admin/MarketingDashboard'));
+
+// Shop routes (lazy-loaded)
+const ShopLanding = lazy(() => import('./components/Shop/ShopLanding'));
+const ShopCategoryPage = lazy(() => import('./components/Shop/ShopCategoryPage'));
+const ProductDetail = lazy(() => import('./components/Shop/ProductDetail'));
+const CartPage = lazy(() => import('./components/Shop/CartPage'));
+const CheckoutPage = lazy(() => import('./components/Shop/CheckoutPage'));
+const OrderConfirmationPage = lazy(() => import('./components/Shop/OrderConfirmationPage'));
+const MyOrders = lazy(() => import('./components/Shop/MyOrders'));
+const CartDrawer = lazy(() => import('./components/Shop/CartDrawer'));
+const ShopProductManagement = lazy(() => import('./components/Admin/ShopProductManagement'));
+const ShopCategoryManagement = lazy(() => import('./components/Admin/ShopCategoryManagement'));
+const ShopOrderManagement = lazy(() => import('./components/Admin/ShopOrderManagement'));
+const ShopAnalytics = lazy(() => import('./components/Admin/ShopAnalytics'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -109,6 +124,118 @@ function AppRoutes() {
           <PublicLayout>
             <ContactPage />
           </PublicLayout>
+        }
+      />
+
+      {/* Shop — public browsing */}
+      <Route
+        path="/shop"
+        element={
+          <PublicLayout>
+            <ShopLanding />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/shop/all"
+        element={
+          <PublicLayout>
+            <ShopCategoryPage />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/shop/:category"
+        element={
+          <PublicLayout>
+            <ShopCategoryPage />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/shop/product/:slug"
+        element={
+          <PublicLayout>
+            <ProductDetail />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/cart"
+        element={
+          <PublicLayout>
+            <CartPage />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/checkout"
+        element={
+          <PublicLayout>
+            <CheckoutPage />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/shop/orders/:id"
+        element={
+          <PublicLayout>
+            <OrderConfirmationPage />
+          </PublicLayout>
+        }
+      />
+
+      {/* Shop admin — protected */}
+      <Route
+        path="/admin/shop/products"
+        element={
+          <ProtectedRoute adminOnly>
+            <Navigation />
+            <main className="pt-16">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+                <ShopProductManagement />
+              </div>
+            </main>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/shop/categories"
+        element={
+          <ProtectedRoute adminOnly>
+            <Navigation />
+            <main className="pt-16">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+                <ShopCategoryManagement />
+              </div>
+            </main>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/shop/orders"
+        element={
+          <ProtectedRoute adminOnly>
+            <Navigation />
+            <main className="pt-16">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+                <ShopOrderManagement />
+              </div>
+            </main>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/shop/analytics"
+        element={
+          <ProtectedRoute adminOnly>
+            <Navigation />
+            <main className="pt-16">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+                <ShopAnalytics />
+              </div>
+            </main>
+          </ProtectedRoute>
         }
       />
 
@@ -246,6 +373,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
     <ThemeProvider>
     <AuthProvider>
+      <ShopCartProvider>
       <ErrorBoundary>
       <Router>
         <div className="min-h-screen bg-aura-bark">
@@ -254,9 +382,13 @@ function App() {
           <PWAInstallBanner />
           <AppRoutes />
           <MobileBottomTabs />
+          <Suspense fallback={null}>
+            <CartDrawer />
+          </Suspense>
         </div>
       </Router>
       </ErrorBoundary>
+      </ShopCartProvider>
     </AuthProvider>
     </ThemeProvider>
     </QueryClientProvider>

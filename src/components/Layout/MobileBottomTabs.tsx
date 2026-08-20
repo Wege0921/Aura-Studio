@@ -6,7 +6,7 @@ import {
   CalendarDaysIcon,
   Squares2X2Icon,
   UserCircleIcon,
-  EnvelopeIcon,
+  ShoppingBagIcon,
 } from '@heroicons/react/24/outline';
 import './MobileBottomTabs.css';
 
@@ -14,7 +14,7 @@ const tabs = [
   { label: 'Home', path: '/', icon: HomeIcon },
   { label: 'Classes', path: '/classes', icon: CalendarDaysIcon },
   { label: 'Packages', path: '/packages', icon: Squares2X2Icon },
-  { label: 'Contact', path: '/contact', icon: EnvelopeIcon },
+  { label: 'Shop', path: '/shop', icon: ShoppingBagIcon },
 ];
 
 const MobileBottomTabs: React.FC = () => {

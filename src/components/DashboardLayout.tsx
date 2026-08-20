@@ -39,8 +39,13 @@ const PaymentManagement = lazy(() => import('./Admin/PaymentManagement'));
 const InstructorManagement = lazy(() => import('./Admin/InstructorManagement'));
 const Analytics = lazy(() => import('./Admin/Analytics'));
 const SiteContentManagement = lazy(() => import('./Admin/SiteContentManagement'));
+const MyOrders = lazy(() => import('./Shop/MyOrders'));
+const ShopProductManagement = lazy(() => import('./Admin/ShopProductManagement'));
+const ShopCategoryManagement = lazy(() => import('./Admin/ShopCategoryManagement'));
+const ShopOrderManagement = lazy(() => import('./Admin/ShopOrderManagement'));
+const ShopAnalytics = lazy(() => import('./Admin/ShopAnalytics'));
 
-type TabType = 'home' | 'classes' | 'packages' | 'bookings' | 'payments' | 'waitlist' | 'profile' | 'calendar' | 'admin-dashboard' | 'admin-classes' | 'admin-users' | 'admin-bookings' | 'admin-packages' | 'admin-payments' | 'admin-instructors' | 'admin-analytics' | 'admin-content';
+type TabType = 'home' | 'classes' | 'packages' | 'bookings' | 'payments' | 'waitlist' | 'profile' | 'calendar' | 'shop-orders' | 'admin-dashboard' | 'admin-classes' | 'admin-users' | 'admin-bookings' | 'admin-packages' | 'admin-payments' | 'admin-instructors' | 'admin-analytics' | 'admin-content' | 'admin-shop-products' | 'admin-shop-categories' | 'admin-shop-orders' | 'admin-shop-analytics';
 
 interface TabDef {
   id: TabType;
@@ -73,8 +78,8 @@ const DashboardLayout: React.FC = () => {
     if (!user) return;
     const isAdmin = user.role === 'ADMIN';
     const tabMap: Record<string, TabType> = isAdmin
-      ? { home: 'admin-dashboard', dashboard: 'admin-dashboard', classes: 'admin-classes', packages: 'admin-packages', bookings: 'admin-bookings', users: 'admin-users', payments: 'admin-payments', instructors: 'admin-instructors', analytics: 'admin-analytics', content: 'admin-content' }
-      : { home: 'home', classes: 'classes', packages: 'packages', bookings: 'bookings', payments: 'payments', waitlist: 'waitlist', profile: 'profile', calendar: 'calendar' };
+      ? { home: 'admin-dashboard', dashboard: 'admin-dashboard', classes: 'admin-classes', packages: 'admin-packages', bookings: 'admin-bookings', users: 'admin-users', payments: 'admin-payments', instructors: 'admin-instructors', analytics: 'admin-analytics', content: 'admin-content', 'shop-products': 'admin-shop-products', 'shop-orders': 'admin-shop-orders', 'shop-categories': 'admin-shop-categories', 'shop-analytics': 'admin-shop-analytics' }
+      : { home: 'home', classes: 'classes', packages: 'packages', bookings: 'bookings', payments: 'payments', waitlist: 'waitlist', profile: 'profile', calendar: 'calendar', 'shop-orders': 'shop-orders' };
     const segments = location.pathname.split('/').filter(Boolean);
     const tab = segments.length > 1 ? segments[1] : null;
     if (tab && tabMap[tab]) {
@@ -92,6 +97,7 @@ const DashboardLayout: React.FC = () => {
     { id: 'calendar', label: 'Schedule', icon: <CalendarIcon className="w-5 h-5" /> },
     { id: 'packages', label: 'Packages', icon: <PackagesIcon className="w-5 h-5" /> },
     { id: 'bookings', label: 'Bookings', icon: <BookingsIcon className="w-5 h-5" /> },
+    { id: 'shop-orders', label: 'My Orders', icon: <PackagesIcon className="w-5 h-5" /> },
     { id: 'payments', label: 'Payments', icon: <PaymentsIcon className="w-5 h-5" /> },
     { id: 'waitlist', label: 'Waitlist', icon: <WaitlistIcon className="w-5 h-5" /> },
     { id: 'profile', label: 'Profile', icon: <ProfileIcon className="w-5 h-5" /> },
@@ -105,6 +111,10 @@ const DashboardLayout: React.FC = () => {
     { id: 'admin-users', label: 'Users', icon: <UsersIcon className="w-5 h-5" /> },
     { id: 'admin-instructors', label: 'Instructors', icon: <InstructorIcon className="w-5 h-5" /> },
     { id: 'admin-payments', label: 'Payments', icon: <PaymentsIcon className="w-5 h-5" /> },
+    { id: 'admin-shop-products', label: 'Shop Products', icon: <PackagesIcon className="w-5 h-5" /> },
+    { id: 'admin-shop-orders', label: 'Shop Orders', icon: <BookingsIcon className="w-5 h-5" /> },
+    { id: 'admin-shop-categories', label: 'Shop Categories', icon: <ContentIcon className="w-5 h-5" /> },
+    { id: 'admin-shop-analytics', label: 'Shop Analytics', icon: <AnalyticsIcon className="w-5 h-5" /> },
     { id: 'admin-analytics', label: 'Analytics', icon: <AnalyticsIcon className="w-5 h-5" /> },
     { id: 'admin-content', label: 'Content', icon: <ContentIcon className="w-5 h-5" /> },
   ], []);
@@ -168,6 +178,7 @@ const DashboardLayout: React.FC = () => {
         case 'waitlist': return <MyWaitlist />;
         case 'profile': return <ProfilePage />;
         case 'calendar': return <CalendarView />;
+        case 'shop-orders': return <MyOrders />;
         case 'admin-dashboard': return <AdminDashboardPage onTabChange={handleTabChange} />;
         case 'admin-classes': return <ClassManagement />;
         case 'admin-users': return <UserManagement />;
@@ -177,6 +188,10 @@ const DashboardLayout: React.FC = () => {
         case 'admin-instructors': return <InstructorManagement />;
         case 'admin-analytics': return <Analytics />;
         case 'admin-content': return <SiteContentManagement />;
+        case 'admin-shop-products': return <ShopProductManagement />;
+        case 'admin-shop-categories': return <ShopCategoryManagement />;
+        case 'admin-shop-orders': return <ShopOrderManagement />;
+        case 'admin-shop-analytics': return <ShopAnalytics />;
         default: return isAdmin ? <AdminDashboardPage onTabChange={handleTabChange} /> : <UserDashboard />;
       }
     })();
@@ -323,7 +338,7 @@ const DashboardLayout: React.FC = () => {
 
         {/* Mobile Bottom Tab Bar — sidebar-only items excluded on mobile */}
         <MobileBottomNav
-          tabs={tabs.filter((t) => !['classes', 'packages', 'admin-classes', 'admin-packages', 'admin-instructors', 'admin-analytics', 'admin-users'].includes(t.id))}
+          tabs={tabs.filter((t) => !['classes', 'packages', 'admin-classes', 'admin-packages', 'admin-instructors', 'admin-analytics', 'admin-users', 'admin-shop-categories', 'admin-shop-analytics'].includes(t.id))}
           activeTab={activeTab}
           onTabChange={handleTabChange}
         />

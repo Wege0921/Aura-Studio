@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useShopCart } from '../../contexts/ShopCartContext';
 import ThemeToggle from '../ThemeToggle';
+import { ShoppingBagIcon } from '@heroicons/react/24/outline';
 import './PublicHeader.css';
 
 const PublicHeader: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { totalItems, openCart } = useShopCart();
   const isAdmin = user?.role === 'ADMIN';
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -29,6 +32,11 @@ const PublicHeader: React.FC = () => {
   const handlePackages = () => {
     closeMenu();
     navigate('/packages');
+  };
+
+  const handleShop = () => {
+    closeMenu();
+    navigate('/shop');
   };
 
   const handleContact = () => {
@@ -121,6 +129,7 @@ const PublicHeader: React.FC = () => {
         <button onClick={() => handleNav('top')}>Home</button>
         <button onClick={handleClasses}>Classes</button>
         <button onClick={handlePackages}>Packages</button>
+        <button onClick={handleShop}>Shop</button>
         <button onClick={() => handleNav('approach')}>About</button>
         <button onClick={handleContact}>Contact</button>
         {user ? (
@@ -161,11 +170,24 @@ const PublicHeader: React.FC = () => {
           <button onClick={() => handleNav('top')}>Home</button>
           <button onClick={handleClasses}>Classes</button>
           <button onClick={handlePackages}>Packages</button>
+          <button onClick={handleShop}>Shop</button>
           <button onClick={() => handleNav('approach')}>About</button>
           <button onClick={handleContact}>Contact</button>
         </nav>
         <div className="ph-desktop-actions">
           <ThemeToggle className="hidden md:inline-flex" />
+          <button onClick={openCart} className="ph-cart-btn hidden md:flex" aria-label="Cart" style={{ position: 'relative' }}>
+            <ShoppingBagIcon className="w-5 h-5" />
+            {totalItems > 0 && (
+              <span style={{
+                position: 'absolute', top: '-6px', right: '-6px',
+                background: '#d946ef', color: '#fff', fontSize: '10px',
+                fontWeight: 700, borderRadius: '9999px', minWidth: '18px',
+                height: '18px', display: 'flex', alignItems: 'center',
+                justifyContent: 'center', padding: '0 4px',
+              }}>{totalItems}</span>
+            )}
+          </button>
           {user ? (
             <div className="ph-auth-btns">
               <button className="ph-btn ph-btn-light" onClick={handleDashboard}>
