@@ -65,6 +65,50 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
   }
 };
 
+// Optional auth: populates req.user when a valid Bearer token is present,
+// but continues unauthenticated (req.user === undefined) when absent or invalid.
+// Used for endpoints that serve both guest and authenticated users (e.g. shop checkout).
+export const optionalAuth = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return next();
+  }
+
+  // Fast path: serve from cache if the token was recently verified
+  const cached = tokenCache.get(token);
+  if (cached && cached.expiresAt > Date.now()) {
+    req.user = cached.user;
+    return next();
+  }
+
+  try {
+    const { data: authData, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !authData.user) {
+      // Invalid token on an optional route: continue as guest rather than 403
+      return next();
+    }
+
+    const user = await ensureUserProfile(authData.user);
+    req.user = { id: user.id, email: user.email, role: user.role };
+
+    tokenCache.set(token, { user, expiresAt: Date.now() + TOKEN_CACHE_TTL_MS });
+    if (tokenCache.size > 1000) {
+      const now = Date.now();
+      for (const [key, val] of tokenCache) {
+        if (val.expiresAt <= now) tokenCache.delete(key);
+      }
+    }
+
+    next();
+  } catch (error) {
+    // Never block an optional-auth route on verification failure
+    next();
+  }
+};
+
 export const requireAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
   if (!req.user || req.user.role !== 'ADMIN') {
     return res.status(403).json({ error: 'Admin access required' });

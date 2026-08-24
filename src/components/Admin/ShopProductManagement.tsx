@@ -27,6 +27,7 @@ const ShopProductManagement: React.FC = () => {
     status: 'ACTIVE',
     isFeatured: false,
     weightGrams: '',
+    stock: '',
   });
 
   const ITEMS_PER_PAGE = 10;
@@ -65,7 +66,7 @@ const ShopProductManagement: React.FC = () => {
   };
 
   const resetForm = () => {
-    setFormData({ name: '', description: '', categoryId: '', basePrice: 0, salePrice: '', sku: '', status: 'ACTIVE', isFeatured: false, weightGrams: '' });
+    setFormData({ name: '', description: '', categoryId: '', basePrice: 0, salePrice: '', sku: '', status: 'ACTIVE', isFeatured: false, weightGrams: '', stock: '' });
     setEditingProduct(null);
     setShowForm(false);
   };
@@ -82,6 +83,7 @@ const ShopProductManagement: React.FC = () => {
       status: product.status,
       isFeatured: product.isFeatured,
       weightGrams: product.weightGrams?.toString() || '',
+      stock: product.stock === null || product.stock === undefined ? '' : product.stock.toString(),
     });
     setShowForm(true);
     setOpenDropdown(null);
@@ -97,6 +99,8 @@ const ShopProductManagement: React.FC = () => {
         basePrice: Number(formData.basePrice),
         salePrice: formData.salePrice ? Number(formData.salePrice) : null,
         weightGrams: formData.weightGrams ? Number(formData.weightGrams) : null,
+        // empty string => null (unlimited / untracked at product level)
+        stock: formData.stock === '' ? null : Number(formData.stock),
       };
       if (editingProduct) {
         await api.put(`/api/admin/shop/products/${editingProduct.id}`, payload);
@@ -209,6 +213,14 @@ const ShopProductManagement: React.FC = () => {
                 <div>
                   <label className="text-sm text-aura-sand mb-1 block">Weight (grams)</label>
                   <input type="number" min="0" value={formData.weightGrams} onChange={(e) => setFormData({ ...formData, weightGrams: e.target.value })}
+                    className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
+                </div>
+                <div>
+                  <label className="text-sm text-aura-sand mb-1 block">
+                    Product Stock
+                    <span className="text-xs text-aura-sand/60 ml-1">(blank = unlimited / use variant stock)</span>
+                  </label>
+                  <input type="number" min="0" placeholder="blank = untracked" value={formData.stock} onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
                     className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
                 </div>
               </div>

@@ -43,6 +43,7 @@ export interface Product {
   status: string;
   isFeatured: boolean;
   weightGrams?: number | null;
+  stock?: number | null; // product-level stock for simple products; null = unlimited/untracked
   category?: { id: string; name: string; slug: string };
   images?: ProductImage[];
   variants?: ProductVariant[];

@@ -66,12 +66,30 @@ const ProductDetail: React.FC = () => {
   const currentPrice = getVariantPrice(product, selectedVariant);
   const onSale = product.salePrice !== null && product.salePrice !== undefined && product.salePrice < product.basePrice;
   const images = product.images || [];
-  const stock = selectedVariant ? selectedVariant.stock : variants.reduce((sum, v) => sum + v.stock, 0);
+
+  // Stock resolution:
+  // - If a variant is selected, use its stock.
+  // - Else if the product has variants (but none selected yet), sum variant
+  //   stock for the "X left" indicator (gating still requires a selection).
+  // - Else (simple product), use product.stock. null = unlimited/untracked,
+  //   represented as a large number so the UI shows "In Stock".
+  const variantStock = selectedVariant ? selectedVariant.stock
+    : hasVariants ? variants.reduce((sum, v) => sum + v.stock, 0)
+    : (product.stock === null || product.stock === undefined ? Number.MAX_SAFE_INTEGER : product.stock);
+  const stock = variantStock;
   const outOfStock = product.status === 'OUT_OF_STOCK' || stock <= 0;
 
   const handleAddToCart = () => {
     if (outOfStock) return;
     if (hasVariants && !selectedVariant) return;
+
+    // For the cart context, stock is the per-line cap:
+    // - variant items: variant.stock
+    // - simple products with tracked stock: product.stock
+    // - simple products with null/untracked stock: null (no cap)
+    const cartStock = selectedVariant
+      ? selectedVariant.stock
+      : (product.stock === null || product.stock === undefined ? null : product.stock);
 
     addItem({
       productId: product.id,
@@ -83,7 +101,7 @@ const ProductDetail: React.FC = () => {
         : null,
       price: currentPrice,
       image: images[0]?.url || null,
-      stock: selectedVariant?.stock ?? null,
+      stock: cartStock,
     }, quantity);
 
     setAddedToCart(true);

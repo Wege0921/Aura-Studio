@@ -173,7 +173,7 @@ router.post('/products', authenticateToken, requireAdmin, [
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
-    const { name, description, categoryId, basePrice, salePrice, sku, status, isFeatured, weightGrams } = req.body;
+    const { name, description, categoryId, basePrice, salePrice, sku, status, isFeatured, weightGrams, stock } = req.body;
     const slug = await ensureUniqueSlug(slugify(name));
 
     const product = await prisma.product.create({
@@ -188,6 +188,9 @@ router.post('/products', authenticateToken, requireAdmin, [
         status: status || 'ACTIVE',
         isFeatured: isFeatured !== undefined ? Boolean(isFeatured) : false,
         weightGrams: weightGrams ? Number(weightGrams) : null,
+        // stock: null = unlimited/untracked; otherwise a non-negative integer.
+        // Accept empty string / undefined as null.
+        stock: stock === undefined || stock === '' || stock === null ? null : Math.max(0, Number(stock)),
       },
       include: { category: true, images: true, variants: true },
     });
@@ -201,7 +204,7 @@ router.post('/products', authenticateToken, requireAdmin, [
 router.put('/products/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, description, categoryId, basePrice, salePrice, sku, status, isFeatured, weightGrams } = req.body;
+    const { name, description, categoryId, basePrice, salePrice, sku, status, isFeatured, weightGrams, stock } = req.body;
     const updateData: any = {};
     if (name !== undefined) { updateData.name = name; updateData.slug = await ensureUniqueSlug(slugify(name), id); }
     if (description !== undefined) updateData.description = description;
@@ -212,6 +215,9 @@ router.put('/products/:id', authenticateToken, requireAdmin, async (req: Authent
     if (status !== undefined) updateData.status = status;
     if (isFeatured !== undefined) updateData.isFeatured = Boolean(isFeatured);
     if (weightGrams !== undefined) updateData.weightGrams = weightGrams ? Number(weightGrams) : null;
+    if (stock !== undefined) {
+      updateData.stock = stock === '' || stock === null ? null : Math.max(0, Number(stock));
+    }
 
     const updated = await prisma.product.update({
       where: { id },
@@ -466,14 +472,34 @@ router.patch('/orders/:id/status', authenticateToken, requireAdmin, [
     if (!order) return res.status(404).json({ error: 'Order not found' });
 
     const result = await prisma.$transaction(async (tx) => {
-      // If cancelling/restocking after confirmation, return stock
-      if ((status === 'CANCELLED' || status === 'REFUNDED') && order.status !== 'PENDING') {
+      // Restock on cancellation/refund. Stock is decremented at order
+      // creation (even while PENDING), so we restock from any non-terminal
+      // status. Guard against double-restock by only restocking when the
+      // order is leaving an active state for a terminal one, and only if
+      // we haven't already restocked (tracked via the previous status).
+      const activeStatuses = ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED'];
+      const isLeavingActive = activeStatuses.includes(order.status);
+      const isTerminalRestock = status === 'CANCELLED' || status === 'REFUNDED';
+
+      if (isTerminalRestock && isLeavingActive) {
         for (const item of order.items) {
           if (item.variantId) {
             await tx.productVariant.update({
               where: { id: item.variantId },
               data: { stock: { increment: item.quantity } },
             });
+          } else {
+            // Only restock product-level stock when it is tracked (non-null)
+            const product = await tx.product.findUnique({
+              where: { id: item.productId },
+              select: { stock: true },
+            });
+            if (product && product.stock !== null) {
+              await tx.product.update({
+                where: { id: item.productId },
+                data: { stock: { increment: item.quantity } },
+              });
+            }
           }
         }
       }

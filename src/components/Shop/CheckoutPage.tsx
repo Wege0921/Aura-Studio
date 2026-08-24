@@ -23,7 +23,7 @@ const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const { items, subtotal, clearCart } = useShopCart();
   const { user } = useAuth();
-  const { register, handleSubmit, formState: { errors } } = useForm<CheckoutForm>({
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<CheckoutForm>({
     defaultValues: {
       shippingFullName: user?.name || '',
       paymentMethod: 'BANK_TRANSFER',
@@ -32,6 +32,8 @@ const CheckoutPage: React.FC = () => {
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const selectedPaymentMethod = watch('paymentMethod');
+  const needsReceipt = selectedPaymentMethod !== 'CASH_ON_DELIVERY';
 
   if (items.length === 0) {
     return (
@@ -47,6 +49,13 @@ const CheckoutPage: React.FC = () => {
   const onSubmit = async (data: CheckoutForm) => {
     setSubmitting(true);
     setSubmitError('');
+
+    // Client-side guard: server also enforces this, but fail fast for UX.
+    if (data.paymentMethod !== 'CASH_ON_DELIVERY' && !receiptFile) {
+      setSubmitError('Please upload your payment receipt to continue.');
+      setSubmitting(false);
+      return;
+    }
 
     try {
       const formData = new FormData();
@@ -66,39 +75,31 @@ const CheckoutPage: React.FC = () => {
       if (data.notes) formData.append('notes', data.notes);
 
       // Generate guest token if not logged in
+      // NOTE: the server now mints a fresh per-order guest token and ignores
+      // any client-supplied value, so we do not send one. The returned token
+      // is appended to the order-confirmation URL below.
       if (!user) {
-        const guestToken = localStorage.getItem('aura-guest-token') || crypto.randomUUID();
-        localStorage.setItem('aura-guest-token', guestToken);
-        formData.append('guestToken', guestToken);
+        // no-op — server returns guestToken in the response
       }
 
       if (receiptFile && data.paymentMethod !== 'CASH_ON_DELIVERY') {
         formData.append('receipt', receiptFile);
       }
 
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/shop/orders', {
-        method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: formData,
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to place order');
-      }
+      const response = await api.postForm<{ message: string; order: { id: string }; guestToken?: string }>(
+        '/api/shop/orders',
+        formData
+      );
 
       clearCart();
-      navigate(`/shop/orders/${result.order.id}${!user ? `?guestToken=${result.guestToken}` : ''}`);
+      const guestToken = response.guestToken;
+      navigate(`/shop/orders/${response.order.id}${!user && guestToken ? `?guestToken=${guestToken}` : ''}`);
     } catch (err: any) {
       setSubmitError(err.message || 'Failed to place order. Please try again.');
     } finally {
       setSubmitting(false);
     }
   };
-
-  const needsReceipt = (watch: any) => watch !== 'CASH_ON_DELIVERY';
 
   return (
     <div className="space-y-6">
@@ -208,7 +209,7 @@ const CheckoutPage: React.FC = () => {
             {/* Receipt upload */}
             <div>
               <label className="text-sm text-aura-sand mb-1 block">
-                Payment Receipt {needsReceipt((document.querySelector('input[name="paymentMethod"]:checked') as HTMLInputElement)?.value) ? '*' : '(not required for Cash on Delivery)'}
+                Payment Receipt {needsReceipt ? '*' : '(not required for Cash on Delivery)'}
               </label>
               <input
                 type="file"
@@ -216,6 +217,11 @@ const CheckoutPage: React.FC = () => {
                 onChange={(e) => setReceiptFile(e.target.files?.[0] || null)}
                 className="w-full text-sm text-aura-cream file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-aura-clay file:text-aura-ink file:font-medium file:cursor-pointer"
               />
+              {needsReceipt && receiptFile && (
+                <p className="text-xs text-green-400 mt-1">
+                  Selected: {receiptFile.name}
+                </p>
+              )}
             </div>
           </div>
 

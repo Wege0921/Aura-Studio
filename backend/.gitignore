@@ -150,8 +150,8 @@ prod.db
 test.db
 
 # Prisma specific
-prisma/migrations/
-!prisma/migrations/.gitkeep
+# IMPORTANT: prisma/migrations/ MUST be committed — they are essential for
+# deployment. Only ignore local dev DB artifacts.
 prisma/dev.db
 prisma/dev.db-journal
 
@@ -282,6 +282,9 @@ nodemon.json
 # Database dumps
 *.sql
 *.dump
+# Exceptions: Prisma migration SQL and the shop bootstrap SQL must be tracked
+!prisma/migrations/**/*.sql
+!prisma/shop_tables.sql
 
 # Performance profiling
 *.cpuprofile

@@ -268,6 +268,10 @@ model Product {
   status       String   @default("ACTIVE") // ACTIVE, DRAFT, ARCHIVED, OUT_OF_STOCK
   isFeatured   Boolean  @default(false)
   weightGrams  Int?
+  // Product-level stock for simple products (no variants).
+  // When null, the product is treated as unlimited / not tracked at the
+  // product level (variant stock is used instead, if any).
+  stock        Int?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -321,7 +325,7 @@ model ShopOrder {
   id               String    @id @default(cuid())
   orderNumber      String    @unique
   userId           String?
-  guestToken       String?   @unique
+  guestToken       String?
   status           String    @default("PENDING") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED
   subtotal         Float
   shippingCost     Float     @default(0)
@@ -343,6 +347,7 @@ model ShopOrder {
   @@index([userId])
   @@index([status])
   @@index([createdAt])
+  @@index([guestToken])
   @@map("shop_orders")
 }
 

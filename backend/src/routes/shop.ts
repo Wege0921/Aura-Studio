@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import multer from 'multer';
 import { body, validationResult } from 'express-validator';
 import { prisma } from '../lib/prisma';
-import { authenticateToken } from '../middleware/auth';
+import { authenticateToken, optionalAuth } from '../middleware/auth';
 import { uploadToSupabase } from '../lib/upload';
 import crypto from 'crypto';
 
@@ -192,7 +192,7 @@ router.get('/products/:slug', async (req: Request, res: Response) => {
 // ============================================================
 
 // Create order (auth or guest)
-router.post('/orders', receiptUpload.single('receipt'), [
+router.post('/orders', optionalAuth, receiptUpload.single('receipt'), [
   body('items').isArray({ min: 1 }).withMessage('At least one item is required'),
   body('paymentMethod').isIn(['BANK_TRANSFER', 'MOBILE_MONEY', 'CASH_ON_DELIVERY']).withMessage('Invalid payment method'),
   body('shippingFullName').notEmpty().withMessage('Full name is required'),
@@ -207,9 +207,19 @@ router.post('/orders', receiptUpload.single('receipt'), [
       return res.status(400).json({ errors: errors.array() });
     }
 
+    // Enforce receipt upload for non-COD payment methods.
+    // Cash on delivery does not require a receipt; bank transfer and mobile
+    // money must include proof of payment at submission time.
+    const paymentMethod = req.body.paymentMethod as string;
+    if (paymentMethod !== 'CASH_ON_DELIVERY' && !req.file) {
+      return res.status(400).json({
+        error: 'A payment receipt is required for bank transfer and mobile money orders. Please upload your receipt and try again.',
+      });
+    }
+
     const {
       items,
-      paymentMethod,
+      paymentMethod: _pm,
       shippingFullName,
       shippingPhone,
       shippingRegion,
@@ -218,14 +228,17 @@ router.post('/orders', receiptUpload.single('receipt'), [
       shippingPostalCode,
       shippingNotes,
       notes,
-      guestToken: providedGuestToken,
     } = req.body;
 
     // Parse items if sent as string (multipart form)
     const parsedItems = typeof items === 'string' ? JSON.parse(items) : items;
 
     const userId = req.user?.id || null;
-    const guestToken = userId ? null : (providedGuestToken || crypto.randomUUID());
+    // Always mint a fresh per-order guest token for unauthenticated orders.
+    // A single browser/device may place multiple orders, and guestToken is no
+    // longer unique-constrained, so reusing a client-supplied token would let
+    // one order's link leak access to another. We ignore any client value.
+    const guestToken = userId ? null : crypto.randomUUID();
 
     // Validate stock and compute totals server-side (never trust client prices)
     const orderItemsData: any[] = [];
@@ -257,9 +270,18 @@ router.post('/orders', receiptUpload.single('receipt'), [
         return res.status(400).json({ error: 'Quantity must be at least 1' });
       }
 
-      // Stock check (skip for CASH_ON_DELIVERY? No — still check)
-      if (variant && variant.stock < qty) {
-        return res.status(400).json({ error: `Insufficient stock for ${product.name}` });
+      // Stock check
+      // - Variant items: check variant.stock
+      // - Simple products (no variant): check product.stock when it is tracked (non-null)
+      // - product.stock === null means unlimited / not tracked
+      if (variant) {
+        if (variant.stock < qty) {
+          return res.status(400).json({ error: `Insufficient stock for ${product.name}` });
+        }
+      } else if (product.stock !== null) {
+        if (product.stock < qty) {
+          return res.status(400).json({ error: `Insufficient stock for ${product.name}` });
+        }
       }
 
       const lineTotal = unitPrice * qty;
@@ -332,13 +354,35 @@ router.post('/orders', receiptUpload.single('receipt'), [
         },
       });
 
-      // Decrement stock now (will be restocked if order is cancelled)
+      // Decrement stock atomically inside the transaction.
+      // Uses updateMany with a `stock >= qty` guard so concurrent orders
+      // cannot drive stock negative. If zero rows are updated, another
+      // concurrent order won the stock — abort the whole transaction.
       for (const item of orderItemsData) {
         if (item.variantId) {
-          await tx.productVariant.update({
-            where: { id: item.variantId },
+          const result = await tx.productVariant.updateMany({
+            where: { id: item.variantId, stock: { gte: item.quantity } },
             data: { stock: { decrement: item.quantity } },
           });
+          if (result.count === 0) {
+            throw new Error(`Insufficient stock for ${item.name}`);
+          }
+        } else {
+          // Only decrement product-level stock when it is tracked (non-null).
+          // null stock means unlimited / not tracked.
+          const fresh = await tx.product.findUnique({
+            where: { id: item.productId },
+            select: { stock: true, name: true },
+          });
+          if (fresh && fresh.stock !== null) {
+            const result = await tx.product.updateMany({
+              where: { id: item.productId, stock: { gte: item.quantity } },
+              data: { stock: { decrement: item.quantity } },
+            });
+            if (result.count === 0) {
+              throw new Error(`Insufficient stock for ${fresh.name}`);
+            }
+          }
         }
       }
 
@@ -350,7 +394,11 @@ router.post('/orders', receiptUpload.single('receipt'), [
       order,
       guestToken,
     });
-  } catch (error) {
+  } catch (error: any) {
+    // Surface stock-exhaustion errors (thrown inside the transaction) as 400
+    if (error?.message?.startsWith('Insufficient stock for ')) {
+      return res.status(400).json({ error: error.message });
+    }
     console.error('Error creating shop order:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -401,7 +449,7 @@ router.get('/orders/mine', authenticateToken, async (req: AuthenticatedRequest, 
 });
 
 // Get single order (owner or admin or guest with token)
-router.get('/orders/:id', async (req: AuthenticatedRequest, res: Response) => {
+router.get('/orders/:id', optionalAuth, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
     const { guestToken } = req.query;
