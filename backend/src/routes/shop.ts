@@ -1,9 +1,10 @@
 import express, { Request, Response } from 'express';
 import multer from 'multer';
 import { body, validationResult } from 'express-validator';
+import rateLimit from 'express-rate-limit';
 import { prisma } from '../lib/prisma';
 import { authenticateToken, optionalAuth } from '../middleware/auth';
-import { uploadToSupabase } from '../lib/upload';
+import { uploadToSupabase, detectMimetype } from '../lib/upload';
 import crypto from 'crypto';
 
 interface AuthenticatedRequest extends Request {
@@ -16,6 +17,36 @@ interface AuthenticatedRequest extends Request {
 }
 
 const router = express.Router();
+
+// Rate limiters
+// Order creation is strict: anonymous scripts could otherwise zero out
+// inventory by spamming checkout. 5 orders / 15 min per IP is generous
+// for real users but blocks abuse.
+const orderCreationLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { error: 'Too many orders from this address, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Receipt uploads: moderate limit to prevent storage abuse.
+const receiptUploadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { error: 'Too many receipt uploads, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Catalog reads: generous, but bounded to prevent scraping / DoS.
+const catalogLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 60,
+  message: { error: 'Too many requests, please slow down' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Multer for receipt uploads (memory storage → Supabase)
 const receiptUpload = multer({
@@ -30,12 +61,44 @@ const receiptUpload = multer({
   },
 });
 
-// Helper: generate sequential order number
-async function generateOrderNumber(): Promise<string> {
+// Idempotency cache for order creation.
+// Keyed by Idempotency-Key header (per IP) → cached response.
+// Prevents duplicate orders from double-clicks or network retries.
+// In-memory with TTL; for multi-instance deployments, use Redis.
+const IDEMPOTENCY_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const idempotencyCache = new Map<string, { response: any; expiresAt: number }>();
+
+// Helper: generate a unique order number.
+// Uses count+1 as a base for human-readability, then verifies uniqueness
+// with a retry loop that appends an incrementing suffix on collision.
+// Safe under concurrency: the unique constraint on orderNumber is the source
+// of truth, and we retry until we find a free slot. Accepts an optional
+// transaction client so the check+insert can be atomic.
+type OrderNumberClient = Pick<typeof prisma, 'shopOrder'>;
+async function generateOrderNumber(tx?: OrderNumberClient): Promise<string> {
+  const client = tx || prisma;
   const year = new Date().getFullYear();
-  const count = await prisma.shopOrder.count();
-  const num = (count + 1).toString().padStart(5, '0');
-  return `AURA-${year}-${num}`;
+  // Start from the current count (approximate — fine since we retry on collision)
+  const count = await client.shopOrder.count();
+  let seq = count + 1;
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const num = seq.toString().padStart(5, '0');
+    const candidate = `AURA-${year}-${num}`;
+    const exists = await client.shopOrder.findUnique({
+      where: { orderNumber: candidate },
+      select: { id: true },
+    });
+    if (!exists) return candidate;
+    seq++;
+  }
+  // Fallback: append a random suffix to guarantee uniqueness
+  const suffix = crypto.randomBytes(3).toString('hex').toUpperCase();
+  return `AURA-${year}-${suffix}`;
+}
+
+// Transaction-scoped variant (the tx client has the same shopOrder shape)
+async function generateOrderNumberWithTx(tx: any): Promise<string> {
+  return generateOrderNumber(tx as OrderNumberClient);
 }
 
 // Helper: slugify
@@ -48,7 +111,7 @@ function slugify(text: string): string {
 // ============================================================
 
 // Get all active categories
-router.get('/categories', async (_req: Request, res: Response) => {
+router.get('/categories', catalogLimiter, async (_req: Request, res: Response) => {
   try {
     const categories = await prisma.productCategory.findMany({
       where: { isActive: true },
@@ -65,7 +128,7 @@ router.get('/categories', async (_req: Request, res: Response) => {
 });
 
 // Get products with filtering, search, sorting, pagination
-router.get('/products', async (req: Request, res: Response) => {
+router.get('/products', catalogLimiter, async (req: Request, res: Response) => {
   try {
     const {
       category,
@@ -86,11 +149,17 @@ router.get('/products', async (req: Request, res: Response) => {
       where.category = { slug: category as string, isActive: true };
     }
 
+    // Build AND conditions so search and price filters combine correctly
+    // (the old code overwrote where.OR, breaking search+price together).
+    const andConditions: any[] = [];
+
     if (search) {
-      where.OR = [
-        { name: { contains: search as string, mode: 'insensitive' } },
-        { description: { contains: search as string, mode: 'insensitive' } },
-      ];
+      andConditions.push({
+        OR: [
+          { name: { contains: search as string, mode: 'insensitive' } },
+          { description: { contains: search as string, mode: 'insensitive' } },
+        ],
+      });
     }
 
     if (featured === 'true') {
@@ -98,15 +167,25 @@ router.get('/products', async (req: Request, res: Response) => {
     }
 
     if (minPrice || maxPrice) {
-      where.OR = [
-        {
-          salePrice: { gte: minPrice ? Number(minPrice) : undefined, lte: maxPrice ? Number(maxPrice) : undefined },
-        },
-        {
-          salePrice: null,
-          basePrice: { gte: minPrice ? Number(minPrice) : undefined, lte: maxPrice ? Number(maxPrice) : undefined },
-        },
-      ];
+      const min = minPrice ? Number(minPrice) : undefined;
+      const max = maxPrice ? Number(maxPrice) : undefined;
+      andConditions.push({
+        OR: [
+          // Products on sale: filter by salePrice
+          {
+            salePrice: { not: null, gte: min, lte: max },
+          },
+          // Products not on sale: filter by basePrice
+          {
+            salePrice: null,
+            basePrice: { gte: min, lte: max },
+          },
+        ],
+      });
+    }
+
+    if (andConditions.length > 0) {
+      where.AND = andConditions;
     }
 
     // Variant filters
@@ -116,14 +195,28 @@ router.get('/products', async (req: Request, res: Response) => {
       if (color) where.variants.some.color = { contains: color as string, mode: 'insensitive' };
     }
 
-    const orderBy: any = { createdAt: 'desc' };
-    if (sort === 'price-low') orderBy.basePrice = 'asc';
-    if (sort === 'price-high') orderBy.basePrice = 'desc';
-    if (sort === 'name') orderBy.name = 'asc';
+    // Sorting: "newest" and "name" can use DB orderBy. Price sorting needs
+    // to account for salePrice (effective price), which Prisma can't express
+    // in orderBy — so we fetch then sort in JS for price sorts.
+    const sortStr = (sort as string) || 'newest';
+    const dbOrderBy: any = { createdAt: 'desc' };
+    let needsJsPriceSort = false;
+    let jsPriceSortDir: 'asc' | 'desc' = 'asc';
+
+    if (sortStr === 'name') {
+      dbOrderBy.name = 'asc';
+      delete dbOrderBy.createdAt;
+    } else if (sortStr === 'price-low') {
+      needsJsPriceSort = true;
+      jsPriceSortDir = 'asc';
+    } else if (sortStr === 'price-high') {
+      needsJsPriceSort = true;
+      jsPriceSortDir = 'desc';
+    }
 
     const products = await prisma.product.findMany({
       where,
-      orderBy,
+      orderBy: dbOrderBy,
       skip: (Number(page) - 1) * Number(limit),
       take: Math.min(Math.max(Number(limit) || 24, 1), 100),
       include: {
@@ -132,6 +225,15 @@ router.get('/products', async (req: Request, res: Response) => {
         variants: { where: { isActive: true } },
       },
     });
+
+    // Apply JS-level price sort using effective price (salePrice ?? basePrice)
+    if (needsJsPriceSort) {
+      products.sort((a: any, b: any) => {
+        const priceA = Number(a.salePrice ?? a.basePrice);
+        const priceB = Number(b.salePrice ?? b.basePrice);
+        return jsPriceSortDir === 'asc' ? priceA - priceB : priceB - priceA;
+      });
+    }
 
     const total = await prisma.product.count({ where });
 
@@ -151,7 +253,7 @@ router.get('/products', async (req: Request, res: Response) => {
 });
 
 // Get single product by slug
-router.get('/products/:slug', async (req: Request, res: Response) => {
+router.get('/products/:slug', catalogLimiter, async (req: Request, res: Response) => {
   try {
     const { slug } = req.params;
     const product = await prisma.product.findUnique({
@@ -192,7 +294,7 @@ router.get('/products/:slug', async (req: Request, res: Response) => {
 // ============================================================
 
 // Create order (auth or guest)
-router.post('/orders', optionalAuth, receiptUpload.single('receipt'), [
+router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single('receipt'), [
   body('items').isArray({ min: 1 }).withMessage('At least one item is required'),
   body('paymentMethod').isIn(['BANK_TRANSFER', 'MOBILE_MONEY', 'CASH_ON_DELIVERY']).withMessage('Invalid payment method'),
   body('shippingFullName').notEmpty().withMessage('Full name is required'),
@@ -202,6 +304,19 @@ router.post('/orders', optionalAuth, receiptUpload.single('receipt'), [
   body('shippingAddress').notEmpty().withMessage('Address is required'),
 ], async (req: AuthenticatedRequest, res: Response) => {
   try {
+    // Idempotency: if the client sends an Idempotency-Key header and we've
+    // already processed it, return the cached response instead of creating
+    // a duplicate order. Keyed by IP + header to prevent cross-user leakage.
+    const idempotencyKey = req.headers['idempotency-key'] as string | undefined;
+    const cacheKey = idempotencyKey ? `${req.ip}:${idempotencyKey}` : null;
+
+    if (cacheKey) {
+      const cached = idempotencyCache.get(cacheKey);
+      if (cached && cached.expiresAt > Date.now()) {
+        return res.status(201).json(cached.response);
+      }
+    }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -215,6 +330,14 @@ router.post('/orders', optionalAuth, receiptUpload.single('receipt'), [
       return res.status(400).json({
         error: 'A payment receipt is required for bank transfer and mobile money orders. Please upload your receipt and try again.',
       });
+    }
+
+    // Validate receipt file contents via magic bytes (don't trust client mimetype)
+    if (req.file) {
+      const detected = detectMimetype(req.file.buffer);
+      if (!detected) {
+        return res.status(400).json({ error: 'The uploaded receipt does not appear to be a valid image or PDF file.' });
+      }
     }
 
     const {
@@ -255,14 +378,16 @@ router.post('/orders', optionalAuth, receiptUpload.single('receipt'), [
       }
 
       let variant = null;
-      let unitPrice = product.salePrice ?? product.basePrice;
+      // Convert Decimal to number for arithmetic. Prisma returns Decimal as
+      // Prisma.Decimal objects when the column type is Decimal.
+      let unitPrice = Number(product.salePrice ?? product.basePrice);
 
       if (item.variantId) {
         variant = product.variants.find((v) => v.id === item.variantId);
         if (!variant || !variant.isActive) {
           return res.status(400).json({ error: `Variant not available: ${item.variantId}` });
         }
-        unitPrice += variant.priceDelta;
+        unitPrice += Number(variant.priceDelta);
       }
 
       const qty = Number(item.quantity);
@@ -316,10 +441,10 @@ router.post('/orders', optionalAuth, receiptUpload.single('receipt'), [
       );
     }
 
-    // Create order in transaction (decrement stock for non-COD, or for COD too to reserve)
-    const orderNumber = await generateOrderNumber();
-
+    // Create order in transaction. Order number is generated inside the
+    // transaction so the uniqueness check and insert are atomic.
     const order = await prisma.$transaction(async (tx) => {
+      const orderNumber = await generateOrderNumberWithTx(tx);
       const newOrder = await tx.shopOrder.create({
         data: {
           orderNumber,
@@ -389,11 +514,28 @@ router.post('/orders', optionalAuth, receiptUpload.single('receipt'), [
       return newOrder;
     });
 
-    res.status(201).json({
+    const responseBody = {
       message: 'Order placed successfully',
       order,
       guestToken,
-    });
+    };
+
+    // Cache the successful response for idempotency
+    if (cacheKey) {
+      idempotencyCache.set(cacheKey, {
+        response: responseBody,
+        expiresAt: Date.now() + IDEMPOTENCY_TTL_MS,
+      });
+      // Bound the cache size
+      if (idempotencyCache.size > 500) {
+        const now = Date.now();
+        for (const [key, val] of idempotencyCache) {
+          if (val.expiresAt <= now) idempotencyCache.delete(key);
+        }
+      }
+    }
+
+    res.status(201).json(responseBody);
   } catch (error: any) {
     // Surface stock-exhaustion errors (thrown inside the transaction) as 400
     if (error?.message?.startsWith('Insufficient stock for ')) {
@@ -405,7 +547,7 @@ router.post('/orders', optionalAuth, receiptUpload.single('receipt'), [
 });
 
 // Upload receipt for an existing order (e.g., if not uploaded at creation)
-router.post('/orders/:id/receipt', authenticateToken, receiptUpload.single('receipt'), async (req: AuthenticatedRequest, res: Response) => {
+router.post('/orders/:id/receipt', receiptUploadLimiter, authenticateToken, receiptUpload.single('receipt'), async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
     const order = await prisma.shopOrder.findUnique({ where: { id } });

@@ -3,7 +3,7 @@ import multer from 'multer';
 import { body, validationResult } from 'express-validator';
 import { prisma } from '../lib/prisma';
 import { authenticateToken, requireAdmin } from '../middleware/auth';
-import { uploadToSupabase } from '../lib/upload';
+import { uploadToSupabase, deleteFromSupabase, detectMimetype } from '../lib/upload';
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -92,9 +92,15 @@ router.post('/categories', authenticateToken, requireAdmin, [
 router.put('/categories/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, description, imageUrl, sortOrder, isActive } = req.body;
+    const { name, description, imageUrl, sortOrder, isActive, slug } = req.body;
     const updateData: any = {};
-    if (name !== undefined) { updateData.name = name; updateData.slug = slugify(name); }
+    if (name !== undefined) updateData.name = name;
+    // Slug is NOT auto-regenerated from name on update — that would break
+    // existing /shop/:categorySlug URLs and inbound links. Slug is only
+    // changed when explicitly provided by the admin.
+    if (slug !== undefined && slug) {
+      updateData.slug = slugify(slug);
+    }
     if (description !== undefined) updateData.description = description;
     if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
     if (sortOrder !== undefined) updateData.sortOrder = Number(sortOrder);
@@ -264,11 +270,20 @@ router.post('/products/:id/images', authenticateToken, requireAdmin, imageUpload
     const product = await prisma.product.findUnique({ where: { id }, include: { images: true } });
     if (!product) return res.status(404).json({ error: 'Product not found' });
 
+    // Validate file contents via magic bytes (don't trust client mimetype)
+    for (const file of files) {
+      const detected = detectMimetype(file.buffer);
+      if (!detected) {
+        return res.status(400).json({ error: `File "${file.originalname}" does not appear to be a valid image` });
+      }
+    }
+
     const uploadedImages: any[] = [];
     let sortOrder = product.images.length;
 
     for (const file of files) {
-      const url = await uploadToSupabase(file.buffer, file.originalname, file.mimetype, 'products', 'products');
+      const detected = detectMimetype(file.buffer) || file.mimetype;
+      const url = await uploadToSupabase(file.buffer, file.originalname, detected, 'products', 'products');
       const img = await prisma.productImage.create({
         data: {
           productId: id,
@@ -291,7 +306,14 @@ router.post('/products/:id/images', authenticateToken, requireAdmin, imageUpload
 router.delete('/products/:id/images/:imageId', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { imageId } = req.params;
+    // Fetch the image URL before deleting so we can clean up Supabase storage
+    const image = await prisma.productImage.findUnique({ where: { id: imageId } });
+    if (!image) return res.status(404).json({ error: 'Image not found' });
+
     await prisma.productImage.delete({ where: { id: imageId } });
+    // Best-effort cleanup of the Supabase storage object (don't block on failure)
+    await deleteFromSupabase(image.url);
+
     res.json({ message: 'Image deleted' });
   } catch (error) {
     console.error('Error deleting product image:', error);
@@ -626,9 +648,13 @@ router.get('/analytics/summary', authenticateToken, requireAdmin, async (req, re
     const topProductsWithDetails = topProducts.map((t) => {
       const detail = topProductDetails.find((p) => p.id === t.productId);
       return {
-        ...t,
+        productId: t.productId,
         name: detail?.name || 'Unknown',
         slug: detail?.slug || '',
+        _sum: {
+          quantity: t._sum.quantity,
+          lineTotal: t._sum.lineTotal ? Number(t._sum.lineTotal) : 0,
+        },
       };
     });
 
@@ -640,7 +666,7 @@ router.get('/analytics/summary', authenticateToken, requireAdmin, async (req, re
         shippedOrders,
         deliveredOrders,
         cancelledOrders,
-        totalRevenue: totalRevenue._sum.total || 0,
+        totalRevenue: totalRevenue._sum.total ? Number(totalRevenue._sum.total) : 0,
         pendingPayments,
       },
       topProducts: topProductsWithDetails,

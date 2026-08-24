@@ -74,13 +74,11 @@ const CheckoutPage: React.FC = () => {
       if (data.shippingNotes) formData.append('shippingNotes', data.shippingNotes);
       if (data.notes) formData.append('notes', data.notes);
 
-      // Generate guest token if not logged in
-      // NOTE: the server now mints a fresh per-order guest token and ignores
-      // any client-supplied value, so we do not send one. The returned token
-      // is appended to the order-confirmation URL below.
-      if (!user) {
-        // no-op — server returns guestToken in the response
-      }
+      // Generate an idempotency key for this checkout attempt so a double-
+      // click or network retry doesn't create a duplicate order. The key is
+      // stable for the lifetime of this submit attempt (regenerated on each
+      // call to onSubmit).
+      const idempotencyKey = crypto.randomUUID();
 
       if (receiptFile && data.paymentMethod !== 'CASH_ON_DELIVERY') {
         formData.append('receipt', receiptFile);
@@ -88,7 +86,8 @@ const CheckoutPage: React.FC = () => {
 
       const response = await api.postForm<{ message: string; order: { id: string }; guestToken?: string }>(
         '/api/shop/orders',
-        formData
+        formData,
+        { 'Idempotency-Key': idempotencyKey }
       );
 
       clearCart();

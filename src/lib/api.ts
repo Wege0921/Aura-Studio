@@ -31,11 +31,14 @@ export const api = {
   patch: <T>(path: string, body: unknown) =>
     request<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),
   delete: <T>(path: string) => request<T>(path, { method: 'DELETE' }),
-  postForm: <T>(path: string, formData: FormData) => {
+  postForm: <T>(path: string, formData: FormData, extraHeaders?: Record<string, string>) => {
     const token = getToken();
     return fetch(`${BASE_URL}${path}`, {
       method: 'POST',
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(extraHeaders || {}),
+      },
       body: formData,
     }).then(async (res) => {
       const data = await res.json().catch(() => ({ error: res.statusText }));

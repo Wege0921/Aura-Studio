@@ -262,8 +262,8 @@ model Product {
   name         String
   description  String?
   categoryId   String
-  basePrice    Float
-  salePrice    Float?
+  basePrice    Decimal  @db.Decimal(10, 2)
+  salePrice    Decimal? @db.Decimal(10, 2)
   sku          String?  @unique
   status       String   @default("ACTIVE") // ACTIVE, DRAFT, ARCHIVED, OUT_OF_STOCK
   isFeatured   Boolean  @default(false)
@@ -294,7 +294,7 @@ model ProductVariant {
   color        String?
   style        String?
   sku          String?  @unique
-  priceDelta   Float    @default(0)
+  priceDelta   Decimal  @default(0) @db.Decimal(10, 2)
   stock        Int      @default(0)
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
@@ -327,10 +327,10 @@ model ShopOrder {
   userId           String?
   guestToken       String?
   status           String    @default("PENDING") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED
-  subtotal         Float
-  shippingCost     Float     @default(0)
-  discount         Float     @default(0)
-  total            Float
+  subtotal         Decimal   @db.Decimal(10, 2)
+  shippingCost     Decimal   @default(0) @db.Decimal(10, 2)
+  discount         Decimal   @default(0) @db.Decimal(10, 2)
+  total            Decimal   @db.Decimal(10, 2)
   paymentMethod    String?   // BANK_TRANSFER, MOBILE_MONEY, CASH_ON_DELIVERY
   paymentReceiptUrl String?
   paymentStatus    String    @default("PENDING") // PENDING, VERIFIED, REJECTED
@@ -358,9 +358,9 @@ model ShopOrderItem {
   variantId    String?
   name         String   // snapshot at purchase time
   variantLabel String?  // "M / Black"
-  unitPrice    Float    // snapshot
+  unitPrice    Decimal  @db.Decimal(10, 2) // snapshot
   quantity     Int
-  lineTotal    Float
+  lineTotal    Decimal  @db.Decimal(10, 2)
 
   order        ShopOrder         @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product      Product           @relation(fields: [productId], references: [id])

@@ -1,4 +1,13 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
+
+// Serialize Decimal fields as JSON numbers instead of strings.
+// Prisma's Decimal.js default toJSON returns a string, which breaks frontend
+// code that expects `number` for price fields. For ETB (2 decimal places)
+// the precision loss from Number() is negligible.
+// This must run before any query is executed.
+(Prisma.Decimal.prototype as any).toJSON = function () {
+  return this.toNumber();
+};
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
