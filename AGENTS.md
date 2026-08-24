@@ -110,17 +110,21 @@ folders under `backend/prisma/migrations/`.
 - Seed (core): `cd backend && npm run seed`
 - Seed (shop): `cd backend && npm run seed:shop`
 
-## Known gaps (post-P0)
+## Known gaps (post-P1)
 
-Still to address (see shop audit, P1+):
-- Order-number generation races / collides (`generateOrderNumber` uses count+1)
-- No rate limiting on shop routes
-- No idempotency key on checkout
-- Money stored as Float (should be Decimal)
-- Category rename regenerates slug (breaks URLs)
-- No order emails (confirmation, payment-verified, shipped)
+P0 and P1 fixes are complete. Still to address (P2 — missing for a production
+storefront):
+- No order emails (confirmation, payment-verified, shipped/delivered)
 - Shipping cost hardcoded to 0; no zone/rate model
 - No coupon/discount system (column exists, never written)
 - Wishlist model exists with no routes
-- No product URLs in sitemap; no per-product SEO/JSON-LD
+- No guest order recovery by order number + phone/email
+- No customer self-service (cancel, return, address book, reorder)
+- No admin order editing (adjust qty, set shipping, tracking number)
+- No `trackingNumber`/`carrier` fields on ShopOrder
+- No `OUT_OF_STOCK` auto-transition, no low-stock alerts, no stock-movement audit
+- No product/category URLs in sitemap; no per-product SEO/JSON-LD
+- No caching on catalog endpoints
+- No revenue-over-time analytics, AOV, conversion data
 - No tests
+- No structured logging/Sentry for order failures
