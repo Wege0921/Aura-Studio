@@ -98,6 +98,8 @@ export interface ShopOrder {
   paymentStatus: string;
   paidAt?: string;
   notes?: string;
+  trackingNumber?: string | null;
+  carrier?: string | null;
   createdAt: string;
   updatedAt: string;
   items?: ShopOrderItem[];

@@ -11,6 +11,7 @@ const ShopOrderManagement: React.FC = () => {
   const [search, setSearch] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<ShopOrder | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [editTracking, setEditTracking] = useState({ carrier: '', trackingNumber: '', shippingCost: '', notes: '' });
   const ITEMS_PER_PAGE = 10;
 
   useEffect(() => { fetchOrders(); }, [statusFilter]);
@@ -50,6 +51,33 @@ const ShopOrderManagement: React.FC = () => {
     try {
       const data = await api.get<ShopOrder>(`/api/admin/shop/orders/${id}`);
       setSelectedOrder(data);
+      setEditTracking({
+        carrier: data.carrier || '',
+        trackingNumber: data.trackingNumber || '',
+        shippingCost: data.shippingCost?.toString() || '0',
+        notes: data.notes || '',
+      });
+    } catch (err: any) { setError(err.message); }
+  };
+
+  const handleDetailsUpdate = async (orderId: string) => {
+    try {
+      await api.patch(`/api/admin/shop/orders/${orderId}/details`, {
+        shippingCost: Number(editTracking.shippingCost),
+        trackingNumber: editTracking.trackingNumber,
+        carrier: editTracking.carrier,
+        notes: editTracking.notes,
+      });
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder({
+          ...selectedOrder,
+          carrier: editTracking.carrier,
+          trackingNumber: editTracking.trackingNumber,
+          shippingCost: Number(editTracking.shippingCost),
+          notes: editTracking.notes,
+        });
+      }
+      fetchOrders();
     } catch (err: any) { setError(err.message); }
   };
 
@@ -192,6 +220,59 @@ const ShopOrderManagement: React.FC = () => {
               <div className="flex justify-between"><span className="text-aura-sand">Subtotal</span><span className="text-aura-cream">{formatETB(selectedOrder.subtotal)}</span></div>
               <div className="flex justify-between"><span className="text-aura-sand">Shipping</span><span className="text-aura-cream">{selectedOrder.shippingCost === 0 ? 'Free' : formatETB(selectedOrder.shippingCost)}</span></div>
               <div className="flex justify-between font-bold"><span className="text-aura-cream">Total</span><span className="text-aura-cream">{formatETB(selectedOrder.total)}</span></div>
+            </div>
+
+            {/* Tracking & shipping editor */}
+            <div className="mt-4 border-t border-aura-umber pt-3">
+              <h3 className="text-sm font-semibold text-aura-cream mb-2">Tracking & Shipping</h3>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-aura-sand mb-1 block">Carrier</label>
+                  <input
+                    type="text"
+                    value={editTracking.carrier}
+                    onChange={(e) => setEditTracking({ ...editTracking, carrier: e.target.value })}
+                    placeholder="e.g. Ethiopian Postal, DHL"
+                    className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded text-aura-cream text-sm focus:outline-none focus:border-aura-clay"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-aura-sand mb-1 block">Tracking Number</label>
+                  <input
+                    type="text"
+                    value={editTracking.trackingNumber}
+                    onChange={(e) => setEditTracking({ ...editTracking, trackingNumber: e.target.value })}
+                    placeholder="Tracking number"
+                    className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded text-aura-cream text-sm focus:outline-none focus:border-aura-clay"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-aura-sand mb-1 block">Shipping Cost (ETB)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={editTracking.shippingCost}
+                    onChange={(e) => setEditTracking({ ...editTracking, shippingCost: e.target.value })}
+                    className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded text-aura-cream text-sm focus:outline-none focus:border-aura-clay"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-aura-sand mb-1 block">Admin Notes</label>
+                  <input
+                    type="text"
+                    value={editTracking.notes}
+                    onChange={(e) => setEditTracking({ ...editTracking, notes: e.target.value })}
+                    placeholder="Internal notes"
+                    className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded text-aura-cream text-sm focus:outline-none focus:border-aura-clay"
+                  />
+                </div>
+              </div>
+              <button
+                onClick={() => handleDetailsUpdate(selectedOrder.id)}
+                className="mt-2 px-4 py-2 rounded bg-purple-600 text-white text-sm hover:bg-purple-700"
+              >
+                Save Details
+              </button>
             </div>
 
             {/* Payment receipt */}

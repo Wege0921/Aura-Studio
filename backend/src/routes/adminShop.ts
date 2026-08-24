@@ -222,7 +222,16 @@ router.put('/products/:id', authenticateToken, requireAdmin, async (req: Authent
     if (isFeatured !== undefined) updateData.isFeatured = Boolean(isFeatured);
     if (weightGrams !== undefined) updateData.weightGrams = weightGrams ? Number(weightGrams) : null;
     if (stock !== undefined) {
-      updateData.stock = stock === '' || stock === null ? null : Math.max(0, Number(stock));
+      const newStock = stock === '' || stock === null ? null : Math.max(0, Number(stock));
+      updateData.stock = newStock;
+      // Auto-reactivate OUT_OF_STOCK products when stock is replenished
+      if (newStock !== null && newStock > 0 && status === undefined) {
+        // Only auto-set to ACTIVE if the admin didn't explicitly set a status
+        const current = await prisma.product.findUnique({ where: { id }, select: { status: true } });
+        if (current?.status === 'OUT_OF_STOCK') {
+          updateData.status = 'ACTIVE';
+        }
+      }
     }
 
     const updated = await prisma.product.update({
@@ -475,6 +484,33 @@ router.get('/orders/:id', authenticateToken, requireAdmin, async (req, res) => {
   }
 });
 
+// Update order details (shipping cost, tracking, carrier, notes)
+router.patch('/orders/:id/details', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { shippingCost, trackingNumber, carrier, notes } = req.body;
+    const updateData: any = {};
+
+    if (shippingCost !== undefined) updateData.shippingCost = Number(shippingCost);
+    if (trackingNumber !== undefined) updateData.trackingNumber = trackingNumber || null;
+    if (carrier !== undefined) updateData.carrier = carrier || null;
+    if (notes !== undefined) updateData.notes = notes || null;
+
+    // Recalculate total if shippingCost changed
+    if (shippingCost !== undefined) {
+      const order = await prisma.shopOrder.findUnique({ where: { id }, select: { subtotal: true, discount: true } });
+      if (!order) return res.status(404).json({ error: 'Order not found' });
+      updateData.total = Number(order.subtotal) + Number(shippingCost) - Number(order.discount);
+    }
+
+    const updated = await prisma.shopOrder.update({ where: { id }, data: updateData });
+    res.json({ message: 'Order details updated', order: updated });
+  } catch (error) {
+    console.error('Error updating order details:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Update order status
 router.patch('/orders/:id/status', authenticateToken, requireAdmin, [
   body('status').isIn(['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED']).withMessage('Invalid status'),
@@ -544,6 +580,43 @@ router.patch('/orders/:id/status', authenticateToken, requireAdmin, [
     });
 
     res.json({ message: `Order status updated to ${status}`, order: result });
+
+    // Send status-update emails (fire-and-forget)
+    if (status === 'SHIPPED' || status === 'DELIVERED') {
+      setImmediate(async () => {
+        try {
+          const fullOrder = await prisma.shopOrder.findUnique({
+            where: { id },
+            include: { user: { select: { email: true, name: true } }, shippingAddress: true },
+          });
+          if (!fullOrder || !fullOrder.user?.email) return;
+
+          const frontendUrl = (process.env.FRONTEND_URL || 'https://aurastudio.et').split(',')[0].trim().replace(/\/$/, '');
+          const orderUrl = `${frontendUrl}/shop/orders/${fullOrder.id}`;
+          const { sendShopOrderShipped, sendShopOrderDelivered } = await import('../services/emailService');
+
+          if (status === 'SHIPPED') {
+            await sendShopOrderShipped({
+              to: fullOrder.user.email,
+              customerName: fullOrder.user.name || fullOrder.shippingAddress?.fullName || 'Customer',
+              orderNumber: fullOrder.orderNumber,
+              orderUrl,
+              carrier: (fullOrder as any).carrier || null,
+              trackingNumber: (fullOrder as any).trackingNumber || null,
+            });
+          } else if (status === 'DELIVERED') {
+            await sendShopOrderDelivered({
+              to: fullOrder.user.email,
+              customerName: fullOrder.user.name || fullOrder.shippingAddress?.fullName || 'Customer',
+              orderNumber: fullOrder.orderNumber,
+              orderUrl,
+            });
+          }
+        } catch (emailErr) {
+          console.error('Failed to send order status email:', emailErr);
+        }
+      });
+    }
   } catch (error) {
     console.error('Error updating order status:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -590,8 +663,233 @@ router.patch('/orders/:id/payment', authenticateToken, requireAdmin, [
     });
 
     res.json({ message: `Payment ${paymentStatus.toLowerCase()} successfully`, order: result });
+
+    // Send payment-verified email (fire-and-forget)
+    if (paymentStatus === 'VERIFIED') {
+      setImmediate(async () => {
+        try {
+          const fullOrder = await prisma.shopOrder.findUnique({
+            where: { id },
+            include: { user: { select: { email: true, name: true } }, shippingAddress: true },
+          });
+          if (!fullOrder || !fullOrder.user?.email) return;
+
+          const frontendUrl = (process.env.FRONTEND_URL || 'https://aurastudio.et').split(',')[0].trim().replace(/\/$/, '');
+          const orderUrl = `${frontendUrl}/shop/orders/${fullOrder.id}`;
+
+          const { sendShopPaymentVerified } = await import('../services/emailService');
+          await sendShopPaymentVerified({
+            to: fullOrder.user.email,
+            customerName: fullOrder.user.name || fullOrder.shippingAddress?.fullName || 'Customer',
+            orderNumber: fullOrder.orderNumber,
+            orderUrl,
+            total: Number(fullOrder.total),
+          });
+        } catch (emailErr) {
+          console.error('Failed to send payment-verified email:', emailErr);
+        }
+      });
+    }
   } catch (error) {
     console.error('Error verifying payment:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ============================================================
+// SHIPPING RATES
+// ============================================================
+
+router.get('/shipping-rates', authenticateToken, requireAdmin, async (_req, res) => {
+  try {
+    const rates = await prisma.shippingRate.findMany({ orderBy: { region: 'asc' } });
+    res.json(rates);
+  } catch (error) {
+    console.error('Error fetching shipping rates:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.post('/shipping-rates', authenticateToken, requireAdmin, [
+  body('rate').isFloat({ min: 0 }).withMessage('Rate must be positive'),
+], async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+    const { region, rate, freeShippingOver, isActive } = req.body;
+    const created = await prisma.shippingRate.create({
+      data: {
+        region: region || null,
+        rate: Number(rate),
+        freeShippingOver: freeShippingOver ? Number(freeShippingOver) : null,
+        isActive: isActive !== undefined ? Boolean(isActive) : true,
+      },
+    });
+    res.status(201).json(created);
+  } catch (error) {
+    console.error('Error creating shipping rate:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.put('/shipping-rates/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { region, rate, freeShippingOver, isActive } = req.body;
+    const updateData: any = {};
+    if (region !== undefined) updateData.region = region || null;
+    if (rate !== undefined) updateData.rate = Number(rate);
+    if (freeShippingOver !== undefined) updateData.freeShippingOver = freeShippingOver ? Number(freeShippingOver) : null;
+    if (isActive !== undefined) updateData.isActive = Boolean(isActive);
+
+    const updated = await prisma.shippingRate.update({ where: { id }, data: updateData });
+    res.json(updated);
+  } catch (error) {
+    console.error('Error updating shipping rate:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.delete('/shipping-rates/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    await prisma.shippingRate.delete({ where: { id } });
+    res.json({ message: 'Shipping rate deleted' });
+  } catch (error) {
+    console.error('Error deleting shipping rate:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ============================================================
+// COUPONS
+// ============================================================
+
+// Low-stock report: products and variants at or below the threshold
+router.get('/inventory/low-stock', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const threshold = Number(req.query.threshold) || 5;
+
+    // Low-stock simple products (stock tracked, <= threshold, not null)
+    const lowStockProducts = await prisma.product.findMany({
+      where: {
+        stock: { not: null, lte: threshold },
+        status: { notIn: ['ARCHIVED'] },
+      },
+      select: {
+        id: true, name: true, slug: true, sku: true, stock: true, status: true,
+        category: { select: { name: true } },
+        images: { orderBy: { sortOrder: 'asc' }, take: 1, select: { url: true } },
+      },
+      orderBy: { stock: 'asc' },
+    });
+
+    // Low-stock variants
+    const lowStockVariants = await prisma.productVariant.findMany({
+      where: {
+        stock: { lte: threshold },
+        product: { status: { notIn: ['ARCHIVED'] } },
+      },
+      include: {
+        product: { select: { id: true, name: true, slug: true, status: true } },
+      },
+      orderBy: { stock: 'asc' },
+    });
+
+    res.json({
+      threshold,
+      products: lowStockProducts.map((p) => ({
+        id: p.id, name: p.name, slug: p.slug, sku: p.sku,
+        stock: p.stock, status: p.status,
+        category: p.category?.name || null,
+        image: p.images[0]?.url || null,
+      })),
+      variants: lowStockVariants.map((v) => ({
+        id: v.id,
+        productId: v.product.id,
+        productName: v.product.name,
+        productSlug: v.product.slug,
+        size: v.size, color: v.color, style: v.style,
+        sku: v.sku, stock: v.stock, isActive: v.isActive,
+      })),
+    });
+  } catch (error) {
+    console.error('Error fetching low-stock report:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.get('/coupons', authenticateToken, requireAdmin, async (_req, res) => {
+  try {
+    const coupons = await prisma.coupon.findMany({ orderBy: { createdAt: 'desc' } });
+    res.json(coupons);
+  } catch (error) {
+    console.error('Error fetching coupons:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.post('/coupons', authenticateToken, requireAdmin, [
+  body('code').notEmpty().withMessage('Code is required'),
+  body('type').isIn(['PERCENTAGE', 'FIXED']).withMessage('Invalid type'),
+  body('value').isFloat({ min: 0 }).withMessage('Value must be positive'),
+], async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+    const { code, type, value, minSubtotal, maxDiscount, maxUses, startsAt, endsAt, isActive } = req.body;
+    const created = await prisma.coupon.create({
+      data: {
+        code: code.toUpperCase().trim(),
+        type,
+        value: Number(value),
+        minSubtotal: minSubtotal ? Number(minSubtotal) : null,
+        maxDiscount: maxDiscount ? Number(maxDiscount) : null,
+        maxUses: maxUses ? Number(maxUses) : null,
+        startsAt: startsAt ? new Date(startsAt) : null,
+        endsAt: endsAt ? new Date(endsAt) : null,
+        isActive: isActive !== undefined ? Boolean(isActive) : true,
+      },
+    });
+    res.status(201).json(created);
+  } catch (error) {
+    console.error('Error creating coupon:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.put('/coupons/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { code, type, value, minSubtotal, maxDiscount, maxUses, startsAt, endsAt, isActive } = req.body;
+    const updateData: any = {};
+    if (code !== undefined) updateData.code = code.toUpperCase().trim();
+    if (type !== undefined) updateData.type = type;
+    if (value !== undefined) updateData.value = Number(value);
+    if (minSubtotal !== undefined) updateData.minSubtotal = minSubtotal ? Number(minSubtotal) : null;
+    if (maxDiscount !== undefined) updateData.maxDiscount = maxDiscount ? Number(maxDiscount) : null;
+    if (maxUses !== undefined) updateData.maxUses = maxUses ? Number(maxUses) : null;
+    if (startsAt !== undefined) updateData.startsAt = startsAt ? new Date(startsAt) : null;
+    if (endsAt !== undefined) updateData.endsAt = endsAt ? new Date(endsAt) : null;
+    if (isActive !== undefined) updateData.isActive = Boolean(isActive);
+
+    const updated = await prisma.coupon.update({ where: { id }, data: updateData });
+    res.json(updated);
+  } catch (error) {
+    console.error('Error updating coupon:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.delete('/coupons/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    await prisma.coupon.delete({ where: { id } });
+    res.json({ message: 'Coupon deleted' });
+  } catch (error) {
+    console.error('Error deleting coupon:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -658,6 +956,40 @@ router.get('/analytics/summary', authenticateToken, requireAdmin, async (req, re
       };
     });
 
+    // Revenue over time (last 30 days, grouped by day)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentOrders = await prisma.shopOrder.findMany({
+      where: {
+        ...where,
+        paymentStatus: 'VERIFIED',
+        createdAt: { gte: thirtyDaysAgo },
+      },
+      select: { total: true, createdAt: true },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    const revenueByDay: { date: string; revenue: number; orders: number }[] = [];
+    const dayMap = new Map<string, { revenue: number; orders: number }>();
+    for (const o of recentOrders) {
+      const dayKey = o.createdAt.toISOString().slice(0, 10);
+      const existing = dayMap.get(dayKey) || { revenue: 0, orders: 0 };
+      existing.revenue += Number(o.total);
+      existing.orders += 1;
+      dayMap.set(dayKey, existing);
+    }
+    for (const [date, val] of dayMap) {
+      revenueByDay.push({ date, revenue: val.revenue, orders: val.orders });
+    }
+    revenueByDay.sort((a, b) => a.date.localeCompare(b.date));
+
+    // Average order value
+    const verifiedOrders = totalOrders > 0
+      ? await prisma.shopOrder.count({ where: { ...where, paymentStatus: 'VERIFIED' } })
+      : 0;
+    const totalRevenueNum = totalRevenue._sum.total ? Number(totalRevenue._sum.total) : 0;
+    const aov = verifiedOrders > 0 ? totalRevenueNum / verifiedOrders : 0;
+
     res.json({
       summary: {
         totalOrders,
@@ -666,10 +998,13 @@ router.get('/analytics/summary', authenticateToken, requireAdmin, async (req, re
         shippedOrders,
         deliveredOrders,
         cancelledOrders,
-        totalRevenue: totalRevenue._sum.total ? Number(totalRevenue._sum.total) : 0,
+        totalRevenue: totalRevenueNum,
         pendingPayments,
+        aov: Math.round(aov * 100) / 100,
+        verifiedOrders,
       },
       topProducts: topProductsWithDetails,
+      revenueOverTime: revenueByDay,
     });
   } catch (error) {
     console.error('Error fetching shop analytics:', error);

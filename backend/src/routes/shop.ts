@@ -61,6 +61,41 @@ const receiptUpload = multer({
   },
 });
 
+// Helper: calculate shipping cost for a given region and subtotal.
+// Looks up a region-specific rate (case-insensitive); falls back to the
+// default rate (region = null). Returns 0 if no rates are configured.
+async function calculateShippingCost(region: string, subtotal: number): Promise<number> {
+  // Try region-specific rate (case-insensitive)
+  const regionRate = await prisma.shippingRate.findFirst({
+    where: {
+      region: { equals: region, mode: 'insensitive' },
+      isActive: true,
+    },
+  });
+
+  if (regionRate) {
+    if (regionRate.freeShippingOver && subtotal >= Number(regionRate.freeShippingOver)) {
+      return 0;
+    }
+    return Number(regionRate.rate);
+  }
+
+  // Fall back to default rate (region = null)
+  const defaultRate = await prisma.shippingRate.findFirst({
+    where: { region: null, isActive: true },
+  });
+
+  if (defaultRate) {
+    if (defaultRate.freeShippingOver && subtotal >= Number(defaultRate.freeShippingOver)) {
+      return 0;
+    }
+    return Number(defaultRate.rate);
+  }
+
+  // No rates configured → free shipping
+  return 0;
+}
+
 // Idempotency cache for order creation.
 // Keyed by Idempotency-Key header (per IP) → cached response.
 // Prevents duplicate orders from double-clicks or network retries.
@@ -106,12 +141,22 @@ function slugify(text: string): string {
   return text.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
+// Cache-Control middleware for public catalog endpoints.
+// Allows CDN/browser caching for 60 seconds, with a short stale-while-
+// revalidate window. Private endpoints (orders, wishlist) are never cached.
+function cachePublicRead(seconds: number = 60) {
+  return (_req: Request, res: Response, next: () => void) => {
+    res.setHeader('Cache-Control', `public, max-age=${seconds}, stale-while-revalidate=30`);
+    next();
+  };
+}
+
 // ============================================================
 // PUBLIC CATALOG — no auth required
 // ============================================================
 
 // Get all active categories
-router.get('/categories', catalogLimiter, async (_req: Request, res: Response) => {
+router.get('/categories', catalogLimiter, cachePublicRead(300), async (_req: Request, res: Response) => {
   try {
     const categories = await prisma.productCategory.findMany({
       where: { isActive: true },
@@ -128,7 +173,7 @@ router.get('/categories', catalogLimiter, async (_req: Request, res: Response) =
 });
 
 // Get products with filtering, search, sorting, pagination
-router.get('/products', catalogLimiter, async (req: Request, res: Response) => {
+router.get('/products', catalogLimiter, cachePublicRead(60), async (req: Request, res: Response) => {
   try {
     const {
       category,
@@ -253,7 +298,7 @@ router.get('/products', catalogLimiter, async (req: Request, res: Response) => {
 });
 
 // Get single product by slug
-router.get('/products/:slug', catalogLimiter, async (req: Request, res: Response) => {
+router.get('/products/:slug', catalogLimiter, cachePublicRead(120), async (req: Request, res: Response) => {
   try {
     const { slug } = req.params;
     const product = await prisma.product.findUnique({
@@ -285,6 +330,79 @@ router.get('/products/:slug', catalogLimiter, async (req: Request, res: Response
     res.json({ product, related });
   } catch (error) {
     console.error('Error fetching product:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get shipping quote for a region and subtotal
+router.get('/shipping/quote', catalogLimiter, async (req: Request, res: Response) => {
+  try {
+    const { region, subtotal } = req.query;
+    if (!region) {
+      return res.status(400).json({ error: 'Region is required' });
+    }
+    const subtotalNum = Number(subtotal) || 0;
+    const shippingCost = await calculateShippingCost(region as string, subtotalNum);
+    res.json({ shippingCost, subtotal: subtotalNum, total: subtotalNum + shippingCost });
+  } catch (error) {
+    console.error('Error calculating shipping:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Validate a coupon code and return the discount amount for a given subtotal
+router.post('/coupons/validate', orderCreationLimiter, [
+  body('code').notEmpty().withMessage('Coupon code is required'),
+  body('subtotal').isFloat({ min: 0 }).withMessage('Subtotal must be positive'),
+], async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+    const { code, subtotal } = req.body;
+    const coupon = await prisma.coupon.findUnique({
+      where: { code: code.toUpperCase().trim() },
+    });
+
+    if (!coupon || !coupon.isActive) {
+      return res.status(400).json({ error: 'Invalid or inactive coupon code' });
+    }
+
+    const now = new Date();
+    if (coupon.startsAt && now < coupon.startsAt) {
+      return res.status(400).json({ error: 'This coupon is not yet active' });
+    }
+    if (coupon.endsAt && now > coupon.endsAt) {
+      return res.status(400).json({ error: 'This coupon has expired' });
+    }
+    if (coupon.maxUses !== null && coupon.usedCount >= coupon.maxUses) {
+      return res.status(400).json({ error: 'This coupon has reached its usage limit' });
+    }
+    if (coupon.minSubtotal && Number(subtotal) < Number(coupon.minSubtotal)) {
+      return res.status(400).json({ error: `Minimum order of ETB ${Number(coupon.minSubtotal).toLocaleString()} required for this coupon` });
+    }
+
+    let discount = 0;
+    if (coupon.type === 'PERCENTAGE') {
+      discount = (Number(subtotal) * Number(coupon.value)) / 100;
+      if (coupon.maxDiscount && discount > Number(coupon.maxDiscount)) {
+        discount = Number(coupon.maxDiscount);
+      }
+    } else {
+      // FIXED
+      discount = Number(coupon.value);
+      if (discount > Number(subtotal)) discount = Number(subtotal);
+    }
+
+    res.json({
+      code: coupon.code,
+      type: coupon.type,
+      value: Number(coupon.value),
+      discount,
+      subtotal: Number(subtotal),
+    });
+  } catch (error) {
+    console.error('Error validating coupon:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -351,6 +469,7 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
       shippingPostalCode,
       shippingNotes,
       notes,
+      couponCode,
     } = req.body;
 
     // Parse items if sent as string (multipart form)
@@ -427,8 +546,46 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
       });
     }
 
-    const shippingCost = 0; // flat — admin can adjust later
-    const total = subtotal + shippingCost;
+    const shippingCost = await calculateShippingCost(shippingRegion, subtotal);
+
+    // Apply coupon if provided
+    let discount = 0;
+    let couponRecord: any = null;
+    if (couponCode && couponCode.trim()) {
+      couponRecord = await prisma.coupon.findUnique({
+        where: { code: couponCode.toUpperCase().trim() },
+      });
+
+      if (!couponRecord || !couponRecord.isActive) {
+        return res.status(400).json({ error: 'Invalid coupon code' });
+      }
+
+      const now = new Date();
+      if (couponRecord.startsAt && now < couponRecord.startsAt) {
+        return res.status(400).json({ error: 'This coupon is not yet active' });
+      }
+      if (couponRecord.endsAt && now > couponRecord.endsAt) {
+        return res.status(400).json({ error: 'This coupon has expired' });
+      }
+      if (couponRecord.maxUses !== null && couponRecord.usedCount >= couponRecord.maxUses) {
+        return res.status(400).json({ error: 'This coupon has reached its usage limit' });
+      }
+      if (couponRecord.minSubtotal && subtotal < Number(couponRecord.minSubtotal)) {
+        return res.status(400).json({ error: `Minimum order of ETB ${Number(couponRecord.minSubtotal).toLocaleString()} required for this coupon` });
+      }
+
+      if (couponRecord.type === 'PERCENTAGE') {
+        discount = (subtotal * Number(couponRecord.value)) / 100;
+        if (couponRecord.maxDiscount && discount > Number(couponRecord.maxDiscount)) {
+          discount = Number(couponRecord.maxDiscount);
+        }
+      } else {
+        discount = Number(couponRecord.value);
+        if (discount > subtotal) discount = subtotal;
+      }
+    }
+
+    const total = subtotal + shippingCost - discount;
 
     // Handle receipt upload
     let receiptUrl: string | null = null;
@@ -453,8 +610,10 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
           status: 'PENDING',
           subtotal,
           shippingCost,
+          discount,
           total,
           paymentMethod,
+          couponId: couponRecord?.id || null,
           paymentReceiptUrl: receiptUrl,
           paymentStatus: paymentMethod === 'CASH_ON_DELIVERY' ? 'PENDING' : 'PENDING',
           notes: notes || null,
@@ -492,6 +651,11 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
           if (result.count === 0) {
             throw new Error(`Insufficient stock for ${item.name}`);
           }
+          // Auto-deactivate variant when stock reaches 0
+          await tx.productVariant.updateMany({
+            where: { id: item.variantId, stock: { lte: 0 } },
+            data: { isActive: false },
+          });
         } else {
           // Only decrement product-level stock when it is tracked (non-null).
           // null stock means unlimited / not tracked.
@@ -507,8 +671,21 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
             if (result.count === 0) {
               throw new Error(`Insufficient stock for ${fresh.name}`);
             }
+            // Auto-transition product to OUT_OF_STOCK when stock reaches 0
+            await tx.product.updateMany({
+              where: { id: item.productId, stock: { lte: 0 }, status: 'ACTIVE' },
+              data: { status: 'OUT_OF_STOCK' },
+            });
           }
         }
+      }
+
+      // Increment coupon usage count
+      if (couponRecord) {
+        await tx.coupon.update({
+          where: { id: couponRecord.id },
+          data: { usedCount: { increment: 1 } },
+        });
       }
 
       return newOrder;
@@ -536,6 +713,58 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
     }
 
     res.status(201).json(responseBody);
+
+    // Send confirmation emails (fire-and-forget — don't block the response)
+    setImmediate(async () => {
+      try {
+        const frontendUrl = (process.env.FRONTEND_URL || 'https://aurastudio.et').split(',')[0].trim().replace(/\/$/, '');
+        const orderUrl = `${frontendUrl}/shop/orders/${order.id}${guestToken ? `?guestToken=${guestToken}` : ''}`;
+        const adminUrl = `${frontendUrl}/admin/shop/orders/${order.id}`;
+
+        // Determine customer email and name
+        let customerEmail: string | null = null;
+        let customerName = shippingFullName;
+        if (userId) {
+          const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true, name: true } });
+          if (user) {
+            customerEmail = user.email;
+            customerName = user.name || shippingFullName;
+          }
+        }
+
+        const { sendShopOrderConfirmation, sendShopAdminNewOrderAlert } = await import('../services/emailService');
+
+        if (customerEmail) {
+          await sendShopOrderConfirmation({
+            to: customerEmail,
+            customerName,
+            orderNumber: order.orderNumber,
+            orderUrl,
+            items: orderItemsData.map((i) => ({
+              name: i.name,
+              variantLabel: i.variantLabel,
+              quantity: i.quantity,
+              lineTotal: i.lineTotal,
+            })),
+            subtotal: Number(subtotal),
+            shippingCost: Number(shippingCost),
+            total: Number(total),
+            paymentMethod,
+            shippingAddress: { fullName: shippingFullName, phone: shippingPhone, region: shippingRegion, city: shippingCity, address: shippingAddress },
+          });
+        }
+
+        await sendShopAdminNewOrderAlert({
+          orderNumber: order.orderNumber,
+          customerName,
+          total: Number(total),
+          paymentMethod,
+          adminUrl,
+        });
+      } catch (emailErr) {
+        console.error('Failed to send order confirmation emails:', emailErr);
+      }
+    });
   } catch (error: any) {
     // Surface stock-exhaustion errors (thrown inside the transaction) as 400
     if (error?.message?.startsWith('Insufficient stock for ')) {
@@ -590,6 +819,46 @@ router.get('/orders/mine', authenticateToken, async (req: AuthenticatedRequest, 
   }
 });
 
+// Guest order recovery: look up an order by order number + shipping phone.
+// Returns the order ID + guest token so the frontend can redirect to the
+// order confirmation page. Does NOT return full order details (those require
+// the guest token, which is returned here).
+router.post('/orders/lookup', orderCreationLimiter, [
+  body('orderNumber').notEmpty().withMessage('Order number is required'),
+  body('phone').notEmpty().withMessage('Phone is required'),
+], async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+    const { orderNumber, phone } = req.body;
+
+    const order = await prisma.shopOrder.findUnique({
+      where: { orderNumber },
+      include: { shippingAddress: true },
+    });
+
+    if (!order || !order.shippingAddress) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Match phone (loose comparison: trim + last 9 digits to handle formatting)
+    const normalizePhone = (p: string) => p.replace(/\D/g, '').slice(-9);
+    if (normalizePhone(order.shippingAddress.phone) !== normalizePhone(phone)) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    res.json({
+      orderId: order.id,
+      guestToken: order.guestToken,
+      orderNumber: order.orderNumber,
+    });
+  } catch (error) {
+    console.error('Error looking up order:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Get single order (owner or admin or guest with token)
 router.get('/orders/:id', optionalAuth, async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -619,6 +888,66 @@ router.get('/orders/:id', optionalAuth, async (req: AuthenticatedRequest, res: R
     res.json(order);
   } catch (error) {
     console.error('Error fetching order:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ============================================================
+// WISHLIST (authenticated users only)
+// ============================================================
+
+// Get my wishlist
+router.get('/wishlist', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const wishlist = await prisma.wishlist.findMany({
+      where: { userId: req.user!.id },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        product: {
+          include: {
+            images: { orderBy: { sortOrder: 'asc' }, take: 1 },
+            category: { select: { id: true, name: true, slug: true } },
+          },
+        },
+      },
+    });
+    res.json(wishlist);
+  } catch (error) {
+    console.error('Error fetching wishlist:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Add to wishlist
+router.post('/wishlist/:productId', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { productId } = req.params;
+    const product = await prisma.product.findUnique({ where: { id: productId } });
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+
+    // upsert (unique constraint on userId+productId prevents duplicates)
+    const item = await prisma.wishlist.upsert({
+      where: { userId_productId: { userId: req.user!.id, productId } },
+      create: { userId: req.user!.id, productId },
+      update: {}, // no-op if already exists
+    });
+    res.status(201).json(item);
+  } catch (error) {
+    console.error('Error adding to wishlist:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Remove from wishlist
+router.delete('/wishlist/:productId', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { productId } = req.params;
+    await prisma.wishlist.deleteMany({
+      where: { userId: req.user!.id, productId },
+    });
+    res.json({ message: 'Removed from wishlist' });
+  } catch (error) {
+    console.error('Error removing from wishlist:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

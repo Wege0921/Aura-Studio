@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { Product, ProductVariant, formatETB, getVariantPrice, getEffectivePrice } from './shopTypes';
 import { useShopCart } from '../../contexts/ShopCartContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { useSEO } from '../../hooks/useSEO';
 import ProductCard from './ProductCard';
 import { ShoppingBagIcon, HeartIcon, CheckIcon } from '@heroicons/react/24/outline';
 
@@ -10,6 +12,7 @@ const ProductDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { addItem } = useShopCart();
+  const { user } = useAuth();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [related, setRelated] = useState<Product[]>([]);
@@ -18,6 +21,8 @@ const ProductDetail: React.FC = () => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [inWishlist, setInWishlist] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -37,6 +42,50 @@ const ProductDetail: React.FC = () => {
     };
     if (slug) fetchProduct();
   }, [slug]);
+
+  // Check wishlist status when product loads (authenticated users only)
+  useEffect(() => {
+    if (!user || !product) return;
+    const checkWishlist = async () => {
+      try {
+        const data = await api.get<{ id: string; productId: string }[]>('/api/shop/wishlist');
+        setInWishlist(data.some((w) => w.productId === product.id));
+      } catch {
+        // ignore — wishlist is non-critical
+      }
+    };
+    checkWishlist();
+  }, [user, product]);
+
+  const toggleWishlist = async () => {
+    if (!user || !product) return;
+    setWishlistLoading(true);
+    try {
+      if (inWishlist) {
+        await api.delete(`/api/shop/wishlist/${product.id}`);
+        setInWishlist(false);
+      } else {
+        await api.post(`/api/shop/wishlist/${product.id}`, {});
+        setInWishlist(true);
+      }
+    } catch (err) {
+      console.error('Wishlist toggle failed:', err);
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
+
+  // SEO: update title/meta when product loads
+  useSEO({
+    title: product ? `${product.name} — AURA Studio Shop` : 'AURA Studio Shop',
+    description: product?.description
+      ? `${product.description.slice(0, 160)}`
+      : 'Shop premium yoga and wellness products at AURA Studio.',
+    ogTitle: product ? `${product.name} — AURA Studio` : undefined,
+    ogDescription: product?.description?.slice(0, 160),
+    ogImage: product?.images?.[0]?.url,
+    canonicalPath: product ? `/shop/products/${product.slug}` : undefined,
+  });
 
   if (loading) {
     return (
@@ -319,10 +368,16 @@ const ProductDetail: React.FC = () => {
               )}
             </button>
             <button
-              className="px-4 py-3 rounded-lg border border-aura-umber text-aura-cream hover:border-aura-clay"
-              title="Wishlist (coming soon)"
+              onClick={toggleWishlist}
+              disabled={!user || wishlistLoading}
+              className={`px-4 py-3 rounded-lg border transition-colors ${
+                inWishlist
+                  ? 'border-red-500 text-red-400 bg-red-900/20'
+                  : 'border-aura-umber text-aura-cream hover:border-aura-clay'
+              } ${!user ? 'opacity-50 cursor-not-allowed' : ''}`}
+              title={user ? (inWishlist ? 'Remove from wishlist' : 'Add to wishlist') : 'Log in to use wishlist'}
             >
-              <HeartIcon className="w-5 h-5" />
+              <HeartIcon className={`w-5 h-5 ${inWishlist ? 'fill-current' : ''}`} />
             </button>
           </div>
 

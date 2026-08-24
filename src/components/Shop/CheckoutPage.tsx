@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { api } from '../../lib/api';
@@ -32,8 +32,54 @@ const CheckoutPage: React.FC = () => {
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [shippingCost, setShippingCost] = useState(0);
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
+  const [couponError, setCouponError] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
   const selectedPaymentMethod = watch('paymentMethod');
+  const selectedRegion = watch('shippingRegion');
   const needsReceipt = selectedPaymentMethod !== 'CASH_ON_DELIVERY';
+
+  const discount = appliedCoupon?.discount || 0;
+  const orderTotal = subtotal + shippingCost - discount;
+
+  // Fetch shipping quote when region changes
+  useEffect(() => {
+    if (!selectedRegion || selectedRegion.trim().length < 2) {
+      setShippingCost(0);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const data = await api.get<{ shippingCost: number }>(
+          `/api/shop/shipping/quote?region=${encodeURIComponent(selectedRegion)}&subtotal=${subtotal}`
+        );
+        setShippingCost(data.shippingCost);
+      } catch {
+        setShippingCost(0);
+      }
+    }, 500); // debounce
+    return () => clearTimeout(timer);
+  }, [selectedRegion, subtotal]);
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    setCouponError('');
+    try {
+      const data = await api.post<{ code: string; discount: number }>(
+        '/api/shop/coupons/validate',
+        { code: couponCode, subtotal }
+      );
+      setAppliedCoupon({ code: data.code, discount: data.discount });
+    } catch (err: any) {
+      setAppliedCoupon(null);
+      setCouponError(err.message || 'Invalid coupon code');
+    } finally {
+      setCouponLoading(false);
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -73,6 +119,7 @@ const CheckoutPage: React.FC = () => {
       if (data.shippingPostalCode) formData.append('shippingPostalCode', data.shippingPostalCode);
       if (data.shippingNotes) formData.append('shippingNotes', data.shippingNotes);
       if (data.notes) formData.append('notes', data.notes);
+      if (appliedCoupon) formData.append('couponCode', appliedCoupon.code);
 
       // Generate an idempotency key for this checkout attempt so a double-
       // click or network retry doesn't create a duplicate order. The key is
@@ -257,14 +304,41 @@ const CheckoutPage: React.FC = () => {
                 <span className="text-aura-cream">{formatETB(subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-aura-sand">Shipping</span>
-                <span className="text-aura-cream">Free</span>
+                <span className="text-aura-sand">Shipping {selectedRegion ? `(${selectedRegion})` : ''}</span>
+                <span className="text-aura-cream">{shippingCost === 0 ? 'Free' : formatETB(shippingCost)}</span>
               </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-sm text-green-400">
+                  <span>Discount ({appliedCoupon?.code})</span>
+                  <span>−{formatETB(discount)}</span>
+                </div>
+              )}
               <div className="border-t border-aura-umber pt-2 flex justify-between items-baseline">
                 <span className="text-aura-cream font-medium">Total</span>
-                <span className="text-xl font-bold text-aura-cream">{formatETB(subtotal)}</span>
+                <span className="text-xl font-bold text-aura-cream">{formatETB(orderTotal)}</span>
               </div>
             </div>
+
+            {/* Coupon input */}
+            <div className="mt-3 flex gap-2">
+              <input
+                type="text"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+                placeholder="Coupon code"
+                className="flex-1 px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream text-sm focus:outline-none focus:border-aura-clay"
+              />
+              <button
+                type="button"
+                onClick={applyCoupon}
+                disabled={couponLoading || !couponCode.trim()}
+                className="px-4 py-2 rounded-lg bg-aura-ink border border-aura-umber text-aura-cream text-sm hover:border-aura-clay disabled:opacity-50"
+              >
+                {couponLoading ? '...' : 'Apply'}
+              </button>
+            </div>
+            {couponError && <p className="text-xs text-red-400 mt-1">{couponError}</p>}
+            {appliedCoupon && <p className="text-xs text-green-400 mt-1">Coupon applied: {formatETB(discount)} off</p>}
 
             {submitError && (
               <p className="text-sm text-red-400 bg-red-900/20 rounded p-2">{submitError}</p>

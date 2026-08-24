@@ -336,10 +336,14 @@ model ShopOrder {
   paymentStatus    String    @default("PENDING") // PENDING, VERIFIED, REJECTED
   paidAt           DateTime?
   notes            String?
+  trackingNumber   String?
+  carrier          String?
+  couponId         String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
   user             User?                    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  coupon           Coupon?                  @relation(fields: [couponId], references: [id], onDelete: SetNull)
   items            ShopOrderItem[]
   shippingAddress  ShippingAddress?
   statusHistory    ShopOrderStatusHistory[]
@@ -348,6 +352,7 @@ model ShopOrder {
   @@index([status])
   @@index([createdAt])
   @@index([guestToken])
+  @@index([couponId])
   @@map("shop_orders")
 }
 
@@ -411,4 +416,46 @@ model Wishlist {
 
   @@unique([userId, productId])
   @@map("shop_wishlist")
+}
+
+model ShippingRate {
+  id           String   @id @default(cuid())
+  // Region name (e.g. "Addis Ababa", "Oromia"). Case-insensitive match.
+  // Null means the default rate used when no region-specific rate matches.
+  region       String?  @unique
+  rate         Decimal  @db.Decimal(10, 2)
+  // Free shipping threshold: orders with subtotal >= this get free shipping.
+  // Null means no free-shipping threshold for this rate.
+  freeShippingOver Decimal? @db.Decimal(10, 2)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("shop_shipping_rates")
+}
+
+model Coupon {
+  id             String    @id @default(cuid())
+  code           String    @unique
+  // PERCENTAGE or FIXED
+  type           String    @default("PERCENTAGE")
+  // For PERCENTAGE: 1-100. For FIXED: amount in ETB.
+  value          Decimal   @db.Decimal(10, 2)
+  // Minimum subtotal required to apply the coupon. Null = no minimum.
+  minSubtotal    Decimal?  @db.Decimal(10, 2)
+  // Max discount amount (caps percentage coupons). Null = no cap.
+  maxDiscount    Decimal?  @db.Decimal(10, 2)
+  // Usage limits
+  maxUses        Int?      // null = unlimited
+  usedCount      Int       @default(0)
+  // Validity window
+  startsAt       DateTime?
+  endsAt         DateTime?
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  orders         ShopOrder[]
+
+  @@map("shop_coupons")
 }

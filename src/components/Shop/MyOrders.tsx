@@ -2,14 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { ShopOrder, formatETB, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, PAYMENT_METHOD_LABELS } from './shopTypes';
-import { ShoppingBagIcon } from '@heroicons/react/24/outline';
+import { ShoppingBagIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '../../contexts/AuthContext';
 
 const MyOrders: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [orders, setOrders] = useState<ShopOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lookupNumber, setLookupNumber] = useState('');
+  const [lookupPhone, setLookupPhone] = useState('');
+  const [lookupError, setLookupError] = useState('');
+  const [lookupLoading, setLookupLoading] = useState(false);
 
   useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     const fetchOrders = async () => {
       try {
         const data = await api.get<ShopOrder[]>('/api/shop/orders/mine');
@@ -21,7 +31,24 @@ const MyOrders: React.FC = () => {
       }
     };
     fetchOrders();
-  }, []);
+  }, [user]);
+
+  const handleLookup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLookupError('');
+    setLookupLoading(true);
+    try {
+      const data = await api.post<{ orderId: string; guestToken: string; orderNumber: string }>(
+        '/api/shop/orders/lookup',
+        { orderNumber: lookupNumber, phone: lookupPhone }
+      );
+      navigate(`/shop/orders/${data.orderId}?guestToken=${data.guestToken}`);
+    } catch (err: any) {
+      setLookupError(err.message || 'Order not found. Check your order number and phone.');
+    } finally {
+      setLookupLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -33,16 +60,67 @@ const MyOrders: React.FC = () => {
 
   if (orders.length === 0) {
     return (
-      <div className="text-center py-20">
-        <ShoppingBagIcon className="w-16 h-16 text-aura-umber mx-auto mb-4" />
-        <h2 className="text-xl font-serif text-aura-ivory mb-2">No orders yet</h2>
-        <p className="text-aura-sand mb-6">When you place an order, it will appear here.</p>
-        <button
-          onClick={() => navigate('/shop')}
-          className="px-6 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700"
-        >
-          Go to Shop
-        </button>
+      <div className="space-y-8">
+        <div className="text-center py-12">
+          <ShoppingBagIcon className="w-16 h-16 text-aura-umber mx-auto mb-4" />
+          <h2 className="text-xl font-serif text-aura-ivory mb-2">
+            {user ? 'No orders yet' : 'Track your order'}
+          </h2>
+          <p className="text-aura-sand mb-6">
+            {user
+              ? 'When you place an order, it will appear here.'
+              : 'Enter your order number and phone to view your order.'}
+          </p>
+          {user && (
+            <button
+              onClick={() => navigate('/shop')}
+              className="px-6 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700"
+            >
+              Go to Shop
+            </button>
+          )}
+        </div>
+
+        {/* Guest order lookup */}
+        {!user && (
+          <div className="max-w-md mx-auto bg-aura-ink rounded-xl border border-aura-umber p-6">
+            <h3 className="text-lg font-serif text-aura-ivory mb-4 flex items-center gap-2">
+              <MagnifyingGlassIcon className="w-5 h-5" /> Find your order
+            </h3>
+            <form onSubmit={handleLookup} className="space-y-3">
+              <div>
+                <label className="text-sm text-aura-sand mb-1 block">Order Number</label>
+                <input
+                  type="text"
+                  required
+                  value={lookupNumber}
+                  onChange={(e) => setLookupNumber(e.target.value)}
+                  placeholder="e.g. AURA-2026-00001"
+                  className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-aura-sand mb-1 block">Phone Number</label>
+                <input
+                  type="tel"
+                  required
+                  value={lookupPhone}
+                  onChange={(e) => setLookupPhone(e.target.value)}
+                  placeholder="The phone you used at checkout"
+                  className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
+                />
+              </div>
+              {lookupError && <p className="text-sm text-red-400">{lookupError}</p>}
+              <button
+                type="submit"
+                disabled={lookupLoading}
+                className="w-full px-4 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 disabled:opacity-50"
+              >
+                {lookupLoading ? 'Searching...' : 'Find Order'}
+              </button>
+            </form>
+          </div>
+        )}
       </div>
     );
   }

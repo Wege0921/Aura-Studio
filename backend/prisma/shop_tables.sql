@@ -106,6 +106,9 @@ CREATE TABLE IF NOT EXISTS "shop_orders" (
     "paymentStatus" TEXT NOT NULL DEFAULT 'PENDING',
     "paidAt" TIMESTAMP(3),
     "notes" TEXT,
+    "trackingNumber" TEXT,
+    "carrier" TEXT,
+    "couponId" TEXT,
     "shippingFullName" TEXT NOT NULL,
     "shippingPhone" TEXT NOT NULL,
     "shippingRegion" TEXT NOT NULL,
@@ -203,3 +206,46 @@ ALTER TABLE "shop_wishlist"
 ALTER TABLE "shop_wishlist"
     ADD CONSTRAINT "shop_wishlist_productId_fkey"
     FOREIGN KEY ("productId") REFERENCES "shop_products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Shipping Rates
+CREATE TABLE IF NOT EXISTS "shop_shipping_rates" (
+    "id" TEXT NOT NULL,
+    "region" TEXT,
+    "rate" DECIMAL(10,2) NOT NULL,
+    "freeShippingOver" DECIMAL(10,2),
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "shop_shipping_rates_pkey" PRIMARY KEY ("id")
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS "shop_shipping_rates_region_key" ON "shop_shipping_rates"("region");
+
+-- Coupons
+CREATE TABLE IF NOT EXISTS "shop_coupons" (
+    "id" TEXT NOT NULL,
+    "code" TEXT NOT NULL,
+    "type" TEXT NOT NULL DEFAULT 'PERCENTAGE',
+    "value" DECIMAL(10,2) NOT NULL,
+    "minSubtotal" DECIMAL(10,2),
+    "maxDiscount" DECIMAL(10,2),
+    "maxUses" INTEGER,
+    "usedCount" INTEGER NOT NULL DEFAULT 0,
+    "startsAt" TIMESTAMP(3),
+    "endsAt" TIMESTAMP(3),
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "shop_coupons_pkey" PRIMARY KEY ("id")
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS "shop_coupons_code_key" ON "shop_coupons"("code");
+
+-- Add couponId index to shop_orders
+CREATE INDEX IF NOT EXISTS "shop_orders_couponId_idx" ON "shop_orders"("couponId");
+
+ALTER TABLE "shop_orders"
+    ADD CONSTRAINT "shop_orders_couponId_fkey"
+    FOREIGN KEY ("couponId") REFERENCES "shop_coupons"("id") ON DELETE SET NULL ON UPDATE CASCADE;
