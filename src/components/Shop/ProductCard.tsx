@@ -6,9 +6,10 @@ import { useShopCart } from '../../contexts/ShopCartContext';
 
 interface ProductCardProps {
   product: Product;
+  onOpen?: (slug: string) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
   const navigate = useNavigate();
   const { addItem } = useShopCart();
 
@@ -18,14 +19,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const totalStock = product.variants?.reduce((sum, v) => sum + v.stock, 0) ?? 0;
   const outOfStock = product.status === 'OUT_OF_STOCK' || (product.variants && product.variants.length > 0 && totalStock === 0);
 
-  const handleClick = () => navigate(`/shop/product/${product.slug}`);
+  const handleClick = () => {
+    if (onOpen) onOpen(product.slug);
+    else navigate(`/shop/product/${product.slug}`);
+  };
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (outOfStock) return;
-    // If product has variants, navigate to detail page for selection
+    // If product has variants, open detail for selection
     if (product.variants && product.variants.length > 0) {
-      navigate(`/shop/product/${product.slug}`);
+      handleClick();
       return;
     }
     // No variants — add directly

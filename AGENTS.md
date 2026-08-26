@@ -8,7 +8,16 @@ Learned project conventions and operational procedures. Append-only.
 - Backend: Node.js + Express + TypeScript
 - Database: PostgreSQL + Prisma ORM (provider in `backend/prisma/schema.prisma`)
 - Auth: Supabase Auth (JWT verified in `backend/src/middleware/auth.ts`); tokens cached in-memory for 60s
-- File uploads: Multer (memory storage) → Supabase Storage buckets (`products`, `shop-receipts`)
+- File uploads: Multer (memory storage) → Cloudflare R2 (S3-compatible) for new uploads.
+  Legacy files still live in Supabase Storage; `deleteFromSupabase()` auto-detects
+  the provider from the URL host. All uploads/deletes go through
+  `backend/src/lib/upload.ts` (`uploadToSupabase` / `deleteFromSupabase` — names
+  kept for backward compat). R2 uses a single bucket (`aura-media`) with
+  `<legacyBucket>/<folder>/<file>` key prefixes (e.g. `products/products/...`,
+  `shop-receipts/receipts/...`). Required env: `R2_ACCOUNT_ID`,
+  `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_BASE_URL`.
+  Supabase Storage env vars (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) are
+  still required for legacy file deletes.
 - Email: `backend/src/services/emailService.ts` (nodemailer)
 
 Frontend API helper: `src/lib/api.ts` (`api.get/post/put/patch/delete/postForm`).

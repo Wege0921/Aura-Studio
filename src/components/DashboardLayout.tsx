@@ -53,6 +53,35 @@ interface TabDef {
   icon: React.ReactNode;
 }
 
+// A NavSection is either a direct link (single item) or a collapsible group
+// of related pages. This keeps the sidebar scannable as features grow.
+type NavSection =
+  | { type: 'item'; id: TabType; label: string; icon: React.ReactNode }
+  | { type: 'group'; id: string; label: string; icon: React.ReactNode; children: TabDef[] };
+
+// Flatten sections into a simple tab list (for MobileBottomNav, etc.)
+const flattenSections = (sections: NavSection[]): TabDef[] => {
+  const result: TabDef[] = [];
+  for (const s of sections) {
+    if (s.type === 'item') {
+      result.push({ id: s.id, label: s.label, icon: s.icon });
+    } else {
+      result.push(...s.children);
+    }
+  }
+  return result;
+};
+
+// Find which group (if any) contains the active tab
+const findActiveGroupId = (sections: NavSection[], activeTab: string): string | null => {
+  for (const s of sections) {
+    if (s.type === 'group' && s.children.some((c) => c.id === activeTab)) {
+      return s.id;
+    }
+  }
+  return null;
+};
+
 const DashboardLayout: React.FC = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
@@ -103,21 +132,47 @@ const DashboardLayout: React.FC = () => {
     { id: 'profile', label: 'Profile', icon: <ProfileIcon className="w-5 h-5" /> },
   ], []);
 
-  const adminTabs: TabDef[] = useMemo(() => [
-    { id: 'admin-dashboard', label: 'Dashboard', icon: <DashboardIcon className="w-5 h-5" /> },
-    { id: 'admin-classes', label: 'Classes', icon: <ClassesIcon className="w-5 h-5" /> },
-    { id: 'admin-packages', label: 'Packages', icon: <PackagesIcon className="w-5 h-5" /> },
-    { id: 'admin-bookings', label: 'Bookings', icon: <BookingsIcon className="w-5 h-5" /> },
-    { id: 'admin-users', label: 'Users', icon: <UsersIcon className="w-5 h-5" /> },
-    { id: 'admin-instructors', label: 'Instructors', icon: <InstructorIcon className="w-5 h-5" /> },
-    { id: 'admin-payments', label: 'Payments', icon: <PaymentsIcon className="w-5 h-5" /> },
-    { id: 'admin-shop-products', label: 'Shop Products', icon: <PackagesIcon className="w-5 h-5" /> },
-    { id: 'admin-shop-orders', label: 'Shop Orders', icon: <BookingsIcon className="w-5 h-5" /> },
-    { id: 'admin-shop-categories', label: 'Shop Categories', icon: <ContentIcon className="w-5 h-5" /> },
-    { id: 'admin-shop-analytics', label: 'Shop Analytics', icon: <AnalyticsIcon className="w-5 h-5" /> },
-    { id: 'admin-analytics', label: 'Analytics', icon: <AnalyticsIcon className="w-5 h-5" /> },
-    { id: 'admin-content', label: 'Content', icon: <ContentIcon className="w-5 h-5" /> },
+  const adminSections: NavSection[] = useMemo(() => [
+    // Overview
+    { type: 'item', id: 'admin-dashboard', label: 'Dashboard', icon: <DashboardIcon className="w-5 h-5" /> },
+    // Academy
+    {
+      type: 'group',
+      id: 'academy',
+      label: 'Academy',
+      icon: <ClassesIcon className="w-5 h-5" />,
+      children: [
+        { id: 'admin-classes', label: 'Classes', icon: <ClassesIcon className="w-5 h-5" /> },
+        { id: 'admin-packages', label: 'Packages', icon: <PackagesIcon className="w-5 h-5" /> },
+        { id: 'admin-bookings', label: 'Bookings', icon: <BookingsIcon className="w-5 h-5" /> },
+        { id: 'admin-instructors', label: 'Instructors', icon: <InstructorIcon className="w-5 h-5" /> },
+      ],
+    },
+    // Users
+    { type: 'item', id: 'admin-users', label: 'Users', icon: <UsersIcon className="w-5 h-5" /> },
+    // Commerce
+    {
+      type: 'group',
+      id: 'commerce',
+      label: 'Commerce',
+      icon: <PackagesIcon className="w-5 h-5" />,
+      children: [
+        { id: 'admin-shop-products', label: 'Products', icon: <PackagesIcon className="w-5 h-5" /> },
+        { id: 'admin-shop-orders', label: 'Orders', icon: <BookingsIcon className="w-5 h-5" /> },
+        { id: 'admin-shop-categories', label: 'Categories', icon: <ContentIcon className="w-5 h-5" /> },
+        { id: 'admin-shop-analytics', label: 'Shop Analytics', icon: <AnalyticsIcon className="w-5 h-5" /> },
+      ],
+    },
+    // Finance
+    { type: 'item', id: 'admin-payments', label: 'Payments', icon: <PaymentsIcon className="w-5 h-5" /> },
+    // Analytics
+    { type: 'item', id: 'admin-analytics', label: 'Analytics', icon: <AnalyticsIcon className="w-5 h-5" /> },
+    // Content
+    { type: 'item', id: 'admin-content', label: 'Content', icon: <ContentIcon className="w-5 h-5" /> },
   ], []);
+
+  // Flat list for backward-compat uses (mobile bottom nav, etc.)
+  const adminTabs: TabDef[] = useMemo(() => flattenSections(adminSections), [adminSections]);
 
   // Admin on dashboard should always be in admin mode
   useEffect(() => {
@@ -132,6 +187,10 @@ const DashboardLayout: React.FC = () => {
     return <Navigate to="/login" />;
   }
 
+  // For admin: use grouped sections. For user: wrap flat tabs as single-item sections.
+  const sections: NavSection[] = isAdmin && viewMode === 'admin'
+    ? adminSections
+    : userTabs.map((t) => ({ type: 'item' as const, id: t.id, label: t.label, icon: t.icon }));
   const tabs = isAdmin && viewMode === 'admin' ? adminTabs : userTabs;
 
   const toggleViewMode = () => {
@@ -210,7 +269,7 @@ const DashboardLayout: React.FC = () => {
       <div className="aura-dashboard h-screen max-h-screen bg-aura-bark flex overflow-hidden">
         {/* Desktop Sidebar (lg+) */}
         <DesktopSidebar
-          tabs={tabs}
+          sections={sections}
           activeTab={activeTab}
           onTabChange={handleTabChange}
           userName={user.name}
@@ -222,7 +281,7 @@ const DashboardLayout: React.FC = () => {
 
         {/* Tablet Sidebar (md - lg) */}
         <TabletSidebar
-          tabs={tabs}
+          sections={sections}
           activeTab={activeTab}
           onTabChange={handleTabChange}
           userName={user.name}
@@ -338,7 +397,7 @@ const DashboardLayout: React.FC = () => {
 
         {/* Mobile Bottom Tab Bar — sidebar-only items excluded on mobile */}
         <MobileBottomNav
-          tabs={tabs.filter((t) => !['classes', 'packages', 'admin-classes', 'admin-packages', 'admin-instructors', 'admin-analytics', 'admin-users', 'admin-shop-categories', 'admin-shop-analytics'].includes(t.id))}
+          tabs={tabs.filter((t) => ['classes', 'packages', 'admin-classes', 'admin-packages', 'admin-instructors', 'admin-analytics', 'admin-users', 'admin-shop-categories', 'admin-shop-analytics', 'admin-payments', 'admin-content'].indexOf(t.id) === -1)}
           activeTab={activeTab}
           onTabChange={handleTabChange}
         />
@@ -365,23 +424,11 @@ const DashboardLayout: React.FC = () => {
               </button>
             </div>
             <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto overscroll-contain">
-              {tabs.map((tab) => {
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => { handleTabChange(tab.id); setShowMobileDrawer(false); }}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium font-sans transition-colors duration-200 min-h-[44px] ${
-                      isActive
-                        ? 'bg-aura-sand/20 text-aura-ivory'
-                        : 'text-aura-cream hover:bg-aura-umber/40 hover:text-aura-ivory'
-                    }`}
-                  >
-                    {tab.icon}
-                    <span>{tab.label}</span>
-                  </button>
-                );
-              })}
+              <MobileDrawerNav
+                sections={sections}
+                activeTab={activeTab}
+                onTabChange={(id) => { handleTabChange(id); setShowMobileDrawer(false); }}
+              />
             </nav>
             <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-aura-umber shrink-0">
               <button
@@ -402,3 +449,103 @@ const DashboardLayout: React.FC = () => {
 };
 
 export default DashboardLayout;
+
+// ---------- Mobile Drawer Navigation (grouped) ----------
+// Renders collapsible parent menus for sections with multiple children.
+// Auto-expands the group containing the active tab.
+const MobileDrawerNav: React.FC<{
+  sections: NavSection[];
+  activeTab: string;
+  onTabChange: (tabId: string) => void;
+}> = ({ sections, activeTab, onTabChange }) => {
+  const activeGroupId = findActiveGroupId(sections, activeTab);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
+    () => new Set(activeGroupId ? [activeGroupId] : [])
+  );
+
+  // Keep the active group expanded when the active tab changes
+  useEffect(() => {
+    if (activeGroupId) {
+      setExpandedGroups((prev) => new Set(prev).add(activeGroupId));
+    }
+  }, [activeGroupId]);
+
+  const toggleGroup = (id: string) => {
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  return (
+    <>
+      {sections.map((s) => {
+        if (s.type === 'item') {
+          const isActive = activeTab === s.id;
+          return (
+            <button
+              key={s.id}
+              onClick={() => onTabChange(s.id)}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium font-sans transition-colors duration-200 min-h-[44px] ${
+                isActive
+                  ? 'bg-aura-sand/20 text-aura-ivory'
+                  : 'text-aura-cream hover:bg-aura-umber/40 hover:text-aura-ivory'
+              }`}
+            >
+              {s.icon}
+              <span>{s.label}</span>
+            </button>
+          );
+        }
+
+        // Group
+        const isExpanded = expandedGroups.has(s.id);
+        const hasActiveChild = s.children.some((c) => c.id === activeTab);
+        return (
+          <div key={s.id} className="space-y-1">
+            <button
+              onClick={() => toggleGroup(s.id)}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium font-sans transition-colors duration-200 min-h-[44px] ${
+                hasActiveChild
+                  ? 'text-aura-ivory'
+                  : 'text-aura-cream hover:bg-aura-umber/40 hover:text-aura-ivory'
+              }`}
+            >
+              {s.icon}
+              <span className="flex-1 text-left">{s.label}</span>
+              <svg
+                className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {isExpanded && (
+              <div className="ml-4 pl-3 border-l border-aura-umber/50 space-y-1">
+                {s.children.map((child) => {
+                  const isActive = activeTab === child.id;
+                  return (
+                    <button
+                      key={child.id}
+                      onClick={() => onTabChange(child.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium font-sans transition-colors duration-200 min-h-[40px] ${
+                        isActive
+                          ? 'bg-aura-sand/20 text-aura-ivory'
+                          : 'text-aura-sand hover:bg-aura-umber/40 hover:text-aura-ivory'
+                      }`}
+                    >
+                      {child.icon}
+                      <span>{child.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </>
+  );
+};

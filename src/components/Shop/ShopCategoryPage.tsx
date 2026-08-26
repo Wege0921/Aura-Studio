@@ -74,9 +74,6 @@ const ShopCategoryPage: React.FC = () => {
         <h1 className="text-2xl md:text-3xl font-serif text-aura-ivory">
           {currentCategory?.name || 'All Products'}
         </h1>
-        {currentCategory?.description && (
-          <p className="text-aura-sand text-sm mt-1">{currentCategory.description}</p>
-        )}
       </div>
 
       {/* Search + Sort */}

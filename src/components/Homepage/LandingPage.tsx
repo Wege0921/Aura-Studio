@@ -1,7 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { ShoppingBagIcon } from '@heroicons/react/24/outline';
 import { useSEO } from '../../hooks/useSEO';
+import { api } from '../../lib/api';
+import { ProductCategory } from '../Shop/shopTypes';
 import './LandingPage.css';
+
+interface ShopCategoryBrief {
+  id: string;
+  slug: string;
+  name: string;
+  description?: string;
+  imageUrl?: string;
+  _count?: { products: number };
+}
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -11,8 +23,11 @@ const LandingPage: React.FC = () => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [newsletterMessage, setNewsletterMessage] = useState('');
+  const [shopCategories, setShopCategories] = useState<ShopCategoryBrief[]>([]);
 
   // Scroll reveal animation
+  // Re-runs when shop categories load so the async-rendered cards (which
+  // don't exist at initial mount) also get observed and fade in correctly.
   useEffect(() => {
     const items = document.querySelectorAll('.lp-reveal');
     const io = new IntersectionObserver(
@@ -28,7 +43,7 @@ const LandingPage: React.FC = () => {
     );
     items.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, []);
+  }, [shopCategories.length]);
 
   // Handle hash-based scrolling when navigating from other pages
   useEffect(() => {
@@ -41,12 +56,25 @@ const LandingPage: React.FC = () => {
     }
   }, [location]);
 
+  // Load shop categories so the About page can host the centralized
+  // shop + category descriptions (keeps individual shop pages compact).
+  useEffect(() => {
+    api
+      .get<ProductCategory[]>('/api/shop/categories')
+      .then((cats) => setShopCategories(cats.filter((c) => c.isActive).slice(0, 6)))
+      .catch(() => setShopCategories([]));
+  }, []);
+
   const handleBookClass = () => {
     navigate('/classes');
   };
 
   const handleViewPackages = () => {
     navigate('/packages');
+  };
+
+  const handleVisitShop = () => {
+    navigate('/shop');
   };
 
   const scrollTo = (id: string) => {
@@ -138,6 +166,54 @@ const LandingPage: React.FC = () => {
             </button>
           </div>
         </div>
+      </section>
+
+      {/* ---------- AURA SHOP ---------- */}
+      <section className="lp-shop" id="shop">
+        <p className="lp-eyebrow" style={{ fontWeight: 700 }}>The AURA Shop</p>
+        <div className="lp-divider" />
+        <div className="lp-shop-intro lp-reveal">
+          <h2>Studio essentials, curated by AURA.</h2>
+          <p>
+            Outfits, cups, bags, grip socks, and hair accessories &mdash; thoughtfully
+            chosen to support your practice, on the reformer and beyond.
+          </p>
+          <button className="lp-btn lp-btn-dark" onClick={() => handleVisitShop()}>
+            Visit the Shop
+          </button>
+        </div>
+
+        {shopCategories.length > 0 && (
+          <div className="lp-shop-cards">
+            {shopCategories.map((cat) => (
+              <button
+                key={cat.id}
+                className="lp-shop-card lp-reveal bg-aura-ink rounded-xl border border-aura-umber overflow-hidden hover:border-aura-clay transition-colors duration-200 group text-left"
+                onClick={() => navigate(`/shop/${cat.slug}`)}
+              >
+                <div className="aspect-square bg-aura-bark overflow-hidden">
+                  {cat.imageUrl ? (
+                    <img
+                      src={cat.imageUrl}
+                      alt={cat.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <ShoppingBagIcon className="w-10 h-10 text-aura-umber" />
+                    </div>
+                  )}
+                </div>
+                <div className="p-3">
+                  <h3>{cat.name}</h3>
+                  {cat._count && cat._count.products > 0 && (
+                    <p>{cat._count.products} items</p>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* ---------- APPROACH ---------- */}

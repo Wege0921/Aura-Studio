@@ -196,7 +196,10 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
       {/* Quick Actions */}
       <div className="bg-aura-ink rounded-lg shadow p-6">
         <h2 className="text-xl font-semibold text-aura-cream mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        {/* Academy */}
+        <p className="text-[10px] font-semibold tracking-[0.18em] uppercase text-aura-sand/50 mb-3">Academy</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <button onClick={() => onTabChange && onTabChange('admin-classes')} className="block w-full text-left px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
             <div className="flex items-center">
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -221,14 +224,60 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
               View Analytics
             </div>
           </button>
-          <button onClick={() => onTabChange && onTabChange('admin-users')} className="block w-full text-left px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-            <div className="flex items-center">
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-              Manage Users
-            </div>
-          </button>
+        </div>
+
+        {/* Users */}
+        <div className="border-t border-aura-umber/40 pt-5 mb-6">
+          <p className="text-[10px] font-semibold tracking-[0.18em] uppercase text-aura-sand/50 mb-3">Users</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button onClick={() => onTabChange && onTabChange('admin-users')} className="block w-full text-left px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                Manage Users
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Commerce */}
+        <div className="border-t border-aura-umber/40 pt-5">
+          <p className="text-[10px] font-semibold tracking-[0.18em] uppercase text-aura-sand/50 mb-3">Commerce</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button onClick={() => onTabChange && onTabChange('admin-shop-products')} className="block w-full text-left px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H4.5a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 109.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1114.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                </svg>
+                Manage Products
+              </div>
+            </button>
+            <button onClick={() => onTabChange && onTabChange('admin-shop-orders')} className="block w-full text-left px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.932-2.222a47.922 47.922 0 00-17.136 0A2.25 2.25 0 002.25 6.108v9.984A2.25 2.25 0 004.5 18.75h.375m15 0h.375m-15 0a2.251 2.251 0 01-1.125-1.968V6.108c0-1.135.845-2.098 1.932-2.222a47.916 47.916 0 0117.136 0c1.087.124 1.932 1.087 1.932 2.222v9.984A2.251 2.251 0 0119.5 18.75h-.375" />
+                </svg>
+                View Shop Orders
+              </div>
+            </button>
+            <button onClick={() => onTabChange && onTabChange('admin-shop-categories')} className="block w-full text-left px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
+                Manage Categories
+              </div>
+            </button>
+            <button onClick={() => onTabChange && onTabChange('admin-shop-analytics')} className="block w-full text-left px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                </svg>
+                Shop Analytics
+              </div>
+            </button>
+          </div>
         </div>
       </div>
 

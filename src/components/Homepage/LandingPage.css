@@ -415,6 +415,74 @@
 [data-theme="light"] .landing-page .lp-card .lp-learn { color: #3b2a1d; border-color: #5c4530; }
 .landing-page .lp-card .lp-learn:hover { opacity: 0.6; }
 
+/* ---------- AURA SHOP ---------- */
+.landing-page .lp-shop {
+  background: var(--lp-paper);
+  padding: 6.5rem 3.5rem 7rem;
+  text-align: center;
+}
+[data-theme="light"] .landing-page .lp-shop {
+  background: #eee5d6;
+}
+.landing-page .lp-shop .lp-eyebrow {
+  color: var(--lp-bark);
+  font-size: 1.1rem;
+  letter-spacing: 0.28em;
+  margin-bottom: 1.4rem;
+}
+[data-theme="light"] .landing-page .lp-shop .lp-eyebrow { color: #3b2a1d; }
+.landing-page .lp-shop-intro {
+  max-width: 640px;
+  margin: 0 auto 3.8rem;
+}
+.landing-page .lp-shop-intro h2 {
+  font-size: 2.6rem;
+  line-height: 1.18;
+  font-weight: 500;
+  margin-bottom: 1.6rem;
+  color: var(--lp-bark);
+}
+[data-theme="light"] .landing-page .lp-shop-intro h2 { color: #3b2a1d; }
+.landing-page .lp-shop-intro p {
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: var(--lp-bark);
+  max-width: 38ch;
+  margin: 0 auto 2.4rem;
+}
+[data-theme="light"] .landing-page .lp-shop-intro p { color: #3b2a1d; }
+.landing-page .lp-shop-cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  max-width: 1180px;
+  margin: 0 auto;
+  text-align: left;
+}
+/* Card visuals come from the same Tailwind utilities used on the Shop page
+   (bg-aura-ink, rounded-xl, border-aura-umber, etc.) so the two stay in sync.
+   Card text is styled here (not via Tailwind) so it overrides the global
+   .landing-page h3 serif rule and stays readable in both themes. */
+.landing-page .lp-shop-card {
+  cursor: pointer;
+}
+.landing-page .lp-shop-card h3 {
+  font-family: 'Jost', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--lp-bark);
+  margin-bottom: 0.25rem;
+}
+[data-theme="light"] .landing-page .lp-shop-card h3 { color: #3b2a1d; }
+.landing-page .lp-shop-card p {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.8rem;
+  color: var(--lp-bark);
+  opacity: 0.8;
+}
+[data-theme="light"] .landing-page .lp-shop-card p { color: #3b2a1d; }
+
 /* ---------- APPROACH ---------- */
 .landing-page .lp-approach {
   background: var(--lp-bark);
@@ -633,6 +701,14 @@
   .landing-page .lp-card h3 { font-size: 0.75rem; margin-bottom: 0.4rem; }
   .landing-page .lp-card p { font-size: 0.72rem; line-height: 1.5; margin-bottom: 0.7rem; }
   .landing-page .lp-card .lp-learn { font-size: 0.6rem; }
+
+  .landing-page .lp-shop { padding: 3rem 1rem 3.5rem; }
+  .landing-page .lp-shop-intro { margin-bottom: 2.4rem; }
+  .landing-page .lp-shop-intro h2 { font-size: 1.8rem; }
+  .landing-page .lp-shop-intro p { font-size: 0.82rem; margin-bottom: 1.4rem; }
+  .landing-page .lp-shop-cards { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .landing-page .lp-shop-card h3 { font-size: 0.9rem; }
+  .landing-page .lp-shop-card p { font-size: 0.72rem; }
 
   .landing-page .lp-approach {
     grid-template-columns: 1fr;

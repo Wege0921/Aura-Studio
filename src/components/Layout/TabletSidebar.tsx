@@ -6,8 +6,12 @@ interface NavItem {
   icon: React.ReactNode;
 }
 
+type NavSection =
+  | { type: 'item'; id: string; label: string; icon: React.ReactNode }
+  | { type: 'group'; id: string; label: string; icon: React.ReactNode; children: NavItem[] };
+
 interface TabletSidebarProps {
-  tabs: NavItem[];
+  sections: NavSection[];
   activeTab: string;
   onTabChange: (tabId: string) => void;
   userName: string;
@@ -18,7 +22,7 @@ interface TabletSidebarProps {
 }
 
 const TabletSidebar: React.FC<TabletSidebarProps> = ({
-  tabs,
+  sections,
   activeTab,
   onTabChange,
   userName,
@@ -29,6 +33,31 @@ const TabletSidebar: React.FC<TabletSidebarProps> = ({
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  // Auto-expand the group containing the active tab
+  const activeGroupId = sections.find(
+    (s): s is Extract<NavSection, { type: 'group' }> =>
+      s.type === 'group' && s.children.some((c) => c.id === activeTab)
+  )?.id ?? null;
+
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
+    () => new Set(activeGroupId ? [activeGroupId] : [])
+  );
+
+  useEffect(() => {
+    if (activeGroupId) {
+      setExpandedGroups((prev) => new Set(prev).add(activeGroupId));
+    }
+  }, [activeGroupId]);
+
+  const toggleGroup = (id: string) => {
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   useEffect(() => {
     const handleClickOutside = () => setShowProfileMenu(false);
@@ -50,25 +79,106 @@ const TabletSidebar: React.FC<TabletSidebarProps> = ({
 
       {/* Navigation */}
       <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto" aria-label="Tablet navigation">
-        {tabs.map((tab) => {
-          const isActive = activeTab === tab.id;
+        {sections.map((s) => {
+          if (s.type === 'item') {
+            const isActive = activeTab === s.id;
+            return (
+              <button
+                key={s.id}
+                onClick={() => onTabChange(s.id)}
+                className={`
+                  w-full flex items-center gap-3 px-2.5 py-2.5 rounded-lg text-sm font-medium font-sans
+                  transition-colors duration-200 min-h-[44px]
+                  ${isActive
+                    ? 'bg-aura-sand/20 text-aura-ivory'
+                    : 'text-aura-sand hover:bg-aura-umber/40 hover:text-aura-ivory'
+                  }
+                `}
+                aria-current={isActive ? 'page' : undefined}
+                title={!expanded ? s.label : undefined}
+              >
+                <span className="flex-shrink-0">{s.icon}</span>
+                {expanded && <span className="truncate">{s.label}</span>}
+              </button>
+            );
+          }
+
+          // Collapsible group
+          const isGroupExpanded = expandedGroups.has(s.id);
+          const hasActiveChild = s.children.some((c) => c.id === activeTab);
+
+          // When sidebar is collapsed (icon-only), render the group icon as a
+          // direct link to its first child (quick access) with a tooltip.
+          if (!expanded) {
+            return (
+              <button
+                key={s.id}
+                onClick={() => onTabChange(s.children[0].id)}
+                className={`
+                  w-full flex items-center gap-3 px-2.5 py-2.5 rounded-lg text-sm font-medium font-sans
+                  transition-colors duration-200 min-h-[44px]
+                  ${hasActiveChild
+                    ? 'bg-aura-sand/20 text-aura-ivory'
+                    : 'text-aura-sand hover:bg-aura-umber/40 hover:text-aura-ivory'
+                  }
+                `}
+                title={s.label}
+              >
+                <span className="flex-shrink-0">{s.icon}</span>
+              </button>
+            );
+          }
+
+          // When sidebar is expanded, render the full collapsible group
           return (
-            <button
-              key={tab.id}
-              onClick={() => onTabChange(tab.id)}
-              className={`
-                w-full flex items-center gap-3 px-2.5 py-2.5 rounded-lg text-sm font-medium font-sans
-                transition-colors duration-200 min-h-[44px]
-                ${isActive
-                  ? 'bg-aura-sand/20 text-aura-ivory'
-                  : 'text-aura-sand hover:bg-aura-umber/40 hover:text-aura-ivory'
-                }
-              `}
-              aria-current={isActive ? 'page' : undefined}
-            >
-              {tab.icon}
-              {expanded && <span className="truncate">{tab.label}</span>}
-            </button>
+            <div key={s.id} className="space-y-1">
+              <button
+                onClick={() => toggleGroup(s.id)}
+                className={`
+                  w-full flex items-center gap-3 px-2.5 py-2.5 rounded-lg text-sm font-medium font-sans
+                  transition-colors duration-200 min-h-[44px]
+                  ${hasActiveChild
+                    ? 'text-aura-ivory'
+                    : 'text-aura-sand hover:bg-aura-umber/40 hover:text-aura-ivory'
+                  }
+                `}
+                aria-expanded={isGroupExpanded}
+              >
+                <span className="flex-shrink-0">{s.icon}</span>
+                <span className="flex-1 text-left truncate">{s.label}</span>
+                <svg
+                  className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${isGroupExpanded ? 'rotate-180' : ''}`}
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isGroupExpanded && (
+                <div className="ml-4 pl-3 border-l border-aura-umber/50 space-y-1">
+                  {s.children.map((child) => {
+                    const isActive = activeTab === child.id;
+                    return (
+                      <button
+                        key={child.id}
+                        onClick={() => onTabChange(child.id)}
+                        className={`
+                          w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium font-sans
+                          transition-colors duration-200 min-h-[40px]
+                          ${isActive
+                            ? 'bg-aura-sand/20 text-aura-ivory'
+                            : 'text-aura-sand hover:bg-aura-umber/40 hover:text-aura-ivory'
+                          }
+                        `}
+                        aria-current={isActive ? 'page' : undefined}
+                      >
+                        <span className="flex-shrink-0">{child.icon}</span>
+                        <span className="truncate">{child.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           );
         })}
       </nav>
