@@ -260,10 +260,12 @@ router.get('/products', catalogLimiter, cachePublicRead(60), async (req: Request
       orderBy: dbOrderBy,
       skip: (Number(page) - 1) * Number(limit),
       take: Math.min(Math.max(Number(limit) || 24, 1), 100),
-      include: {
+      select: {
+        id: true, slug: true, name: true, basePrice: true, salePrice: true,
+        status: true, stock: true, isFeatured: true, createdAt: true,
         category: { select: { id: true, name: true, slug: true } },
-        images: { orderBy: { sortOrder: 'asc' } },
-        variants: { where: { isActive: true } },
+        images: { orderBy: { sortOrder: 'asc' }, take: 1 },
+        variants: { where: { isActive: true }, select: { id: true, size: true, color: true, style: true, priceDelta: true, stock: true } },
       },
     });
 
@@ -281,6 +283,25 @@ router.get('/products', catalogLimiter, cachePublicRead(60), async (req: Request
   } catch (error) {
     console.error('Error fetching shop products:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get distinct sizes and colors from active variants (for filter UI)
+router.get('/filters', catalogLimiter, cachePublicRead(300), async (req: Request, res: Response) => {
+  try {
+    const variants = await prisma.productVariant.findMany({
+      where: {
+        isActive: true,
+        product: { status: 'ACTIVE' }
+      },
+      select: { size: true, color: true },
+      distinct: ['size', 'color'],
+    });
+    const sizes = [...new Set(variants.map(v => v.size).filter(Boolean))];
+    const colors = [...new Set(variants.map(v => v.color).filter(Boolean))];
+    res.json({ sizes, colors });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load filters' });
   }
 });
 
@@ -495,11 +516,16 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
     const orderItemsData: any[] = [];
     let subtotal = 0;
 
+    // Load all products in one query to avoid N+1 lookups
+    const productIds = parsedItems.map((i: any) => i.productId);
+    const products = await prisma.product.findMany({
+      where: { id: { in: productIds } },
+      include: { variants: true, category: true },
+    });
+    const productMap = new Map(products.map(p => [p.id, p]));
+
     for (const item of parsedItems) {
-      const product = await prisma.product.findUnique({
-        where: { id: item.productId },
-        include: { variants: true },
-      });
+      const product = productMap.get(item.productId);
 
       if (!product || product.status !== 'ACTIVE') {
         return res.status(400).json({ error: `Product not available: ${item.productId}` });
@@ -923,7 +949,7 @@ router.get('/orders/:id', optionalAuth, async (req: AuthenticatedRequest, res: R
     const order = await prisma.shopOrder.findUnique({
       where: { id },
       include: {
-        items: { include: { product: { include: { images: { orderBy: { sortOrder: 'asc' } } } } } },
+        items: { include: { product: { include: { images: { orderBy: { sortOrder: 'asc' }, take: 1 } } } } },
         shippingAddress: true,
         statusHistory: { orderBy: { createdAt: 'asc' } },
       },

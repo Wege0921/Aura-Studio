@@ -286,6 +286,9 @@ model Product {
   @@index([status])
   @@index([isFeatured])
   @@index([status, stock])
+  @@index([status, isFeatured, createdAt])
+  @@index([categoryId, status, createdAt])
+  @@index([status, salePrice, basePrice])
   @@map("shop_products")
 }
 
@@ -307,6 +310,7 @@ model ProductVariant {
 
   @@index([productId])
   @@index([stock])
+  @@index([productId, isActive])
   @@map("shop_product_variants")
 }
 

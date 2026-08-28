@@ -77,6 +77,7 @@ export async function uploadToSupabase(
       Key: key,
       Body: buffer,
       ContentType: mimetype,
+      CacheControl: 'public, max-age=31536000, immutable',
     })
   );
 

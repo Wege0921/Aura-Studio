@@ -62,6 +62,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
+            decoding="async"
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
           <div className="w-full h-full flex items-center justify-center absolute inset-0" style={{display:'none'}}>
@@ -116,4 +117,4 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
   );
 };
 
-export default ProductCard;
+export default React.memo(ProductCard);

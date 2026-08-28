@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { Product, ProductCategory } from './shopTypes';
 import ProductCard from './ProductCard';
-import ProductDetailModal from './ProductDetailModal';
 import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline';
+
+const ProductDetailModal = lazy(() => import('./ProductDetailModal'));
 
 const ShopCategoryPage: React.FC = () => {
   const { category } = useParams<{ category: string }>();
@@ -196,7 +197,9 @@ const ShopCategoryPage: React.FC = () => {
 
       {/* Product detail modal (in-place, no page navigation) */}
       {modalSlug && (
-        <ProductDetailModal slug={modalSlug} onClose={() => setModalSlug(null)} />
+        <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-umber" /></div>}>
+          <ProductDetailModal slug={modalSlug} onClose={() => setModalSlug(null)} />
+        </Suspense>
       )}
     </div>
   );

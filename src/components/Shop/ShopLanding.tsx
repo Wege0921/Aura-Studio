@@ -1,16 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { ProductCategory, Product } from './shopTypes';
 import ProductCard from './ProductCard';
-import ProductDetailModal from './ProductDetailModal';
 import { ShoppingBagIcon, MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline';
+
+const ProductDetailModal = lazy(() => import('./ProductDetailModal'));
 
 const ShopLanding: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [featured, setFeatured] = useState<Product[]>([]);
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [availableSizes, setAvailableSizes] = useState<string[]>([]);
+  const [availableColors, setAvailableColors] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   // In-page category selection (persists throughout the session)
@@ -47,14 +49,15 @@ const ShopLanding: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [cats, prods, allProds] = await Promise.all([
+        const [cats, prods, filters] = await Promise.all([
           api.get<ProductCategory[]>('/api/shop/categories'),
           api.get<{ products: Product[] }>('/api/shop/products?featured=true&limit=8'),
-          api.get<{ products: Product[] }>('/api/shop/products?limit=100'),
+          api.get<{ sizes: string[]; colors: string[] }>('/api/shop/filters').catch(() => ({ sizes: [], colors: [] })),
         ]);
         setCategories(cats);
         setFeatured(prods.products || []);
-        setAllProducts(allProds.products || []);
+        setAvailableSizes(filters.sizes || []);
+        setAvailableColors(filters.colors || []);
       } catch (err) {
         console.error('Error loading shop data:', err);
       } finally {
@@ -103,18 +106,6 @@ const ShopLanding: React.FC = () => {
 
   const showingCategory = !!selectedCategory || !!search || !!selectedSize || !!selectedColor || !!maxPrice;
   const currentCat = categories.find((c) => c.slug === selectedCategory);
-
-  // Collect available sizes and colors from ALL products (so filters work on every view)
-  const availableSizes: string[] = [];
-  const availableColors: string[] = [];
-  for (const p of allProducts) {
-    if (p.variants) {
-      for (const v of p.variants) {
-        if (v.size && availableSizes.indexOf(v.size) === -1) availableSizes.push(v.size);
-        if (v.color && availableColors.indexOf(v.color) === -1) availableColors.push(v.color);
-      }
-    }
-  }
 
   const clearFilters = () => {
     setSelectedSize('');
@@ -493,7 +484,9 @@ const ShopLanding: React.FC = () => {
 
       {/* Product detail modal (in-place, no page navigation) */}
       {modalSlug && (
-        <ProductDetailModal slug={modalSlug} onClose={() => setModalSlug(null)} />
+        <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-umber" /></div>}>
+          <ProductDetailModal slug={modalSlug} onClose={() => setModalSlug(null)} />
+        </Suspense>
       )}
     </div>
   );

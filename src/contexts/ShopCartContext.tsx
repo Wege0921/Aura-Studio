@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
 
 export interface CartItem {
   productId: string;
@@ -56,7 +56,7 @@ export const ShopCartProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   }, [items]);
 
-  const addItem: ShopCartContextType['addItem'] = (item, quantity = 1) => {
+  const addItem = useCallback<ShopCartContextType['addItem']>((item, quantity = 1) => {
     setItems((prev) => {
       const existing = prev.find(
         (i) => i.productId === item.productId && i.variantId === item.variantId
@@ -75,13 +75,13 @@ export const ShopCartProvider: React.FC<{ children: ReactNode }> = ({ children }
       return [...prev, { ...item, quantity: cappedQty }];
     });
     setIsCartOpen(true);
-  };
+  }, []);
 
-  const removeItem: ShopCartContextType['removeItem'] = (productId, variantId) => {
+  const removeItem = useCallback<ShopCartContextType['removeItem']>((productId, variantId) => {
     setItems((prev) => prev.filter((i) => !(i.productId === productId && i.variantId === variantId)));
-  };
+  }, []);
 
-  const updateQuantity: ShopCartContextType['updateQuantity'] = (productId, variantId, quantity) => {
+  const updateQuantity = useCallback<ShopCartContextType['updateQuantity']>((productId, variantId, quantity) => {
     if (quantity < 1) {
       removeItem(productId, variantId);
       return;
@@ -95,14 +95,17 @@ export const ShopCartProvider: React.FC<{ children: ReactNode }> = ({ children }
         return i;
       })
     );
-  };
+  }, [removeItem]);
 
-  const clearCart = () => setItems([]);
+  const clearCart = useCallback(() => setItems([]), []);
 
-  const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
-  const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const openCart = useCallback(() => setIsCartOpen(true), []);
+  const closeCart = useCallback(() => setIsCartOpen(false), []);
 
-  const value: ShopCartContextType = {
+  const totalItems = useMemo(() => items.reduce((sum, i) => sum + i.quantity, 0), [items]);
+  const subtotal = useMemo(() => items.reduce((sum, i) => sum + i.price * i.quantity, 0), [items]);
+
+  const value = useMemo<ShopCartContextType>(() => ({
     items,
     addItem,
     removeItem,
@@ -111,9 +114,9 @@ export const ShopCartProvider: React.FC<{ children: ReactNode }> = ({ children }
     totalItems,
     subtotal,
     isCartOpen,
-    openCart: () => setIsCartOpen(true),
-    closeCart: () => setIsCartOpen(false),
-  };
+    openCart,
+    closeCart,
+  }), [items, addItem, removeItem, updateQuantity, clearCart, totalItems, subtotal, isCartOpen, openCart, closeCart]);
 
   return <ShopCartContext.Provider value={value}>{children}</ShopCartContext.Provider>;
 };
