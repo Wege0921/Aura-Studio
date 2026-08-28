@@ -111,7 +111,7 @@ const OrderConfirmationPage: React.FC = () => {
             </span>
           </div>
           {order.paymentStatus === 'PENDING' && order.paymentMethod !== 'CASH_ON_DELIVERY' && (
-            <p className="text-xs text-aura-sand/60 bg-amber-900/20 rounded p-2">
+            <p className="text-xs text-aura-sand bg-amber-900/20 rounded p-2">
               Your payment is being verified. You'll receive a notification once confirmed.
             </p>
           )}
@@ -125,7 +125,6 @@ const OrderConfirmationPage: React.FC = () => {
               <p className="text-aura-cream">{order.shippingAddress.fullName}</p>
               <p>{order.shippingAddress.phone}</p>
               <p>{order.shippingAddress.address}</p>
-              <p>{order.shippingAddress.city}, {order.shippingAddress.region}</p>
               {order.shippingAddress.postalCode && <p>{order.shippingAddress.postalCode}</p>}
             </div>
           </div>

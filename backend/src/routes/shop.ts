@@ -413,12 +413,17 @@ router.post('/coupons/validate', orderCreationLimiter, [
 
 // Create order (auth or guest)
 router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single('receipt'), [
-  body('items').isArray({ min: 1 }).withMessage('At least one item is required'),
+  body('items').custom((value) => {
+    // FormData sends items as a JSON string; JSON body sends an actual array.
+    const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      throw new Error('At least one item is required');
+    }
+    return true;
+  }),
   body('paymentMethod').isIn(['BANK_TRANSFER', 'MOBILE_MONEY', 'CASH_ON_DELIVERY']).withMessage('Invalid payment method'),
   body('shippingFullName').notEmpty().withMessage('Full name is required'),
   body('shippingPhone').notEmpty().withMessage('Phone is required'),
-  body('shippingRegion').notEmpty().withMessage('Region is required'),
-  body('shippingCity').notEmpty().withMessage('City is required'),
   body('shippingAddress').notEmpty().withMessage('Address is required'),
 ], async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -546,7 +551,7 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
       });
     }
 
-    const shippingCost = await calculateShippingCost(shippingRegion, subtotal);
+    const shippingCost = shippingRegion ? await calculateShippingCost(shippingRegion, subtotal) : 0;
 
     // Apply coupon if provided
     let discount = 0;
@@ -624,8 +629,8 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
             create: {
               fullName: shippingFullName,
               phone: shippingPhone,
-              region: shippingRegion,
-              city: shippingCity,
+              region: shippingRegion || null,
+              city: shippingCity || null,
               address: shippingAddress,
               postalCode: shippingPostalCode || null,
               notes: shippingNotes || null,
@@ -689,7 +694,7 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
       }
 
       return newOrder;
-    });
+    }, { timeout: 15000, maxWait: 20000 });
 
     const responseBody = {
       message: 'Order placed successfully',
@@ -750,7 +755,7 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
             shippingCost: Number(shippingCost),
             total: Number(total),
             paymentMethod,
-            shippingAddress: { fullName: shippingFullName, phone: shippingPhone, region: shippingRegion, city: shippingCity, address: shippingAddress },
+            shippingAddress: { fullName: shippingFullName, phone: shippingPhone, region: shippingRegion || '', city: shippingCity || '', address: shippingAddress },
           });
         }
 

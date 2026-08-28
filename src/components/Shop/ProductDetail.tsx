@@ -181,7 +181,7 @@ const ProductDetail: React.FC = () => {
         <span>/</span>
         {product.category && (
           <>
-            <button onClick={() => navigate(`/shop/${product.category!.slug}`)} className="hover:text-aura-clay">
+            <button onClick={() => navigate(`/shop?category=${product.category!.slug}`)} className="hover:text-aura-clay">
               {product.category!.name}
             </button>
             <span>/</span>

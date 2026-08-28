@@ -124,7 +124,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
                   type="checkbox"
                   checked={usePackageSession}
                   onChange={(e) => setUsePackageSession(e.target.checked)}
-                  className="mt-1 h-4 w-4 text-green-500 focus:ring-green-500 border-aura-umber rounded"
+                  className="mt-1"
                 />
                 <div className="ml-3">
                   <span className="text-sm font-medium text-green-300">Use Package Session</span>

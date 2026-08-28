@@ -25,6 +25,25 @@ type Config = {
   onUpdate?: (registration: ServiceWorkerRegistration) => void;
 };
 
+// In development a service worker left over from a production build will serve
+// a cached index.html pointing at a stale bundle hash. Webpack's HMR runtime
+// then 404s on `main.<staleHash>.hot-update.json` and falls back to
+// window.location.reload(), producing an endless reload/flicker loop. Tear the
+// worker and its caches down so dev always runs against the dev server.
+export function unregisterInDevelopment() {
+  if (process.env.NODE_ENV === 'production' || !('serviceWorker' in navigator)) {
+    return;
+  }
+
+  navigator.serviceWorker.getRegistrations()
+    .then((registrations) => Promise.all(registrations.map((r) => r.unregister())))
+    .then(() => (window.caches ? window.caches.keys() : Promise.resolve([] as string[])))
+    .then((cacheNames) => Promise.all(cacheNames.map((name) => window.caches.delete(name))))
+    .catch((error) => {
+      console.error('Failed to clean up development service worker:', error);
+    });
+}
+
 export function register(config?: Config) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.

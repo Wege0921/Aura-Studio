@@ -16,6 +16,12 @@ button, a, input, select, textarea, [role="button"] {
   min-width: 44px;
 }
 
+/* Exempt small icon-only buttons from the 44px tap target rule */
+button.icon-btn {
+  min-height: auto;
+  min-width: auto;
+}
+
 /* Mobile: bottom sheet modals instead of centered modals */
 @media (max-width: 767px) {
   .modal-overlay {
@@ -124,6 +130,78 @@ h4 { font-size: 1rem; line-height: 1.4; }
 /* Touch-friendly form inputs */
 input, select, textarea {
   font-size: 16px; /* Prevents iOS zoom on focus */
+}
+
+/* Custom checkboxes — strip native styling and draw our own */
+input[type="checkbox"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  max-width: 20px !important;
+  max-height: 20px !important;
+  border: 1.5px solid var(--aura-umber) !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  position: relative !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+}
+
+input[type="checkbox"]:checked {
+  background: var(--aura-clay) !important;
+  border-color: var(--aura-clay) !important;
+}
+
+input[type="checkbox"]:checked::after {
+  content: '' !important;
+  position: absolute !important;
+  left: 6px !important;
+  top: 2px !important;
+  width: 6px !important;
+  height: 11px !important;
+  border: solid var(--aura-ink) !important;
+  border-width: 0 2px 2px 0 !important;
+  transform: rotate(45deg) !important;
+}
+
+/* Custom radio buttons — strip native styling and draw our own */
+input[type="radio"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  min-height: 26px !important;
+  max-width: 26px !important;
+  max-height: 26px !important;
+  border: 1.5px solid var(--aura-umber) !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  position: relative !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+}
+
+input[type="radio"]:checked {
+  border-color: var(--aura-clay) !important;
+  background: var(--aura-clay) !important;
+}
+
+input[type="radio"]:checked::after {
+  content: '' !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  background: var(--aura-ink) !important;
+  transform: translate(-50%, -50%) !important;
 }
 
 /* Smooth scrolling */

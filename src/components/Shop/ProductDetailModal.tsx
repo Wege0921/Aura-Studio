@@ -89,7 +89,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ slug, onClose }
 
   if (loading) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={onClose}>
+      <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4" onClick={onClose}>
         <div className="bg-aura-bark rounded-2xl border border-aura-umber p-8" onClick={(e) => e.stopPropagation()}>
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-umber mx-auto"></div>
         </div>
@@ -99,7 +99,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ slug, onClose }
 
   if (!product) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={onClose}>
+      <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4" onClick={onClose}>
         <div className="bg-aura-bark rounded-2xl border border-aura-umber p-8 text-center" onClick={(e) => e.stopPropagation()}>
           <p className="text-aura-sand text-lg">Product not found.</p>
           <button onClick={onClose} className="mt-4 text-aura-clay hover:text-aura-sand">← Close</button>
@@ -146,7 +146,10 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ slug, onClose }
     }, quantity);
 
     setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
+    setTimeout(() => {
+      setAddedToCart(false);
+      onClose();
+    }, 1200);
   };
 
   const selectVariant = (field: 'size' | 'color' | 'style', value: string) => {
@@ -164,7 +167,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ slug, onClose }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-3 md:p-6 overflow-y-auto" onClick={onClose}>
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-3 md:p-6 overflow-y-auto" onClick={onClose}>
       <div
         className="bg-aura-bark rounded-2xl border border-aura-umber max-w-4xl w-full my-auto max-h-[95vh] overflow-y-auto relative"
         onClick={(e) => e.stopPropagation()}
@@ -178,7 +181,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ slug, onClose }
           <XMarkIcon className="w-5 h-5" />
         </button>
 
-        <div className="grid md:grid-cols-2 gap-6 p-4 md:p-6">
+        <div className="grid md:grid-cols-2 gap-6 p-4 md:p-6 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-6">
           {/* Image Gallery */}
           <div className="space-y-3">
             <div className="aspect-square bg-aura-ink rounded-xl border border-aura-umber overflow-hidden">
@@ -211,7 +214,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ slug, onClose }
           <div className="space-y-4">
             <div>
               {product.category && (
-                <p className="text-sm text-aura-sand/70 mb-1">{product.category.name}</p>
+                <p className="text-sm text-aura-clay mb-1">{product.category.name}</p>
               )}
               <h1 className="text-xl md:text-2xl font-serif text-aura-ivory">{product.name}</h1>
             </div>
@@ -220,7 +223,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ slug, onClose }
             <div className="flex items-baseline gap-3">
               <span className="text-xl md:text-2xl font-bold text-aura-cream">{formatETB(currentPrice)}</span>
               {onSale && (
-                <span className="text-base text-aura-sand/50 line-through">{formatETB(product.basePrice)}</span>
+                <span className="text-base text-aura-sand line-through">{formatETB(product.basePrice)}</span>
               )}
             </div>
 
@@ -337,7 +340,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ slug, onClose }
                 disabled={outOfStock || (hasVariants && !selectedVariant)}
                 className={`flex-1 px-5 py-3 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center gap-2 ${
                   outOfStock || (hasVariants && !selectedVariant)
-                    ? 'bg-gray-700/50 text-gray-400 cursor-not-allowed'
+                    ? 'bg-gray-600 text-gray-200 cursor-not-allowed'
                     : 'bg-purple-600 text-white hover:bg-purple-700'
                 }`}
               >
@@ -370,7 +373,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ slug, onClose }
             </div>
 
             {hasVariants && !selectedVariant && (
-              <p className="text-xs text-aura-sand/60">Please select a size, color, or style to add to cart.</p>
+              <p className="text-xs text-aura-clay">Please select a size, color, or style to add to cart.</p>
             )}
           </div>
         </div>

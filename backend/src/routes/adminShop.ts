@@ -121,10 +121,53 @@ router.delete('/categories/:id', authenticateToken, requireAdmin, async (req: Au
     if (productCount > 0) {
       return res.status(400).json({ error: 'Cannot delete category with products. Move or archive products first.' });
     }
+    // Clean up category image from storage if present
+    const category = await prisma.productCategory.findUnique({ where: { id } });
+    if (category?.imageUrl) {
+      try { await deleteFromSupabase(category.imageUrl); } catch { /* ignore storage errors */ }
+    }
     await prisma.productCategory.delete({ where: { id } });
     res.json({ message: 'Category deleted successfully' });
   } catch (error) {
     console.error('Error deleting category:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Upload category image (single file via field 'image')
+router.post('/categories/:id/image', authenticateToken, requireAdmin, imageUpload.single('image'), async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ error: 'Image file is required' });
+    }
+
+    const category = await prisma.productCategory.findUnique({ where: { id } });
+    if (!category) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+
+    // Validate the file is an image (detectMimetype is sync, returns string | null)
+    const detected = detectMimetype(file.buffer);
+    if (!detected) {
+      return res.status(400).json({ error: 'File does not appear to be a valid image' });
+    }
+
+    // Delete old image from storage if present
+    if (category.imageUrl) {
+      try { await deleteFromSupabase(category.imageUrl); } catch { /* ignore */ }
+    }
+
+    const url = await uploadToSupabase(file.buffer, file.originalname, detected, 'products', 'categories');
+    const updated = await prisma.productCategory.update({
+      where: { id },
+      data: { imageUrl: url },
+    });
+
+    res.json({ message: 'Category image uploaded', imageUrl: url, category: updated });
+  } catch (error) {
+    console.error('Error uploading category image:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

@@ -91,7 +91,7 @@ const CartDrawer: React.FC = () => {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-aura-cream truncate">{item.name}</p>
                         {item.variantLabel && (
-                          <p className="text-xs text-aura-sand/70">{item.variantLabel}</p>
+                          <p className="text-xs text-aura-sand">{item.variantLabel}</p>
                         )}
                         <p className="text-sm text-aura-cream mt-1">{formatETB(item.price)}</p>
 
@@ -113,7 +113,7 @@ const CartDrawer: React.FC = () => {
                           </div>
                           <button
                             onClick={() => removeItem(item.productId, item.variantId)}
-                            className="text-aura-sand/60 hover:text-red-400"
+                            className="icon-btn text-red-400 hover:text-red-300 transition-colors"
                           >
                             <TrashIcon className="w-4 h-4" />
                           </button>
@@ -126,7 +126,7 @@ const CartDrawer: React.FC = () => {
 
               {/* Footer */}
               {items.length > 0 && (
-                <div className="border-t border-aura-umber p-4 space-y-3">
+                <div className="border-t border-aura-umber p-4 space-y-3 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-4">
                   <div className="flex items-center justify-between">
                     <span className="text-aura-sand">Subtotal</span>
                     <span className="text-lg font-bold text-aura-cream">{formatETB(subtotal)}</span>

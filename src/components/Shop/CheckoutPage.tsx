@@ -1,21 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { api } from '../../lib/api';
 import { useShopCart } from '../../contexts/ShopCartContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { formatETB, PAYMENT_METHOD_LABELS } from './shopTypes';
-import { ArrowLeftIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 
 interface CheckoutForm {
   shippingFullName: string;
   shippingPhone: string;
-  shippingRegion: string;
-  shippingCity: string;
   shippingAddress: string;
-  shippingPostalCode?: string;
-  shippingNotes?: string;
-  notes?: string;
   paymentMethod: 'BANK_TRANSFER' | 'MOBILE_MONEY' | 'CASH_ON_DELIVERY';
 }
 
@@ -23,45 +18,29 @@ const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const { items, subtotal, clearCart } = useShopCart();
   const { user } = useAuth();
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<CheckoutForm>({
+  const { register, handleSubmit, watch, trigger, formState: { errors } } = useForm<CheckoutForm>({
     defaultValues: {
       shippingFullName: user?.name || '',
+      shippingPhone: '',
       paymentMethod: 'BANK_TRANSFER',
     },
   });
+  const [step, setStep] = useState<1 | 2>(1);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
-  const [shippingCost, setShippingCost] = useState(0);
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
   const [couponError, setCouponError] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
   const selectedPaymentMethod = watch('paymentMethod');
-  const selectedRegion = watch('shippingRegion');
+  const selectedName = watch('shippingFullName');
+  const selectedPhone = watch('shippingPhone');
+  const selectedAddress = watch('shippingAddress');
   const needsReceipt = selectedPaymentMethod !== 'CASH_ON_DELIVERY';
 
   const discount = appliedCoupon?.discount || 0;
-  const orderTotal = subtotal + shippingCost - discount;
-
-  // Fetch shipping quote when region changes
-  useEffect(() => {
-    if (!selectedRegion || selectedRegion.trim().length < 2) {
-      setShippingCost(0);
-      return;
-    }
-    const timer = setTimeout(async () => {
-      try {
-        const data = await api.get<{ shippingCost: number }>(
-          `/api/shop/shipping/quote?region=${encodeURIComponent(selectedRegion)}&subtotal=${subtotal}`
-        );
-        setShippingCost(data.shippingCost);
-      } catch {
-        setShippingCost(0);
-      }
-    }, 500); // debounce
-    return () => clearTimeout(timer);
-  }, [selectedRegion, subtotal]);
+  const orderTotal = subtotal - discount;
 
   const applyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -79,6 +58,17 @@ const CheckoutPage: React.FC = () => {
     } finally {
       setCouponLoading(false);
     }
+  };
+
+  const goToStep2 = async () => {
+    const valid = await trigger(['shippingFullName', 'shippingPhone', 'shippingAddress']);
+    if (!valid) return;
+    if (needsReceipt && !receiptFile) {
+      setSubmitError('Please upload your payment receipt to continue.');
+      return;
+    }
+    setSubmitError('');
+    setStep(2);
   };
 
   if (items.length === 0) {
@@ -112,13 +102,8 @@ const CheckoutPage: React.FC = () => {
       }))));
       formData.append('paymentMethod', data.paymentMethod);
       formData.append('shippingFullName', data.shippingFullName);
-      formData.append('shippingPhone', data.shippingPhone);
-      formData.append('shippingRegion', data.shippingRegion);
-      formData.append('shippingCity', data.shippingCity);
+      formData.append('shippingPhone', '+251' + data.shippingPhone.replace(/^\+251\s?/, '').replace(/^0/, ''));
       formData.append('shippingAddress', data.shippingAddress);
-      if (data.shippingPostalCode) formData.append('shippingPostalCode', data.shippingPostalCode);
-      if (data.shippingNotes) formData.append('shippingNotes', data.shippingNotes);
-      if (data.notes) formData.append('notes', data.notes);
       if (appliedCoupon) formData.append('couponCode', appliedCoupon.code);
 
       // Generate an idempotency key for this checkout attempt so a double-
@@ -148,221 +133,231 @@ const CheckoutPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-2xl mx-auto space-y-4">
       <button onClick={() => navigate('/cart')} className="flex items-center gap-2 text-sm text-aura-sand hover:text-aura-clay">
         <ArrowLeftIcon className="w-4 h-4" /> Back to Cart
       </button>
 
-      <h1 className="text-2xl font-serif text-aura-ivory">Checkout</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-serif text-aura-ivory">Checkout</h1>
+        {/* Step indicator */}
+        <div className="flex items-center gap-2 text-sm">
+          <span className={`flex items-center gap-1.5 ${step === 1 ? 'text-aura-clay' : 'text-aura-sand'}`}>
+            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${step === 1 ? 'bg-aura-clay text-aura-ink' : 'bg-aura-umber/40 text-aura-sand'}`}>1</span>
+            Details
+          </span>
+          <span className="w-8 h-px bg-aura-umber/50" />
+          <span className={`flex items-center gap-1.5 ${step === 2 ? 'text-aura-clay' : 'text-aura-sand'}`}>
+            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${step === 2 ? 'bg-aura-clay text-aura-ink' : 'bg-aura-umber/40 text-aura-sand'}`}>2</span>
+            Review
+          </span>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="grid lg:grid-cols-3 gap-6">
-        {/* Form fields */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Shipping address */}
-          <div className="bg-aura-ink rounded-xl border border-aura-umber p-6 space-y-4">
-            <h2 className="text-lg font-serif text-aura-ivory">Shipping Address</h2>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm text-aura-sand mb-1 block">Full Name *</label>
-                <input
-                  {...register('shippingFullName', { required: 'Required' })}
-                  className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
-                />
-                {errors.shippingFullName && <p className="text-xs text-red-400 mt-1">{errors.shippingFullName.message}</p>}
-              </div>
-              <div>
-                <label className="text-sm text-aura-sand mb-1 block">Phone *</label>
-                <input
-                  {...register('shippingPhone', { required: 'Required' })}
-                  className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
-                />
-                {errors.shippingPhone && <p className="text-xs text-red-400 mt-1">{errors.shippingPhone.message}</p>}
-              </div>
-              <div>
-                <label className="text-sm text-aura-sand mb-1 block">Region *</label>
-                <input
-                  {...register('shippingRegion', { required: 'Required' })}
-                  className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
-                />
-                {errors.shippingRegion && <p className="text-xs text-red-400 mt-1">{errors.shippingRegion.message}</p>}
-              </div>
-              <div>
-                <label className="text-sm text-aura-sand mb-1 block">City *</label>
-                <input
-                  {...register('shippingCity', { required: 'Required' })}
-                  className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
-                />
-                {errors.shippingCity && <p className="text-xs text-red-400 mt-1">{errors.shippingCity.message}</p>}
-              </div>
-              <div className="sm:col-span-2">
-                <label className="text-sm text-aura-sand mb-1 block">Address *</label>
-                <input
-                  {...register('shippingAddress', { required: 'Required' })}
-                  placeholder="Street, building, apartment..."
-                  className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
-                />
-                {errors.shippingAddress && <p className="text-xs text-red-400 mt-1">{errors.shippingAddress.message}</p>}
-              </div>
-              <div>
-                <label className="text-sm text-aura-sand mb-1 block">Postal Code</label>
-                <input
-                  {...register('shippingPostalCode')}
-                  className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
-                />
-              </div>
-              <div>
-                <label className="text-sm text-aura-sand mb-1 block">Delivery Notes</label>
-                <input
-                  {...register('shippingNotes')}
-                  placeholder="Landmark, delivery time..."
-                  className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
-                />
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {/* STEP 1: Shipping + Payment */}
+        {step === 1 && (
+          <div className="space-y-4">
+            {/* Shipping address */}
+            <div className="bg-aura-ink rounded-xl border border-aura-umber p-4 space-y-3">
+              <h2 className="text-base font-serif text-aura-ivory">Shipping Address</h2>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-aura-sand mb-0.5 block">Full Name *</label>
+                  <input
+                    {...register('shippingFullName', { required: 'Required' })}
+                    className="w-full px-3 py-1.5 bg-aura-bark border border-aura-umber rounded-lg text-sm text-aura-cream focus:outline-none focus:border-aura-clay"
+                  />
+                  {errors.shippingFullName && <p className="text-xs text-red-400 mt-0.5">{errors.shippingFullName.message}</p>}
+                </div>
+                <div>
+                  <label className="text-xs text-aura-sand mb-0.5 block">Phone *</label>
+                  <div className="flex">
+                    <span className="inline-flex items-center px-3 py-1.5 bg-aura-umber/30 border border-aura-umber border-r-0 rounded-l-lg text-aura-sand text-sm whitespace-nowrap">+251</span>
+                    <input
+                      {...register('shippingPhone', { required: 'Required', pattern: { value: /^9\d{8}$/, message: '9XXXXXXXX' } })}
+                      placeholder="9XXXXXXXX"
+                      className="flex-1 px-3 py-1.5 bg-aura-bark border border-aura-umber rounded-r-lg text-sm text-aura-cream focus:outline-none focus:border-aura-clay"
+                    />
+                  </div>
+                  {errors.shippingPhone && <p className="text-xs text-red-400 mt-0.5">{errors.shippingPhone.message}</p>}
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-xs text-aura-sand mb-0.5 block">Address *</label>
+                  <input
+                    {...register('shippingAddress', { required: 'Required' })}
+                    placeholder="Street, building, apartment..."
+                    className="w-full px-3 py-1.5 bg-aura-bark border border-aura-umber rounded-lg text-sm text-aura-cream focus:outline-none focus:border-aura-clay"
+                  />
+                  {errors.shippingAddress && <p className="text-xs text-red-400 mt-0.5">{errors.shippingAddress.message}</p>}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Payment method */}
-          <div className="bg-aura-ink rounded-xl border border-aura-umber p-6 space-y-4">
-            <h2 className="text-lg font-serif text-aura-ivory">Payment Method</h2>
-            <div className="space-y-2">
-              {(Object.keys(PAYMENT_METHOD_LABELS) as Array<keyof typeof PAYMENT_METHOD_LABELS>).map((method) => (
-                <label
-                  key={method}
-                  className="flex items-center gap-3 p-3 border border-aura-umber rounded-lg cursor-pointer hover:border-aura-sand"
-                >
-                  <input
-                    type="radio"
-                    value={method}
-                    {...register('paymentMethod')}
-                    className="accent-purple-600"
-                  />
-                  <div>
+            {/* Payment method */}
+            <div className="bg-aura-ink rounded-xl border border-aura-umber p-4 space-y-3">
+              <h2 className="text-base font-serif text-aura-ivory">Payment Method</h2>
+              <div className="space-y-2">
+                {(Object.keys(PAYMENT_METHOD_LABELS) as Array<keyof typeof PAYMENT_METHOD_LABELS>).map((method) => (
+                  <label
+                    key={method}
+                    className="flex items-center gap-3 p-2 border border-aura-umber rounded-lg cursor-pointer hover:border-aura-sand"
+                  >
+                    <input
+                      type="radio"
+                      value={method}
+                      {...register('paymentMethod')}
+                    />
                     <span className="text-sm font-medium text-aura-cream">{PAYMENT_METHOD_LABELS[method]}</span>
                     {method === 'CASH_ON_DELIVERY' && (
-                      <p className="text-xs text-aura-sand/60">Pay with cash when your order arrives.</p>
+                      <span className="text-xs text-aura-sand/60 hidden sm:inline">— Pay with cash on arrival</span>
                     )}
                     {method === 'BANK_TRANSFER' && (
-                      <p className="text-xs text-aura-sand/60">Transfer to the studio's bank account and upload your receipt.</p>
+                      <span className="text-xs text-aura-sand/60 hidden sm:inline">— Upload your receipt</span>
                     )}
                     {method === 'MOBILE_MONEY' && (
-                      <p className="text-xs text-aura-sand/60">Pay via mobile money and upload a screenshot of the transaction.</p>
+                      <span className="text-xs text-aura-sand/60 hidden sm:inline">— Upload transaction screenshot</span>
                     )}
-                  </div>
+                  </label>
+                ))}
+              </div>
+
+              {/* Receipt upload */}
+              <div>
+                <label className="text-xs text-aura-sand mb-0.5 block">
+                  Payment Receipt {needsReceipt ? '*' : '(not required for Cash on Delivery)'}
                 </label>
-              ))}
-            </div>
-
-            {/* Receipt upload */}
-            <div>
-              <label className="text-sm text-aura-sand mb-1 block">
-                Payment Receipt {needsReceipt ? '*' : '(not required for Cash on Delivery)'}
-              </label>
-              <input
-                type="file"
-                accept="image/*,.pdf"
-                onChange={(e) => setReceiptFile(e.target.files?.[0] || null)}
-                className="w-full text-sm text-aura-cream file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-aura-clay file:text-aura-ink file:font-medium file:cursor-pointer"
-              />
-              {needsReceipt && receiptFile && (
-                <p className="text-xs text-green-400 mt-1">
-                  Selected: {receiptFile.name}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Order notes */}
-          <div className="bg-aura-ink rounded-xl border border-aura-umber p-6">
-            <label className="text-sm text-aura-sand mb-1 block">Order Notes (optional)</label>
-            <textarea
-              {...register('notes')}
-              rows={3}
-              placeholder="Any special instructions for your order..."
-              className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
-            />
-          </div>
-        </div>
-
-        {/* Order summary */}
-        <div className="space-y-4">
-          <div className="bg-aura-ink rounded-xl border border-aura-umber p-6 space-y-3 sticky top-4">
-            <h2 className="text-lg font-serif text-aura-ivory">Order Summary</h2>
-            <div className="space-y-2 max-h-60 overflow-y-auto">
-              {items.map((item) => (
-                <div key={`${item.productId}-${item.variantId}`} className="flex justify-between text-sm">
-                  <span className="text-aura-sand">
-                    {item.name} × {item.quantity}
-                    {item.variantLabel && <span className="block text-xs text-aura-sand/60">{item.variantLabel}</span>}
-                  </span>
-                  <span className="text-aura-cream">{formatETB(item.price * item.quantity)}</span>
-                </div>
-              ))}
-            </div>
-            <div className="border-t border-aura-umber pt-3 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-aura-sand">Subtotal</span>
-                <span className="text-aura-cream">{formatETB(subtotal)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-aura-sand">Shipping {selectedRegion ? `(${selectedRegion})` : ''}</span>
-                <span className="text-aura-cream">{shippingCost === 0 ? 'Free' : formatETB(shippingCost)}</span>
-              </div>
-              {discount > 0 && (
-                <div className="flex justify-between text-sm text-green-400">
-                  <span>Discount ({appliedCoupon?.code})</span>
-                  <span>−{formatETB(discount)}</span>
-                </div>
-              )}
-              <div className="border-t border-aura-umber pt-2 flex justify-between items-baseline">
-                <span className="text-aura-cream font-medium">Total</span>
-                <span className="text-xl font-bold text-aura-cream">{formatETB(orderTotal)}</span>
+                <input
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={(e) => setReceiptFile(e.target.files?.[0] || null)}
+                  className="w-full text-sm text-aura-cream file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-aura-clay file:text-aura-ink file:font-medium file:cursor-pointer"
+                />
+                {needsReceipt && receiptFile && (
+                  <p className="text-xs text-green-400 mt-0.5">
+                    Selected: {receiptFile.name}
+                  </p>
+                )}
               </div>
             </div>
-
-            {/* Coupon input */}
-            <div className="mt-3 flex gap-2">
-              <input
-                type="text"
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-                placeholder="Coupon code"
-                className="flex-1 px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream text-sm focus:outline-none focus:border-aura-clay"
-              />
-              <button
-                type="button"
-                onClick={applyCoupon}
-                disabled={couponLoading || !couponCode.trim()}
-                className="px-4 py-2 rounded-lg bg-aura-ink border border-aura-umber text-aura-cream text-sm hover:border-aura-clay disabled:opacity-50"
-              >
-                {couponLoading ? '...' : 'Apply'}
-              </button>
-            </div>
-            {couponError && <p className="text-xs text-red-400 mt-1">{couponError}</p>}
-            {appliedCoupon && <p className="text-xs text-green-400 mt-1">Coupon applied: {formatETB(discount)} off</p>}
 
             {submitError && (
-              <p className="text-sm text-red-400 bg-red-900/20 rounded p-2">{submitError}</p>
+              <p className="text-sm text-red-400 bg-red-900/20 rounded-lg p-2">{submitError}</p>
             )}
 
             <button
-              type="submit"
-              disabled={submitting}
-              className={`w-full px-6 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
-                submitting
-                  ? 'bg-gray-700 text-gray-400 cursor-wait'
-                  : 'bg-purple-600 text-white hover:bg-purple-700'
-              }`}
+              type="button"
+              onClick={goToStep2}
+              className="w-full px-6 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
             >
-              {submitting ? 'Placing order...' : 'Place Order'}
+              Next: Review Order <ArrowRightIcon className="w-4 h-4" />
             </button>
+          </div>
+        )}
+
+        {/* STEP 2: Order Summary + Place Order */}
+        {step === 2 && (
+          <div className="space-y-4">
+            {/* Review shipping + payment */}
+            <div className="bg-aura-ink rounded-xl border border-aura-umber p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-serif text-aura-ivory">Shipping Details</h2>
+                <button type="button" onClick={() => setStep(1)} className="text-sm text-aura-clay hover:text-aura-sand">Edit</button>
+              </div>
+              <div className="text-sm space-y-1">
+                <p className="text-aura-cream font-medium">{selectedName}</p>
+                <p className="text-aura-sand">+251{selectedPhone.replace(/^\+251\s?/, '').replace(/^0/, '')}</p>
+                <p className="text-aura-sand">{selectedAddress}</p>
+                <p className="pt-2 text-aura-cream">{PAYMENT_METHOD_LABELS[selectedPaymentMethod]}</p>
+                {receiptFile && <p className="text-xs text-green-400">Receipt: {receiptFile.name}</p>}
+              </div>
+            </div>
+
+            {/* Order summary */}
+            <div className="bg-aura-ink rounded-xl border border-aura-umber p-4 space-y-3">
+              <h2 className="text-base font-serif text-aura-ivory">Order Summary</h2>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {items.map((item) => (
+                  <div key={`${item.productId}-${item.variantId}`} className="flex justify-between text-sm">
+                    <span className="text-aura-sand">
+                      {item.name} × {item.quantity}
+                      {item.variantLabel && <span className="block text-xs text-aura-sand">{item.variantLabel}</span>}
+                    </span>
+                    <span className="text-aura-cream">{formatETB(item.price * item.quantity)}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-aura-umber pt-2 space-y-1.5">
+                <div className="flex justify-between text-sm">
+                  <span className="text-aura-sand">Subtotal</span>
+                  <span className="text-aura-cream">{formatETB(subtotal)}</span>
+                </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-sm text-green-400">
+                    <span>Discount ({appliedCoupon?.code})</span>
+                    <span>−{formatETB(discount)}</span>
+                  </div>
+                )}
+                <div className="border-t border-aura-umber pt-1.5 flex justify-between items-baseline">
+                  <span className="text-aura-cream font-medium">Total</span>
+                  <span className="text-lg font-bold text-aura-cream">{formatETB(orderTotal)}</span>
+                </div>
+              </div>
+
+              {/* Coupon input */}
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  placeholder="Coupon code"
+                  className="flex-1 px-3 py-1.5 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream text-sm focus:outline-none focus:border-aura-clay"
+                />
+                <button
+                  type="button"
+                  onClick={applyCoupon}
+                  disabled={couponLoading || !couponCode.trim()}
+                  className="px-4 py-2 rounded-lg bg-aura-ink border border-aura-umber text-aura-cream text-sm hover:border-aura-clay disabled:opacity-50"
+                >
+                  {couponLoading ? '...' : 'Apply'}
+                </button>
+              </div>
+              {couponError && <p className="text-xs text-red-400 mt-1">{couponError}</p>}
+              {appliedCoupon && <p className="text-xs text-green-400 mt-1">Coupon applied: {formatETB(discount)} off</p>}
+            </div>
+
+            {submitError && (
+              <p className="text-sm text-red-400 bg-red-900/20 rounded-lg p-3">{submitError}</p>
+            )}
+
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="flex-1 px-6 py-3 rounded-lg border border-aura-umber text-aura-cream text-sm font-medium hover:border-aura-sand transition-colors flex items-center justify-center gap-2"
+              >
+                <ArrowLeftIcon className="w-4 h-4" /> Back
+              </button>
+              <button
+                type="submit"
+                disabled={submitting}
+                className={`flex-1 px-6 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                  submitting
+                    ? 'bg-gray-700 text-gray-400 cursor-wait'
+                    : 'bg-purple-600 text-white hover:bg-purple-700'
+                }`}
+              >
+                {submitting ? 'Placing order...' : 'Place Order'}
+              </button>
+            </div>
 
             {!user && (
-              <p className="text-xs text-aura-sand/60 text-center">
+              <p className="text-xs text-aura-sand text-center">
                 You can check out as a guest. Your order link will be saved for tracking.
               </p>
             )}
           </div>
-        </div>
+        )}
       </form>
     </div>
   );

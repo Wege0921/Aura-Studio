@@ -13,12 +13,10 @@
   --aura-cream: #f2ebe0;
   --aura-paper: #eee5d6;
   --aura-ivory: #f8f4ec;
-
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root {
+  body {
     transition: none;
   }
 }
@@ -135,6 +133,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--aura-cream);
   color: var(--aura-ink);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 input, select, textarea {

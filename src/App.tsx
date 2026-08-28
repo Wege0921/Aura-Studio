@@ -12,7 +12,7 @@ import OfflineIndicator from './components/OfflineIndicator';
 import PWAInstallBanner from './components/PWAInstallBanner';
 import NetworkStatusBar from './components/NetworkStatusBar';
 import MobileBottomTabs from './components/Layout/MobileBottomTabs';
-import { register } from './utils/serviceWorkerRegistration';
+import { register, unregisterInDevelopment } from './utils/serviceWorkerRegistration';
 import './App.css';
 
 // Lazy-loaded routes — split into separate JS chunks
@@ -74,7 +74,7 @@ function PublicLayout({ children, fullWidth = false }: { children: React.ReactNo
       {fullWidth ? (
         children
       ) : (
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-0 md:py-6">
           {children}
         </main>
       )}
@@ -350,7 +350,18 @@ function AppRoutes() {
 
 function App() {
   useEffect(() => {
+    // A service worker cached by a previous production build hijacks the dev
+    // server and causes an endless HMR reload loop, so remove it in development.
+    unregisterInDevelopment();
+
     // Register service worker
+    let reloading = false;
+    const reloadOnce = () => {
+      if (reloading) return;
+      reloading = true;
+      window.location.reload();
+    };
+
     register({
       onSuccess: (registration) => {
         console.log('Service worker registered successfully');
@@ -359,11 +370,9 @@ function App() {
         console.log('Service worker updated');
         // Auto-reload in PWA context where confirm dialogs may not show
         if (navigator.serviceWorker.controller) {
-          navigator.serviceWorker.addEventListener('controllerchange', () => {
-            window.location.reload();
-          });
+          navigator.serviceWorker.addEventListener('controllerchange', reloadOnce);
         } else {
-          window.location.reload();
+          reloadOnce();
         }
       }
     });

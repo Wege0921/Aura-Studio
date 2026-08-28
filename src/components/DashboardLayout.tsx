@@ -397,7 +397,7 @@ const DashboardLayout: React.FC = () => {
 
         {/* Mobile Bottom Tab Bar — sidebar-only items excluded on mobile */}
         <MobileBottomNav
-          tabs={tabs.filter((t) => ['classes', 'packages', 'admin-classes', 'admin-packages', 'admin-instructors', 'admin-analytics', 'admin-users', 'admin-shop-categories', 'admin-shop-analytics', 'admin-payments', 'admin-content'].indexOf(t.id) === -1)}
+          tabs={tabs.filter((t) => ['classes', 'packages', 'calendar', 'payments', 'waitlist', 'admin-classes', 'admin-packages', 'admin-instructors', 'admin-analytics', 'admin-users', 'admin-shop-categories', 'admin-shop-analytics', 'admin-payments', 'admin-content'].indexOf(t.id) === -1)}
           activeTab={activeTab}
           onTabChange={handleTabChange}
         />

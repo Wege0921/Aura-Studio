@@ -57,13 +57,13 @@ const CartPage: React.FC = () => {
                 <div>
                   <h3 className="text-sm font-semibold text-aura-cream">{item.name}</h3>
                   {item.variantLabel && (
-                    <p className="text-xs text-aura-sand/70 mt-0.5">{item.variantLabel}</p>
+                    <p className="text-xs text-aura-sand mt-0.5">{item.variantLabel}</p>
                   )}
                   <p className="text-sm text-aura-cream mt-1">{formatETB(item.price)}</p>
                 </div>
                 <button
                   onClick={() => removeItem(item.productId, item.variantId)}
-                  className="text-aura-sand/60 hover:text-red-400"
+                  className="icon-btn text-red-400 hover:text-red-300 transition-colors"
                 >
                   <TrashIcon className="w-5 h-5" />
                 </button>

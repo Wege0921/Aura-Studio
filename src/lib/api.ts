@@ -16,7 +16,8 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
   const data = await res.json().catch(() => ({ error: res.statusText }));
   if (!res.ok) {
-    throw new Error(data.error || `Request failed: ${res.status}`);
+    const msg = data.error || (data.errors && data.errors[0] && data.errors[0].msg) || `Request failed: ${res.status}`;
+    throw new Error(msg);
   }
 
   return data;
@@ -43,7 +44,8 @@ export const api = {
     }).then(async (res) => {
       const data = await res.json().catch(() => ({ error: res.statusText }));
       if (!res.ok) {
-        throw new Error(data.error || `Request failed: ${res.status}`);
+        const msg = data.error || (data.errors && data.errors[0] && data.errors[0].msg) || `Request failed: ${res.status}`;
+        throw new Error(msg);
       }
       return data as Promise<T>;
     });

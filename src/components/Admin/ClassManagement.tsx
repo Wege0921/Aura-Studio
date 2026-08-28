@@ -479,7 +479,7 @@ const ClassManagement: React.FC = () => {
                     name="hideInstructor"
                     checked={formData.hideInstructor}
                     onChange={handleInputChange}
-                    className="h-4 w-4 rounded border-aura-umber text-purple-600 focus:ring-purple-500"
+                    className="rounded"
                   />
                   <span className="text-sm text-aura-sand">Hide instructor on class cards</span>
                 </label>
@@ -489,7 +489,7 @@ const ClassManagement: React.FC = () => {
                     name="hideSpots"
                     checked={formData.hideSpots}
                     onChange={handleInputChange}
-                    className="h-4 w-4 rounded border-aura-umber text-purple-600 focus:ring-purple-500"
+                    className="rounded"
                   />
                   <span className="text-sm text-aura-sand">Hide spots left on class cards</span>
                 </label>

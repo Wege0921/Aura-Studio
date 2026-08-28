@@ -189,7 +189,7 @@ const LandingPage: React.FC = () => {
               <button
                 key={cat.id}
                 className="lp-shop-card lp-reveal bg-aura-ink rounded-xl border border-aura-umber overflow-hidden hover:border-aura-clay transition-colors duration-200 group text-left"
-                onClick={() => navigate(`/shop/${cat.slug}`)}
+                onClick={() => navigate(`/shop?category=${cat.slug}`)}
               >
                 <div className="aspect-square bg-aura-bark overflow-hidden">
                   {cat.imageUrl ? (

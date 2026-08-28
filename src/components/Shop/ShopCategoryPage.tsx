@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { Product, ProductCategory } from './shopTypes';
 import ProductCard from './ProductCard';
+import ProductDetailModal from './ProductDetailModal';
 import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline';
 
 const ShopCategoryPage: React.FC = () => {
@@ -17,6 +18,7 @@ const ShopCategoryPage: React.FC = () => {
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
+  const [modalSlug, setModalSlug] = useState<string | null>(null);
 
   useEffect(() => {
     api.get<ProductCategory[]>('/api/shop/categories').then(setCategories).catch(() => {});
@@ -187,9 +189,14 @@ const ShopCategoryPage: React.FC = () => {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {products.map((p) => (
-            <ProductCard key={p.id} product={p} />
+            <ProductCard key={p.id} product={p} onOpen={setModalSlug} />
           ))}
         </div>
+      )}
+
+      {/* Product detail modal (in-place, no page navigation) */}
+      {modalSlug && (
+        <ProductDetailModal slug={modalSlug} onClose={() => setModalSlug(null)} />
       )}
     </div>
   );

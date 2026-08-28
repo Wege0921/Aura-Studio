@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline';
+import React, { useState, useEffect, useRef } from 'react';
+import { PencilIcon, TrashIcon, PlusIcon, PhotoIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { api } from '../../lib/api';
 import { ProductCategory } from '../Shop/shopTypes';
 
@@ -11,6 +11,9 @@ const ShopCategoryManagement: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<ProductCategory | null>(null);
   const [formData, setFormData] = useState({ name: '', slug: '', description: '', imageUrl: '', sortOrder: 0, isActive: true });
+  const [imageUploading, setImageUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ProductCategory | null>(null);
 
   useEffect(() => { fetchCategories(); }, []);
 
@@ -48,14 +51,43 @@ const ShopCategoryManagement: React.FC = () => {
     } catch (err: any) { setError(err.message); }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this category? Products in this category must be moved first.')) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await api.delete(`/api/admin/shop/categories/${id}`);
+      await api.delete(`/api/admin/shop/categories/${deleteTarget.id}`);
       setSuccessMsg('Category deleted');
+      setDeleteTarget(null);
       fetchCategories();
       setTimeout(() => setSuccessMsg(''), 3000);
-    } catch (err: any) { setError(err.message); }
+    } catch (err: any) { setError(err.message); setDeleteTarget(null); }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !editing) return;
+
+    setImageUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', files[0]);
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/api/admin/shop/categories/${editing.id}/image`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
+      if (!res.ok) throw new Error('Upload failed');
+      const data = await res.json();
+      setFormData((prev) => ({ ...prev, imageUrl: data.imageUrl }));
+      setSuccessMsg('Image uploaded');
+      setTimeout(() => setSuccessMsg(''), 3000);
+      fetchCategories();
+    } catch (err: any) {
+      setError(err.message || 'Failed to upload image');
+    } finally {
+      setImageUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
   return (
@@ -71,8 +103,8 @@ const ShopCategoryManagement: React.FC = () => {
       {successMsg && <div className="bg-green-900/20 text-green-300 rounded-lg p-3 text-sm">{successMsg}</div>}
 
       {showForm && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={resetForm}>
-          <div className="bg-aura-ink border border-aura-umber rounded-xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/60 z-[70] flex items-center justify-center p-4" onClick={resetForm}>
+          <div className="bg-aura-ink border border-aura-umber rounded-xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:pb-6" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-serif text-aura-ivory mb-4">{editing ? 'Edit Category' : 'Add Category'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -88,8 +120,45 @@ const ShopCategoryManagement: React.FC = () => {
                 <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={2} className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
               </div>
               <div>
-                <label className="text-sm text-aura-sand mb-1 block">Image URL</label>
-                <input value={formData.imageUrl} onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })} className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
+                <label className="text-sm text-aura-sand mb-1 block">Category Image</label>
+                {formData.imageUrl ? (
+                  <div className="relative mb-2">
+                    <img src={formData.imageUrl} alt="Category" className="w-full h-32 object-cover rounded-lg border border-aura-umber" />
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, imageUrl: '' })}
+                      style={{ position: 'absolute', top: '4px', right: '4px' }}
+                      className="icon-btn text-red-400 hover:text-red-300 transition-colors z-10"
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-full h-32 bg-aura-bark border border-aura-umber rounded-lg flex items-center justify-center mb-2">
+                    <PhotoIcon className="w-8 h-8 text-aura-umber" />
+                  </div>
+                )}
+                {editing ? (
+                  <>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      onChange={handleImageUpload}
+                      disabled={imageUploading}
+                      className="w-full text-sm text-aura-cream file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-aura-clay file:text-aura-ink file:font-medium file:cursor-pointer"
+                    />
+                    {imageUploading && <p className="text-xs text-aura-sand/60 mt-1">Uploading...</p>}
+                    <p className="text-xs text-aura-sand/50 mt-1">Save the category first, then upload an image.</p>
+                  </>
+                ) : (
+                  <input
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    placeholder="Image URL (or upload after creating)"
+                    className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay text-sm"
+                  />
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -97,7 +166,7 @@ const ShopCategoryManagement: React.FC = () => {
                   <input type="number" value={formData.sortOrder} onChange={(e) => setFormData({ ...formData, sortOrder: Number(e.target.value) })} className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
                 </div>
                 <label className="flex items-center gap-2 text-sm text-aura-cream pt-6">
-                  <input type="checkbox" checked={formData.isActive} onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })} className="accent-purple-600" /> Active
+                  <input type="checkbox" checked={formData.isActive} onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })} /> Active
                 </label>
               </div>
               <div className="flex gap-3 pt-2">
@@ -115,6 +184,11 @@ const ShopCategoryManagement: React.FC = () => {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((cat) => (
             <div key={cat.id} className="bg-aura-ink rounded-xl border border-aura-umber p-4">
+              {cat.imageUrl && (
+                <div className="w-full h-24 rounded-lg overflow-hidden mb-3 bg-aura-bark">
+                  <img src={cat.imageUrl} alt={cat.name} className="w-full h-full object-cover" />
+                </div>
+              )}
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <h3 className="text-sm font-semibold text-aura-cream">{cat.name}</h3>
@@ -122,7 +196,7 @@ const ShopCategoryManagement: React.FC = () => {
                 </div>
                 <div className="flex gap-1">
                   <button onClick={() => handleEdit(cat)} className="p-1 text-aura-sand hover:text-aura-cream"><PencilIcon className="w-4 h-4" /></button>
-                  <button onClick={() => handleDelete(cat.id)} className="p-1 text-red-400 hover:text-red-300"><TrashIcon className="w-4 h-4" /></button>
+                  <button onClick={() => setDeleteTarget(cat)} className="icon-btn p-1 text-red-400 hover:text-red-300"><TrashIcon className="w-4 h-4" /></button>
                 </div>
               </div>
               {cat.description && <p className="text-xs text-aura-sand mb-2">{cat.description}</p>}
@@ -132,6 +206,37 @@ const ShopCategoryManagement: React.FC = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[70]" onClick={() => setDeleteTarget(null)}>
+          <div className="bg-aura-ink rounded-lg p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center mb-4">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-900/60 flex items-center justify-center mr-3">
+                <ExclamationTriangleIcon className="w-6 h-6 text-red-400" />
+              </div>
+              <h3 className="text-lg font-bold text-aura-cream">Delete Category</h3>
+            </div>
+            <p className="text-aura-sand mb-6">
+              Are you sure you want to delete <strong className="text-aura-cream">{deleteTarget.name}</strong>?
+              Products in this category must be moved first. This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                className="px-4 py-2 border border-aura-umber rounded-md text-aura-sand hover:bg-aura-umber/30 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

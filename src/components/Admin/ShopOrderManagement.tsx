@@ -175,8 +175,8 @@ const ShopOrderManagement: React.FC = () => {
 
       {/* Order detail modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setSelectedOrder(null)}>
-          <div className="bg-aura-ink border border-aura-umber rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/60 z-[70] flex items-center justify-center p-4" onClick={() => setSelectedOrder(null)}>
+          <div className="bg-aura-ink border border-aura-umber rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:pb-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-serif text-aura-ivory">{selectedOrder.orderNumber}</h2>
               <button onClick={() => setSelectedOrder(null)} className="text-aura-sand hover:text-aura-cream"><XMarkIcon className="w-5 h-5" /></button>

@@ -380,8 +380,8 @@ model ShippingAddress {
   orderId    String   @unique
   fullName   String
   phone      String
-  region     String
-  city       String
+  region     String?
+  city       String?
   address    String
   postalCode String?
   notes      String?

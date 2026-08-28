@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { ProductCategory, Product } from './shopTypes';
 import ProductCard from './ProductCard';
@@ -6,13 +7,15 @@ import ProductDetailModal from './ProductDetailModal';
 import { ShoppingBagIcon, MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline';
 
 const ShopLanding: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [featured, setFeatured] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   // In-page category selection (persists throughout the session)
-  const [selectedCategory, setSelectedCategory] = useState<string>(''); // '' = featured, 'all' = all
+  // Pre-select category from ?category= query param (e.g. from homepage links)
+  const [selectedCategory, setSelectedCategory] = useState<string>(searchParams.get('category') || ''); // '' = featured, 'all' = all
   const [categoryProducts, setCategoryProducts] = useState<Product[]>([]);
   const [categoryLoading, setCategoryLoading] = useState(false);
   const [search, setSearch] = useState('');
@@ -127,7 +130,7 @@ const ShopLanding: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4 md:space-y-6 -mt-4 md:mt-0">
+    <div className="space-y-4 md:space-y-6 mt-2 md:mt-0">
       {/* Categories — circles on all viewports */}
       <section>
         <h2 className="text-lg md:text-xl font-semibold text-aura-cream mb-3 md:mb-4 font-serif">Shop by Category</h2>
@@ -137,10 +140,10 @@ const ShopLanding: React.FC = () => {
             onClick={() => { setSelectedCategory(''); setSearch(''); clearFilters(); }}
             className="flex flex-col items-center gap-1.5 shrink-0 group"
           >
-            <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full border-2 overflow-hidden flex items-center justify-center transition-colors duration-200 ${!selectedCategory ? 'border-aura-clay bg-aura-clay/20' : 'border-aura-umber bg-aura-ink'} group-hover:border-aura-clay`}>
-              <ShoppingBagIcon className={`w-6 h-6 md:w-8 md:h-8 ${!selectedCategory ? 'text-aura-clay' : 'text-aura-umber'}`} />
+            <div className={`w-14 h-14 md:w-16 md:h-16 rounded-full border-2 overflow-hidden flex items-center justify-center transition-colors duration-200 ${!selectedCategory ? 'border-aura-clay bg-aura-clay/20' : 'border-aura-umber bg-aura-ink'} group-hover:border-aura-clay`}>
+              <ShoppingBagIcon className={`w-5 h-5 md:w-6 md:h-6 ${!selectedCategory ? 'text-aura-clay' : 'text-aura-umber'}`} />
             </div>
-            <span className={`text-[10px] md:text-xs font-medium whitespace-nowrap ${!selectedCategory ? 'text-aura-clay' : 'text-aura-cream'}`}>All</span>
+            <span className={`text-xs md:text-sm font-medium whitespace-nowrap ${!selectedCategory ? 'text-aura-clay' : 'text-aura-cream'}`}>All</span>
           </button>
           {categories.map((cat) => {
             const isActive = selectedCategory === cat.slug;
@@ -150,16 +153,16 @@ const ShopLanding: React.FC = () => {
                 onClick={() => { setSelectedCategory(cat.slug); setSearch(''); clearFilters(); }}
                 className="flex flex-col items-center gap-1.5 shrink-0 group"
               >
-                <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full border-2 overflow-hidden transition-colors duration-200 ${isActive ? 'border-aura-clay' : 'border-aura-umber bg-aura-ink'} group-hover:border-aura-clay`}>
+                <div className={`w-14 h-14 md:w-16 md:h-16 rounded-full border-2 overflow-hidden transition-colors duration-200 ${isActive ? 'border-aura-clay' : 'border-aura-umber bg-aura-ink'} group-hover:border-aura-clay`}>
                   {cat.imageUrl ? (
                     <img src={cat.imageUrl} alt={cat.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <ShoppingBagIcon className="w-6 h-6 md:w-8 md:h-8 text-aura-umber" />
+                      <ShoppingBagIcon className="w-5 h-5 md:w-6 md:h-6 text-aura-umber" />
                     </div>
                   )}
                 </div>
-                <span className={`text-[10px] md:text-xs font-medium whitespace-nowrap ${isActive ? 'text-aura-clay' : 'text-aura-cream'}`}>{cat.name}</span>
+                <span className={`text-xs md:text-sm font-medium whitespace-nowrap ${isActive ? 'text-aura-clay' : 'text-aura-cream'}`}>{cat.name}</span>
               </button>
             );
           })}

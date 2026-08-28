@@ -61,7 +61,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.7rem 3.5rem;
+  padding: 0.75rem 2.5rem;
   color: var(--ph-ivory);
   background: var(--ph-bark);
 }
@@ -123,6 +123,85 @@
 .public-header .ph-btn-outline:hover { background: var(--ph-sand); color: var(--ph-bark); }
 .public-header .ph-auth-btns { display: flex; gap: 0.6rem; align-items: center; }
 .public-header .ph-desktop-actions { display: flex; align-items: center; gap: 0.75rem; }
+
+/* ---------- USER DROPDOWN ---------- */
+.public-header .ph-user-dropdown { position: relative; }
+.public-header .ph-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ph-clay);
+  color: var(--ph-ink);
+  border: none;
+  cursor: pointer;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+.public-header .ph-user-avatar:hover { opacity: 0.85; }
+.public-header .ph-user-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 220px;
+  background: var(--ph-bark);
+  border: 1px solid var(--ph-line);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  z-index: 100;
+  overflow: hidden;
+  padding: 6px;
+}
+.public-header .ph-user-menu-header {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--ph-line);
+  margin-bottom: 4px;
+}
+.public-header .ph-user-menu-name {
+  display: block;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ph-cream);
+}
+.public-header .ph-user-menu-email {
+  display: block;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.72rem;
+  color: var(--ph-sand);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 190px;
+}
+.public-header .ph-user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  color: var(--ph-sand);
+  font-family: 'Jost', sans-serif;
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+.public-header .ph-user-menu-item:hover {
+  background: rgba(168,127,90,0.18);
+  color: var(--ph-cream);
+}
+.public-header .ph-user-menu-item svg { flex-shrink: 0; opacity: 0.7; }
+.public-header .ph-user-menu-logout { color: #ef6b6b; }
+.public-header .ph-user-menu-logout:hover { background: rgba(239,107,107,0.12); color: #ff8585; }
 
 /* ---------- BURGER ---------- */
 .public-header .ph-burger {
@@ -273,9 +352,11 @@
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 920px) {
-  .public-header .ph-nav { padding: 1.4rem 1.6rem; }
+  .public-header .ph-nav { padding: 0.6rem 4rem 0.6rem 1.2rem; }
   .public-header .ph-links { display: none; }
   .public-header .ph-burger { display: flex; }
   .public-header .ph-nav .ph-btn { display: none; }
-  .public-header .ph-desktop-actions { display: none; }
+  .public-header .ph-desktop-actions { gap: 0.4rem; }
+  .public-header .ph-desktop-actions .ph-auth-btns { display: none; }
+  .public-header .ph-desktop-actions .ph-user-dropdown { display: none; }
 }
