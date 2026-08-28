@@ -477,19 +477,12 @@ const ImagesModal: React.FC<{ product: Product; onClose: () => void }> = ({ prod
       for (let i = 0; i < files.length; i++) {
         formData.append('images', files[i]);
       }
-      const token = localStorage.getItem('token');
-      const res = await fetch(`/api/admin/shop/products/${product.id}/images`, {
-        method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: formData,
-      });
-      if (res.ok) {
-        input.value = '';
-        // Refresh
-        const data = await api.get<{ products: Product[] }>('/api/admin/shop/products');
-        const updated = data.products.find((p) => p.id === product.id);
-        if (updated) setImages(updated.images || []);
-      }
+      await api.postForm(`/api/admin/shop/products/${product.id}/images`, formData);
+      input.value = '';
+      // Refresh
+      const data = await api.get<{ products: Product[] }>('/api/admin/shop/products');
+      const updated = data.products.find((p) => p.id === product.id);
+      if (updated) setImages(updated.images || []);
     } catch (err) {
       console.error('Upload error:', err);
     } finally {

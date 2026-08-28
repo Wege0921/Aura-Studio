@@ -45,7 +45,16 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // Security headers
 app.use(helmet({
-  contentSecurityPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+      connectSrc: ["'self'", "https://*.supabase.co", "wss://*.supabase.co"],
+    },
+  },
   crossOriginEmbedderPolicy: false,
 }));
 

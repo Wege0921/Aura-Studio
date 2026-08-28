@@ -101,7 +101,7 @@ const ShopLanding: React.FC = () => {
     );
   }
 
-  const showingCategory = !!selectedCategory || !!search || !!selectedSize || !!selectedColor || !!maxPrice || sortBy !== 'newest';
+  const showingCategory = !!selectedCategory || !!search || !!selectedSize || !!selectedColor || !!maxPrice;
   const currentCat = categories.find((c) => c.slug === selectedCategory);
 
   // Collect available sizes and colors from ALL products (so filters work on every view)

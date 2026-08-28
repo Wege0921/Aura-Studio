@@ -10,6 +10,7 @@ const OrderConfirmationPage: React.FC = () => {
   const navigate = useNavigate();
   const [order, setOrder] = useState<ShopOrder | null>(null);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState('');
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -18,8 +19,9 @@ const OrderConfirmationPage: React.FC = () => {
         const url = `/api/shop/orders/${id}${guestToken ? `?guestToken=${guestToken}` : ''}`;
         const data = await api.get<ShopOrder>(url);
         setOrder(data);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error fetching order:', err);
+        setFetchError(err.message || 'Failed to load order');
       } finally {
         setLoading(false);
       }
@@ -38,7 +40,7 @@ const OrderConfirmationPage: React.FC = () => {
   if (!order) {
     return (
       <div className="text-center py-20">
-        <p className="text-aura-sand text-lg">Order not found.</p>
+        <p className="text-aura-sand text-lg">{fetchError || 'Order not found.'}</p>
         <button onClick={() => navigate('/shop')} className="mt-4 text-aura-clay hover:text-aura-sand">
           ← Back to Shop
         </button>
@@ -88,6 +90,12 @@ const OrderConfirmationPage: React.FC = () => {
             <span className="text-aura-sand">Subtotal</span>
             <span className="text-aura-cream">{formatETB(order.subtotal)}</span>
           </div>
+          {order.discount && order.discount > 0 && (
+            <div className="flex justify-between text-sm">
+              <span className="text-aura-sand">Discount</span>
+              <span className="text-green-400">-{formatETB(order.discount)}</span>
+            </div>
+          )}
           <div className="flex justify-between text-sm">
             <span className="text-aura-sand">Shipping</span>
             <span className="text-aura-cream">{order.shippingCost === 0 ? 'Free' : formatETB(order.shippingCost)}</span>

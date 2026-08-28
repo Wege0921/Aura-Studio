@@ -42,6 +42,11 @@ Source of truth: the gitignored `backend/.env.production`.
 | `EMAIL_HOST` / `EMAIL_PORT` / `EMAIL_USER` / `EMAIL_PASS` | SMTP for notifications |
 | `ADMIN_EMAIL` | receives newsletter/contact notifications |
 | `TELEGRAM_BOT_TOKEN` / `TELEGRAM_ADMIN_CHAT_ID` | admin Telegram alerts |
+| `R2_ACCOUNT_ID` | Cloudflare R2 account ID (file uploads) |
+| `R2_ACCESS_KEY_ID` | Cloudflare R2 access key ID |
+| `R2_SECRET_ACCESS_KEY` | Cloudflare R2 secret access key |
+| `R2_BUCKET` | R2 bucket name — `aura-media` |
+| `R2_PUBLIC_BASE_URL` | public base URL for R2 objects, e.g. `https://media.aurastudio.et` |
 | `CRON_SECRET` | optional — protects the daily expiry cron endpoint |
 
 > `NODE_ENV` and `VERCEL` are set automatically by Vercel — no action needed.

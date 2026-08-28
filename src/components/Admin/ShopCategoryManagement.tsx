@@ -70,14 +70,7 @@ const ShopCategoryManagement: React.FC = () => {
     try {
       const formData = new FormData();
       formData.append('image', files[0]);
-      const token = localStorage.getItem('token');
-      const res = await fetch(`/api/admin/shop/categories/${editing.id}/image`, {
-        method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: formData,
-      });
-      if (!res.ok) throw new Error('Upload failed');
-      const data = await res.json();
+      const data = await api.postForm<{ imageUrl: string }>(`/api/admin/shop/categories/${editing.id}/image`, formData);
       setFormData((prev) => ({ ...prev, imageUrl: data.imageUrl }));
       setSuccessMsg('Image uploaded');
       setTimeout(() => setSuccessMsg(''), 3000);

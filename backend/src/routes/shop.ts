@@ -240,23 +240,19 @@ router.get('/products', catalogLimiter, cachePublicRead(60), async (req: Request
       if (color) where.variants.some.color = { contains: color as string, mode: 'insensitive' };
     }
 
-    // Sorting: "newest" and "name" can use DB orderBy. Price sorting needs
-    // to account for salePrice (effective price), which Prisma can't express
-    // in orderBy — so we fetch then sort in JS for price sorts.
+    // Sorting: "newest", "name", and price sorts all use DB orderBy.
+    // Price sorting orders by salePrice first then basePrice as a tiebreaker.
+    // This is an approximation of "effective price" (salePrice ?? basePrice)
+    // that Prisma can express in orderBy without fetching all rows into memory.
     const sortStr = (sort as string) || 'newest';
-    const dbOrderBy: any = { createdAt: 'desc' };
-    let needsJsPriceSort = false;
-    let jsPriceSortDir: 'asc' | 'desc' = 'asc';
+    let dbOrderBy: any = { createdAt: 'desc' };
 
     if (sortStr === 'name') {
-      dbOrderBy.name = 'asc';
-      delete dbOrderBy.createdAt;
+      dbOrderBy = { name: 'asc' };
     } else if (sortStr === 'price-low') {
-      needsJsPriceSort = true;
-      jsPriceSortDir = 'asc';
+      dbOrderBy = [{ salePrice: 'asc' }, { basePrice: 'asc' }];
     } else if (sortStr === 'price-high') {
-      needsJsPriceSort = true;
-      jsPriceSortDir = 'desc';
+      dbOrderBy = [{ salePrice: 'desc' }, { basePrice: 'desc' }];
     }
 
     const products = await prisma.product.findMany({
@@ -270,15 +266,6 @@ router.get('/products', catalogLimiter, cachePublicRead(60), async (req: Request
         variants: { where: { isActive: true } },
       },
     });
-
-    // Apply JS-level price sort using effective price (salePrice ?? basePrice)
-    if (needsJsPriceSort) {
-      products.sort((a: any, b: any) => {
-        const priceA = Number(a.salePrice ?? a.basePrice);
-        const priceB = Number(b.salePrice ?? b.basePrice);
-        return jsPriceSortDir === 'asc' ? priceA - priceB : priceB - priceA;
-      });
-    }
 
     const total = await prisma.product.count({ where });
 
@@ -415,9 +402,26 @@ router.post('/coupons/validate', orderCreationLimiter, [
 router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single('receipt'), [
   body('items').custom((value) => {
     // FormData sends items as a JSON string; JSON body sends an actual array.
-    const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+    let parsed: any;
+    try {
+      parsed = typeof value === 'string' ? JSON.parse(value) : value;
+    } catch {
+      throw new Error('Items must be valid JSON');
+    }
     if (!Array.isArray(parsed) || parsed.length === 0) {
       throw new Error('At least one item is required');
+    }
+    for (const item of parsed) {
+      if (typeof item.productId !== 'string' || item.productId.trim() === '') {
+        throw new Error('Each item must have a non-empty productId');
+      }
+      if (item.variantId !== undefined && item.variantId !== null && typeof item.variantId !== 'string') {
+        throw new Error('variantId must be a string when provided');
+      }
+      const qty = Number(item.quantity);
+      if (!Number.isInteger(qty) || qty < 1) {
+        throw new Error('Each item must have an integer quantity >= 1');
+      }
     }
     return true;
   }),
@@ -592,56 +596,59 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
 
     const total = subtotal + shippingCost - discount;
 
-    // Handle receipt upload
-    let receiptUrl: string | null = null;
-    if (req.file && paymentMethod !== 'CASH_ON_DELIVERY') {
-      receiptUrl = await uploadToSupabase(
-        req.file.buffer,
-        req.file.originalname,
-        req.file.mimetype,
-        'shop-receipts'
-      );
-    }
-
     // Create order in transaction. Order number is generated inside the
     // transaction so the uniqueness check and insert are atomic.
+    // The receipt file is uploaded only AFTER the transaction commits, so a
+    // failed checkout never leaves an orphaned file in object storage.
     const order = await prisma.$transaction(async (tx) => {
-      const orderNumber = await generateOrderNumberWithTx(tx);
-      const newOrder = await tx.shopOrder.create({
-        data: {
-          orderNumber,
-          userId,
-          guestToken,
-          status: 'PENDING',
-          subtotal,
-          shippingCost,
-          discount,
-          total,
-          paymentMethod,
-          couponId: couponRecord?.id || null,
-          paymentReceiptUrl: receiptUrl,
-          paymentStatus: paymentMethod === 'CASH_ON_DELIVERY' ? 'PENDING' : 'PENDING',
-          notes: notes || null,
-          items: {
-            create: orderItemsData,
-          },
-          shippingAddress: {
-            create: {
-              fullName: shippingFullName,
-              phone: shippingPhone,
-              region: shippingRegion || null,
-              city: shippingCity || null,
-              address: shippingAddress,
-              postalCode: shippingPostalCode || null,
-              notes: shippingNotes || null,
+      // Generate an order number and insert, retrying on unique-constraint
+      // collisions (P2002) with a fresh candidate each attempt.
+      let newOrder: any = null;
+      for (let attempt = 0; attempt < 10; attempt++) {
+        const orderNumber = await generateOrderNumberWithTx(tx);
+        try {
+          newOrder = await tx.shopOrder.create({
+            data: {
+              orderNumber,
+              userId,
+              guestToken,
+              status: 'PENDING',
+              subtotal,
+              shippingCost,
+              discount,
+              total,
+              paymentMethod,
+              couponId: couponRecord?.id || null,
+              paymentReceiptUrl: null,
+              paymentStatus: paymentMethod === 'CASH_ON_DELIVERY' ? 'PENDING' : 'PENDING',
+              notes: notes || null,
+              items: {
+                create: orderItemsData,
+              },
+              shippingAddress: {
+                create: {
+                  fullName: shippingFullName,
+                  phone: shippingPhone,
+                  region: shippingRegion || null,
+                  city: shippingCity || null,
+                  address: shippingAddress,
+                  postalCode: shippingPostalCode || null,
+                  notes: shippingNotes || null,
+                },
+              },
             },
-          },
-        },
-        include: {
-          items: true,
-          shippingAddress: true,
-        },
-      });
+            include: {
+              items: true,
+              shippingAddress: true,
+            },
+          });
+          break;
+        } catch (err: any) {
+          // P2002 = unique constraint violation on orderNumber; try again
+          if (err?.code !== 'P2002' || attempt === 9) throw err;
+        }
+      }
+      if (!newOrder) throw new Error('Failed to generate a unique order number');
 
       // Decrement stock atomically inside the transaction.
       // Uses updateMany with a `stock >= qty` guard so concurrent orders
@@ -685,16 +692,44 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
         }
       }
 
-      // Increment coupon usage count
+      // Increment coupon usage count atomically. The conditional update only
+      // increments when usedCount < maxUses (or maxUses is unlimited), which
+      // prevents a race where two concurrent orders both pass the pre-check
+      // but exceed the limit. If zero rows update, the coupon is exhausted.
       if (couponRecord) {
-        await tx.coupon.update({
-          where: { id: couponRecord.id },
+        const where: any = { id: couponRecord.id };
+        if (couponRecord.maxUses !== null) {
+          where.usedCount = { lt: couponRecord.maxUses };
+        }
+        const result = await tx.coupon.updateMany({
+          where,
           data: { usedCount: { increment: 1 } },
         });
+        if (result.count === 0) {
+          throw new Error('This coupon has reached its usage limit');
+        }
       }
 
       return newOrder;
     }, { timeout: 15000, maxWait: 20000 });
+
+    // Upload the receipt now that the order has been committed. Doing this
+    // after the transaction guarantees no orphaned files are left in R2 when
+    // checkout fails. We then patch the URL onto the order.
+    let receiptUrl: string | null = null;
+    if (req.file && paymentMethod !== 'CASH_ON_DELIVERY') {
+      receiptUrl = await uploadToSupabase(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype,
+        'shop-receipts'
+      );
+      await prisma.shopOrder.update({
+        where: { id: order.id },
+        data: { paymentReceiptUrl: receiptUrl },
+      });
+      order.paymentReceiptUrl = receiptUrl;
+    }
 
     const responseBody = {
       message: 'Order placed successfully',
@@ -722,7 +757,7 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
     // Send confirmation emails (fire-and-forget — don't block the response)
     setImmediate(async () => {
       try {
-        const frontendUrl = (process.env.FRONTEND_URL || 'https://aurastudio.et').split(',')[0].trim().replace(/\/$/, '');
+        const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',')[0].trim().replace(/\/$/, '');
         const orderUrl = `${frontendUrl}/shop/orders/${order.id}${guestToken ? `?guestToken=${guestToken}` : ''}`;
         const adminUrl = `${frontendUrl}/admin/shop/orders/${order.id}`;
 
@@ -771,8 +806,9 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
       }
     });
   } catch (error: any) {
-    // Surface stock-exhaustion errors (thrown inside the transaction) as 400
-    if (error?.message?.startsWith('Insufficient stock for ')) {
+    // Surface stock-exhaustion and coupon-limit errors (thrown inside the
+    // transaction) as 400 instead of 500.
+    if (error?.message?.startsWith('Insufficient stock for ') || error?.message === 'This coupon has reached its usage limit') {
       return res.status(400).json({ error: error.message });
     }
     console.error('Error creating shop order:', error);
@@ -809,15 +845,29 @@ router.post('/orders/:id/receipt', receiptUploadLimiter, authenticateToken, rece
 // Get my orders (authenticated user)
 router.get('/orders/mine', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const orders = await prisma.shopOrder.findMany({
-      where: { userId: req.user!.id },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        items: { include: { product: { include: { images: { take: 1, orderBy: { sortOrder: 'asc' } } } } } },
-        shippingAddress: true,
-      },
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const limit = Math.min(Math.max(Number(req.query.limit) || 20, 1), 100);
+
+    const where = { userId: req.user!.id };
+    const [orders, total] = await Promise.all([
+      prisma.shopOrder.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: {
+          items: { include: { product: { include: { images: { take: 1, orderBy: { sortOrder: 'asc' } } } } } },
+          shippingAddress: true,
+        },
+      }),
+      prisma.shopOrder.count({ where }),
+    ]);
+    res.json({
+      orders,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
     });
-    res.json(orders);
   } catch (error) {
     console.error('Error fetching my orders:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -904,19 +954,33 @@ router.get('/orders/:id', optionalAuth, async (req: AuthenticatedRequest, res: R
 // Get my wishlist
 router.get('/wishlist', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const wishlist = await prisma.wishlist.findMany({
-      where: { userId: req.user!.id },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        product: {
-          include: {
-            images: { orderBy: { sortOrder: 'asc' }, take: 1 },
-            category: { select: { id: true, name: true, slug: true } },
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const limit = Math.min(Math.max(Number(req.query.limit) || 20, 1), 100);
+
+    const where = { userId: req.user!.id };
+    const [wishlist, total] = await Promise.all([
+      prisma.wishlist.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: {
+          product: {
+            include: {
+              images: { orderBy: { sortOrder: 'asc' }, take: 1 },
+              category: { select: { id: true, name: true, slug: true } },
+            },
           },
         },
-      },
+      }),
+      prisma.wishlist.count({ where }),
+    ]);
+    res.json({
+      wishlist,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
     });
-    res.json(wishlist);
   } catch (error) {
     console.error('Error fetching wishlist:', error);
     res.status(500).json({ error: 'Internal server error' });

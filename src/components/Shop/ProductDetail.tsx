@@ -195,7 +195,7 @@ const ProductDetail: React.FC = () => {
         <div className="space-y-3">
           <div className="aspect-square bg-aura-ink rounded-xl border border-aura-umber overflow-hidden">
             {images[selectedImage] ? (
-              <img src={images[selectedImage].url} alt={product.name} className="w-full h-full object-cover" />
+              <img src={images[selectedImage].url} alt={product.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <ShoppingBagIcon className="w-16 h-16 text-aura-umber" />
@@ -212,7 +212,7 @@ const ProductDetail: React.FC = () => {
                     selectedImage === idx ? 'border-aura-clay' : 'border-aura-umber'
                   }`}
                 >
-                  <img src={img.url} alt="" className="w-full h-full object-cover" />
+                  <img src={img.url} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.opacity = '0.3'; }} />
                 </button>
               ))}
             </div>

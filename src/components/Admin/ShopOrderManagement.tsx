@@ -16,6 +16,13 @@ const ShopOrderManagement: React.FC = () => {
 
   useEffect(() => { fetchOrders(); }, [statusFilter]);
 
+  // Debounced search auto-fetch
+  useEffect(() => {
+    const t = setTimeout(() => { fetchOrders(); }, 400);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
   const fetchOrders = async () => {
     try {
       setLoading(true);
@@ -235,6 +242,29 @@ const ShopOrderManagement: React.FC = () => {
             ))}
           </div>
         </>
+      )}
+
+      {/* Pagination */}
+      {orders.length > ITEMS_PER_PAGE && (
+        <div className="flex items-center justify-center gap-2 pt-2">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 rounded-lg bg-aura-ink border border-aura-umber text-sm text-aura-cream disabled:opacity-40 hover:border-aura-sand"
+          >
+            Prev
+          </button>
+          <span className="text-sm text-aura-sand">
+            Page {currentPage} of {Math.ceil(orders.length / ITEMS_PER_PAGE)}
+          </span>
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(Math.ceil(orders.length / ITEMS_PER_PAGE), p + 1))}
+            disabled={currentPage >= Math.ceil(orders.length / ITEMS_PER_PAGE)}
+            className="px-3 py-1 rounded-lg bg-aura-ink border border-aura-umber text-sm text-aura-cream disabled:opacity-40 hover:border-aura-sand"
+          >
+            Next
+          </button>
+        </div>
       )}
 
       {/* Order detail modal */}

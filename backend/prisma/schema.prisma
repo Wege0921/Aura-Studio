@@ -253,6 +253,7 @@ model ProductCategory {
 
   products    Product[]
 
+  @@index([isActive, sortOrder])
   @@map("shop_categories")
 }
 
@@ -284,6 +285,7 @@ model Product {
   @@index([categoryId])
   @@index([status])
   @@index([isFeatured])
+  @@index([status, stock])
   @@map("shop_products")
 }
 
@@ -304,6 +306,7 @@ model ProductVariant {
   orderItems   ShopOrderItem[]
 
   @@index([productId])
+  @@index([stock])
   @@map("shop_product_variants")
 }
 
@@ -353,6 +356,8 @@ model ShopOrder {
   @@index([createdAt])
   @@index([guestToken])
   @@index([couponId])
+  @@index([paymentStatus])
+  @@index([status, paymentStatus, createdAt])
   @@map("shop_orders")
 }
 
@@ -372,6 +377,8 @@ model ShopOrderItem {
   variant      ProductVariant?   @relation(fields: [variantId], references: [id])
 
   @@index([orderId])
+  @@index([productId])
+  @@index([variantId])
   @@map("shop_order_items")
 }
 

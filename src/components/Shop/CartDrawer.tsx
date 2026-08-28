@@ -79,7 +79,7 @@ const CartDrawer: React.FC = () => {
                       {/* Image */}
                       <div className="w-16 h-16 rounded-lg overflow-hidden bg-aura-ink flex-shrink-0">
                         {item.image ? (
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
                             <ShoppingBagIcon className="w-6 h-6 text-aura-umber" />

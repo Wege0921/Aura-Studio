@@ -44,7 +44,7 @@ const CartPage: React.FC = () => {
           >
             <div className="w-20 h-20 rounded-lg overflow-hidden bg-aura-bark flex-shrink-0">
               {item.image ? (
-                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                <img src={item.image} alt={item.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <ShoppingBagIcon className="w-8 h-8 text-aura-umber" />

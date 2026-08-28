@@ -83,6 +83,11 @@ const CheckoutPage: React.FC = () => {
   }
 
   const onSubmit = async (data: CheckoutForm) => {
+    // If on Step 1, move to Step 2 instead of submitting the order
+    if (step === 1) {
+      setStep(2);
+      return;
+    }
     setSubmitting(true);
     setSubmitError('');
 
@@ -110,7 +115,7 @@ const CheckoutPage: React.FC = () => {
       // click or network retry doesn't create a duplicate order. The key is
       // stable for the lifetime of this submit attempt (regenerated on each
       // call to onSubmit).
-      const idempotencyKey = crypto.randomUUID();
+      const idempotencyKey = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
       if (receiptFile && data.paymentMethod !== 'CASH_ON_DELIVERY') {
         formData.append('receipt', receiptFile);

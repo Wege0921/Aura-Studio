@@ -17,7 +17,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
   const onSale = product.salePrice !== null && product.salePrice !== undefined && product.salePrice < product.basePrice;
   const image = getFirstImage(product);
   const totalStock = product.variants?.reduce((sum, v) => sum + v.stock, 0) ?? 0;
-  const outOfStock = product.status === 'OUT_OF_STOCK' || (product.variants && product.variants.length > 0 && totalStock === 0);
+  const simpleStock = product.stock;
+  const outOfStock = product.status === 'OUT_OF_STOCK' ||
+    (product.variants && product.variants.length > 0 && totalStock === 0) ||
+    (!product.variants?.length && simpleStock !== null && simpleStock !== undefined && simpleStock <= 0);
 
   const handleClick = () => {
     if (onOpen) onOpen(product.slug);
@@ -41,7 +44,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
       variantLabel: null,
       price,
       image,
-      stock: null,
+      stock: simpleStock ?? null,
     });
   };
 
@@ -53,12 +56,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
       {/* Image */}
       <div className="aspect-square bg-aura-bark overflow-hidden relative">
         {image ? (
+          <>
           <img
             src={image}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
+          <div className="w-full h-full flex items-center justify-center absolute inset-0" style={{display:'none'}}>
+            <ShoppingBagIcon className="w-12 h-12 text-aura-umber" />
+          </div>
+          </>
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <ShoppingBagIcon className="w-12 h-12 text-aura-umber" />

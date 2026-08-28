@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import multer from 'multer';
 import { body, validationResult } from 'express-validator';
+import rateLimit from 'express-rate-limit';
 import { prisma } from '../lib/prisma';
 import { authenticateToken, requireAdmin } from '../middleware/auth';
 import { uploadToSupabase, deleteFromSupabase, detectMimetype } from '../lib/upload';
@@ -15,6 +16,20 @@ interface AuthenticatedRequest extends Request {
 }
 
 const router = express.Router();
+
+// Admin shop rate limiter: 100 requests / 10 min per IP. Admin actions are
+// authenticated and low-volume, but we still bound them to block brute-force
+// / scripted abuse of management endpoints.
+const adminShopLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 100,
+  message: { error: 'Too many admin shop requests, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply the admin rate limiter to all routes on this router.
+router.use(adminShopLimiter);
 
 // Multer for product image uploads (memory → Supabase 'products' bucket)
 const imageUpload = multer({
@@ -42,6 +57,39 @@ async function ensureUniqueSlug(baseSlug: string, excludeId?: string): Promise<s
     if (!existing || existing.id === excludeId) return slug;
     slug = `${baseSlug}-${suffix}`;
     suffix++;
+  }
+}
+
+// ============================================================
+// ORDER STATUS STATE MACHINE
+// ============================================================
+
+// Allowed forward transitions. CANCELLED is additionally allowed from any
+// non-terminal state (handled in isValidStatusTransition). REFUNDED and
+// CANCELLED are terminal — no transitions out.
+const VALID_STATUS_TRANSITIONS: Record<string, string[]> = {
+  PENDING: ['CONFIRMED', 'CANCELLED'],
+  CONFIRMED: ['PROCESSING', 'CANCELLED'],
+  PROCESSING: ['SHIPPED', 'CANCELLED'],
+  SHIPPED: ['DELIVERED'],
+  DELIVERED: ['REFUNDED'],
+};
+
+function isValidStatusTransition(from: string, to: string): boolean {
+  // CANCELLED is allowed from any state that isn't already terminal.
+  if (to === 'CANCELLED' && from !== 'CANCELLED' && from !== 'REFUNDED') return true;
+  const allowed = VALID_STATUS_TRANSITIONS[from];
+  return !!allowed && allowed.includes(to);
+}
+
+// Lightweight error used to surface a specific HTTP status from inside a
+// transaction (where we can't directly send a response).
+class StatusError extends Error {
+  status: number;
+  constructor(status: number, message: string) {
+    super(message);
+    this.status = status;
+    this.name = 'StatusError';
   }
 }
 
@@ -89,8 +137,15 @@ router.post('/categories', authenticateToken, requireAdmin, [
   }
 });
 
-router.put('/categories/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+router.put('/categories/:id', authenticateToken, requireAdmin, [
+  body('name').optional().notEmpty().withMessage('Name cannot be empty'),
+  body('slug').optional().isString().withMessage('Slug must be a string'),
+  body('isActive').optional().isBoolean().withMessage('isActive must be a boolean'),
+], async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
     const { id } = req.params;
     const { name, description, imageUrl, sortOrder, isActive, slug } = req.body;
     const updateData: any = {};
@@ -250,8 +305,16 @@ router.post('/products', authenticateToken, requireAdmin, [
   }
 });
 
-router.put('/products/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+router.put('/products/:id', authenticateToken, requireAdmin, [
+  body('name').optional().notEmpty().withMessage('Name cannot be empty'),
+  body('basePrice').optional().isFloat({ min: 0 }).withMessage('Base price must be 0 or positive'),
+  body('categoryId').optional().notEmpty().withMessage('Category cannot be empty'),
+  body('status').optional().isIn(['ACTIVE', 'DRAFT', 'ARCHIVED', 'OUT_OF_STOCK']).withMessage('Invalid status'),
+], async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
     const { id } = req.params;
     const { name, description, categoryId, basePrice, salePrice, sku, status, isFeatured, weightGrams, stock } = req.body;
     const updateData: any = {};
@@ -292,6 +355,13 @@ router.put('/products/:id', authenticateToken, requireAdmin, async (req: Authent
 router.delete('/products/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
+    // Verify the product exists before doing anything else
+    const product = await prisma.product.findUnique({
+      where: { id },
+      select: { id: true, images: { select: { url: true } } },
+    });
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+
     // Check for active orders
     const activeOrders = await prisma.shopOrderItem.count({
       where: {
@@ -302,6 +372,13 @@ router.delete('/products/:id', authenticateToken, requireAdmin, async (req: Auth
     if (activeOrders > 0) {
       return res.status(400).json({ error: 'Cannot delete product with active orders. Archive it instead.' });
     }
+
+    // Clean up all product images from storage before deleting the DB rows.
+    // Best-effort: storage failures shouldn't block the DB delete.
+    for (const image of product.images) {
+      try { await deleteFromSupabase(image.url); } catch { /* ignore storage errors */ }
+    }
+
     await prisma.product.delete({ where: { id } });
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {
@@ -406,8 +483,18 @@ router.post('/products/:id/variants', authenticateToken, requireAdmin, [
   }
 });
 
-router.put('/variants/:variantId', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+router.put('/variants/:variantId', authenticateToken, requireAdmin, [
+  body('size').optional().isString().withMessage('Size must be a string'),
+  body('color').optional().isString().withMessage('Color must be a string'),
+  body('style').optional().isString().withMessage('Style must be a string'),
+  body('priceDelta').optional().isNumeric().withMessage('Price delta must be numeric'),
+  body('stock').optional().isInt({ min: 0 }).withMessage('Stock must be an integer >= 0'),
+  body('sku').optional().isString().withMessage('SKU must be a string'),
+], async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
     const { variantId } = req.params;
     const { size, color, style, sku, priceDelta, stock, isActive } = req.body;
     const updateData: any = {};
@@ -430,6 +517,10 @@ router.put('/variants/:variantId', authenticateToken, requireAdmin, async (req: 
 router.delete('/variants/:variantId', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { variantId } = req.params;
+    // Verify the variant exists before acting on it
+    const variant = await prisma.productVariant.findUnique({ where: { id: variantId }, select: { id: true } });
+    if (!variant) return res.status(404).json({ error: 'Variant not found' });
+
     const inOrders = await prisma.shopOrderItem.count({ where: { variantId } });
     if (inOrders > 0) {
       // Don't delete — just deactivate
@@ -528,8 +619,16 @@ router.get('/orders/:id', authenticateToken, requireAdmin, async (req, res) => {
 });
 
 // Update order details (shipping cost, tracking, carrier, notes)
-router.patch('/orders/:id/details', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+router.patch('/orders/:id/details', authenticateToken, requireAdmin, [
+  body('shippingCost').optional().isFloat({ min: 0 }).withMessage('Shipping cost must be a number >= 0'),
+  body('trackingNumber').optional().isString().withMessage('Tracking number must be a string'),
+  body('carrier').optional().isString().withMessage('Carrier must be a string'),
+  body('notes').optional().isString().withMessage('Notes must be a string'),
+], async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
     const { id } = req.params;
     const { shippingCost, trackingNumber, carrier, notes } = req.body;
     const updateData: any = {};
@@ -566,61 +665,97 @@ router.patch('/orders/:id/status', authenticateToken, requireAdmin, [
     const { status, note } = req.body;
     const adminId = req.user!.id;
 
-    const order = await prisma.shopOrder.findUnique({
-      where: { id },
-      include: { items: true },
-    });
-    if (!order) return res.status(404).json({ error: 'Order not found' });
+    // Quick existence check outside the transaction for the 404 case.
+    const orderExists = await prisma.shopOrder.findUnique({ where: { id }, select: { id: true } });
+    if (!orderExists) return res.status(404).json({ error: 'Order not found' });
 
-    const result = await prisma.$transaction(async (tx) => {
-      // Restock on cancellation/refund. Stock is decremented at order
-      // creation (even while PENDING), so we restock from any non-terminal
-      // status. Guard against double-restock by only restocking when the
-      // order is leaving an active state for a terminal one, and only if
-      // we haven't already restocked (tracked via the previous status).
-      const activeStatuses = ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED'];
-      const isLeavingActive = activeStatuses.includes(order.status);
-      const isTerminalRestock = status === 'CANCELLED' || status === 'REFUNDED';
+    let result;
+    try {
+      result = await prisma.$transaction(async (tx) => {
+        // Re-read the order INSIDE the transaction to get the authoritative
+        // current status. This prevents double-restock when two admins cancel
+        // simultaneously: the first transaction commits the status change, so
+        // the second one re-reads a terminal status and skips restocking.
+        const current = await tx.shopOrder.findUnique({
+          where: { id },
+          include: { items: true },
+        });
+        if (!current) throw new StatusError(404, 'Order not found');
 
-      if (isTerminalRestock && isLeavingActive) {
-        for (const item of order.items) {
-          if (item.variantId) {
-            await tx.productVariant.update({
-              where: { id: item.variantId },
-              data: { stock: { increment: item.quantity } },
-            });
-          } else {
-            // Only restock product-level stock when it is tracked (non-null)
-            const product = await tx.product.findUnique({
-              where: { id: item.productId },
-              select: { stock: true },
-            });
-            if (product && product.stock !== null) {
-              await tx.product.update({
-                where: { id: item.productId },
+        // Validate the transition against the state machine.
+        if (!isValidStatusTransition(current.status, status)) {
+          throw new StatusError(400, `Invalid status transition from ${current.status} to ${status}`);
+        }
+
+        // Restock on cancellation/refund. Stock is decremented at order
+        // creation (even while PENDING), so we restock from any non-terminal
+        // status. The re-read `current.status` is what guards against
+        // double-restock under concurrent updates.
+        const activeStatuses = ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED'];
+        const isLeavingActive = activeStatuses.includes(current.status);
+        const isTerminalRestock = status === 'CANCELLED' || status === 'REFUNDED';
+
+        if (isTerminalRestock && isLeavingActive) {
+          for (const item of current.items) {
+            if (item.variantId) {
+              await tx.productVariant.update({
+                where: { id: item.variantId },
                 data: { stock: { increment: item.quantity } },
+              });
+            } else {
+              // Only restock product-level stock when it is tracked (non-null)
+              const product = await tx.product.findUnique({
+                where: { id: item.productId },
+                select: { stock: true },
+              });
+              if (product && product.stock !== null) {
+                await tx.product.update({
+                  where: { id: item.productId },
+                  data: { stock: { increment: item.quantity } },
+                });
+              }
+            }
+          }
+
+          // Decrement the coupon's usedCount if this order used a coupon.
+          // Only decrement when restock actually happened (leaving active)
+          // and the count is positive, so we never go negative.
+          if (current.couponId) {
+            const coupon = await tx.coupon.findUnique({
+              where: { id: current.couponId },
+              select: { usedCount: true },
+            });
+            if (coupon && coupon.usedCount > 0) {
+              await tx.coupon.update({
+                where: { id: current.couponId },
+                data: { usedCount: { decrement: 1 } },
               });
             }
           }
         }
+
+        const updated = await tx.shopOrder.update({
+          where: { id },
+          data: { status },
+        });
+
+        await tx.shopOrderStatusHistory.create({
+          data: {
+            orderId: id,
+            status,
+            note: note || null,
+            changedBy: adminId,
+          },
+        });
+
+        return updated;
+      });
+    } catch (e) {
+      if (e instanceof StatusError) {
+        return res.status(e.status).json({ error: e.message });
       }
-
-      const updated = await tx.shopOrder.update({
-        where: { id },
-        data: { status },
-      });
-
-      await tx.shopOrderStatusHistory.create({
-        data: {
-          orderId: id,
-          status,
-          note: note || null,
-          changedBy: adminId,
-        },
-      });
-
-      return updated;
-    });
+      throw e;
+    }
 
     res.json({ message: `Order status updated to ${status}`, order: result });
 
@@ -634,7 +769,7 @@ router.patch('/orders/:id/status', authenticateToken, requireAdmin, [
           });
           if (!fullOrder || !fullOrder.user?.email) return;
 
-          const frontendUrl = (process.env.FRONTEND_URL || 'https://aurastudio.et').split(',')[0].trim().replace(/\/$/, '');
+          const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',')[0].trim().replace(/\/$/, '');
           const orderUrl = `${frontendUrl}/shop/orders/${fullOrder.id}`;
           const { sendShopOrderShipped, sendShopOrderDelivered } = await import('../services/emailService');
 
@@ -717,7 +852,7 @@ router.patch('/orders/:id/payment', authenticateToken, requireAdmin, [
           });
           if (!fullOrder || !fullOrder.user?.email) return;
 
-          const frontendUrl = (process.env.FRONTEND_URL || 'https://aurastudio.et').split(',')[0].trim().replace(/\/$/, '');
+          const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',')[0].trim().replace(/\/$/, '');
           const orderUrl = `${frontendUrl}/shop/orders/${fullOrder.id}`;
 
           const { sendShopPaymentVerified } = await import('../services/emailService');

@@ -5,7 +5,7 @@ const API_CACHE = 'aura-studio-api-v3';
 const staticUrlsToCache = [
   '/',
   '/offline.html',
-  '/manifest.json',
+  '/site.webmanifest',
   '/favicon.ico',
   '/logo192.svg',
   '/logo512.svg',
@@ -120,6 +120,13 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Message handler — allows the page to trigger skipWaiting
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 // Background sync for offline actions
 self.addEventListener('sync', (event) => {
   if (event.tag === 'background-sync') {
@@ -128,8 +135,10 @@ self.addEventListener('sync', (event) => {
 });
 
 function doBackgroundSync() {
-  // Sync offline bookings, payments, etc.
-  return self.registration.sync.register('background-sync');
+  // Actual sync operations (offline bookings, payments, etc.) should go here.
+  // Do NOT re-register the 'background-sync' tag here — that creates an
+  // infinite self-loop.
+  return Promise.resolve();
 }
 
 // Push notification handler

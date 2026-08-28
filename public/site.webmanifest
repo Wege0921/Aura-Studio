@@ -1,27 +1,74 @@
 {
+  "short_name": "AURA Studio",
   "name": "AURA Studio",
-  "short_name": "AURA Pilates",
   "description": "Book pilates classes at AURA Studio. Women-only classes with expert instructors.",
   "icons": [
     {
-      "src": "/web-app-manifest-192x192.png",
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/web-app-manifest-512x512.png",
+      "src": "web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#d946ef",
-  "background_color": "#FBF5EE",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
+  "theme_color": "#d946ef",
+  "background_color": "#ffffff",
+  "categories": ["health", "fitness", "lifestyle", "education"],
+  "lang": "en",
   "scope": "/",
-  "start_url": "/",
-  "categories": ["health", "fitness", "lifestyle"],
-  "lang": "en"
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "My Bookings",
+      "short_name": "Bookings",
+      "description": "View your class bookings",
+      "url": "/dashboard/bookings",
+      "icons": [{ "src": "web-app-manifest-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Packages",
+      "short_name": "Packages",
+      "description": "Purchase class packages",
+      "url": "/packages",
+      "icons": [{ "src": "web-app-manifest-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Shop",
+      "short_name": "Shop",
+      "description": "Browse and purchase studio products",
+      "url": "/shop",
+      "icons": [{ "src": "web-app-manifest-192x192.png", "sizes": "192x192" }]
+    }
+  ]
 }
