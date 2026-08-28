@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
 import { ShopOrder, formatETB, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, PAYMENT_METHOD_LABELS, PAYMENT_STATUS_COLORS } from '../Shop/shopTypes';
-import { XMarkIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, EyeIcon, CheckIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
 const ShopOrderManagement: React.FC = () => {
   const [orders, setOrders] = useState<ShopOrder[]>([]);
@@ -90,20 +90,20 @@ const ShopOrderManagement: React.FC = () => {
       {error && <div className="bg-red-900/20 text-red-300 rounded-lg p-3 text-sm">{error}</div>}
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex flex-row gap-2">
         <input
           type="text"
-          placeholder="Search by order # or customer..."
+          placeholder="Search..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 px-4 py-2 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
+          className="flex-1 min-w-0 px-3 py-2 bg-aura-ink border border-aura-umber rounded-lg text-sm text-aura-cream focus:outline-none focus:border-aura-clay"
         />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
+          className="px-2 py-2 bg-aura-ink border border-aura-umber rounded-lg text-sm text-aura-cream focus:outline-none focus:border-aura-clay shrink-0"
         >
-          <option value="">All Statuses</option>
+          <option value="">All</option>
           <option value="PENDING">Pending</option>
           <option value="CONFIRMED">Confirmed</option>
           <option value="PROCESSING">Processing</option>
@@ -112,7 +112,7 @@ const ShopOrderManagement: React.FC = () => {
           <option value="CANCELLED">Cancelled</option>
           <option value="REFUNDED">Refunded</option>
         </select>
-        <button onClick={fetchOrders} className="px-4 py-2 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream text-sm hover:border-aura-sand">Refresh</button>
+        <button onClick={fetchOrders} className="px-3 py-2 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream text-sm hover:border-aura-sand shrink-0">Refresh</button>
       </div>
 
       {/* Orders list */}
@@ -121,56 +121,120 @@ const ShopOrderManagement: React.FC = () => {
       ) : paginated.length === 0 ? (
         <div className="text-center py-10 text-aura-sand">No orders found.</div>
       ) : (
-        <div className="space-y-2">
-          {paginated.map((order) => (
-            <div key={order.id} className="bg-aura-ink rounded-lg border border-aura-umber p-4">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="text-sm font-bold text-aura-cream">{order.orderNumber}</p>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${ORDER_STATUS_COLORS[order.status] || ''}`}>{ORDER_STATUS_LABELS[order.status] || order.status}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${PAYMENT_STATUS_COLORS[order.paymentStatus] || ''}`}>Pay: {order.paymentStatus}</span>
-                  </div>
-                  <p className="text-xs text-aura-sand">
-                    {order.user?.name || 'Guest'} · {order.user?.email || '—'} · {new Date(order.createdAt).toLocaleDateString()}
-                  </p>
-                  <p className="text-xs text-aura-sand mt-1">
-                    {order.items?.length || 0} item(s) · {order.paymentMethod ? PAYMENT_METHOD_LABELS[order.paymentMethod] : '—'}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-bold text-aura-cream">{formatETB(order.total)}</p>
-                  <button onClick={() => viewOrder(order.id)} className="text-xs text-aura-clay hover:text-aura-sand flex items-center gap-1 mt-1">
-                    <EyeIcon className="w-4 h-4" /> View
-                  </button>
-                </div>
-              </div>
+        <>
+          {/* Desktop table */}
+          <div className="hidden md:block overflow-x-auto bg-aura-ink rounded-lg border border-aura-umber">
+            <table className="min-w-full divide-y divide-aura-umber/50">
+              <thead className="bg-aura-umber/30">
+                <tr>
+                  <th className="px-3 py-2 text-left text-xs font-bold text-aura-sand uppercase tracking-wider">Order #</th>
+                  <th className="px-3 py-2 text-left text-xs font-bold text-aura-sand uppercase tracking-wider">Customer</th>
+                  <th className="px-3 py-2 text-left text-xs font-bold text-aura-sand uppercase tracking-wider">Date</th>
+                  <th className="px-3 py-2 text-left text-xs font-bold text-aura-sand uppercase tracking-wider">Items</th>
+                  <th className="px-3 py-2 text-left text-xs font-bold text-aura-sand uppercase tracking-wider">Payment</th>
+                  <th className="px-3 py-2 text-left text-xs font-bold text-aura-sand uppercase tracking-wider">Status</th>
+                  <th className="px-3 py-2 text-right text-xs font-bold text-aura-sand uppercase tracking-wider">Total</th>
+                  <th className="px-3 py-2 text-center text-xs font-bold text-aura-sand uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-aura-umber/30">
+                {paginated.map((order) => (
+                  <tr key={order.id} className="hover:bg-aura-bark/30">
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      <p className="text-sm font-bold text-aura-cream">{order.orderNumber}</p>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${ORDER_STATUS_COLORS[order.status] || ''}`}>{ORDER_STATUS_LABELS[order.status] || order.status}</span>
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      <p className="text-sm text-aura-cream">{order.user?.name || 'Guest'}</p>
+                      <p className="text-xs text-aura-sand">{order.user?.email || '—'}</p>
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-aura-sand">{new Date(order.createdAt).toLocaleDateString()}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-aura-sand">{order.items?.length || 0}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${PAYMENT_STATUS_COLORS[order.paymentStatus] || ''}`}>{order.paymentStatus}</span>
+                      <p className="text-[10px] text-aura-sand mt-0.5">{order.paymentMethod ? PAYMENT_METHOD_LABELS[order.paymentMethod] : '—'}</p>
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      <select
+                        value={order.status}
+                        onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
+                        className="text-xs px-1.5 py-0.5 bg-aura-bark border border-aura-umber rounded text-aura-cream"
+                      >
+                        <option value="PENDING">Pending</option>
+                        <option value="CONFIRMED">Confirmed</option>
+                        <option value="PROCESSING">Processing</option>
+                        <option value="SHIPPED">Shipped</option>
+                        <option value="DELIVERED">Delivered</option>
+                        <option value="CANCELLED">Cancelled</option>
+                        <option value="REFUNDED">Refunded</option>
+                      </select>
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap text-right text-sm font-bold text-aura-cream">{formatETB(order.total)}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      <div className="flex items-center justify-center gap-1">
+                        {order.paymentStatus === 'PENDING' && order.paymentMethod !== 'CASH_ON_DELIVERY' && (
+                          <>
+                            <button onClick={() => handlePaymentVerify(order.id, 'VERIFIED')} title="Verify Payment" className="icon-btn bg-green-900/30 text-green-300 hover:bg-green-900/50">
+                              <CheckIcon className="w-4 h-4" />
+                            </button>
+                            <button onClick={() => handlePaymentVerify(order.id, 'REJECTED')} title="Reject Payment" className="icon-btn bg-red-900/30 text-red-300 hover:bg-red-900/50">
+                              <XCircleIcon className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
+                        <button onClick={() => viewOrder(order.id)} title="View" className="icon-btn text-aura-clay hover:text-aura-sand">
+                          <EyeIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-              {/* Quick actions */}
-              <div className="flex gap-2 mt-3 pt-3 border-t border-aura-umber/50">
-                {order.paymentStatus === 'PENDING' && order.paymentMethod !== 'CASH_ON_DELIVERY' && (
-                  <>
-                    <button onClick={() => handlePaymentVerify(order.id, 'VERIFIED')} className="text-xs px-3 py-1 rounded bg-green-900/30 text-green-300 hover:bg-green-900/50">Verify Payment</button>
-                    <button onClick={() => handlePaymentVerify(order.id, 'REJECTED')} className="text-xs px-3 py-1 rounded bg-red-900/30 text-red-300 hover:bg-red-900/50">Reject Payment</button>
-                  </>
-                )}
-                <select
-                  value={order.status}
-                  onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
-                  className="text-xs px-2 py-1 bg-aura-bark border border-aura-umber rounded text-aura-cream"
-                >
-                  <option value="PENDING">Pending</option>
-                  <option value="CONFIRMED">Confirmed</option>
-                  <option value="PROCESSING">Processing</option>
-                  <option value="SHIPPED">Shipped</option>
-                  <option value="DELIVERED">Delivered</option>
-                  <option value="CANCELLED">Cancelled</option>
-                  <option value="REFUNDED">Refunded</option>
-                </select>
+          {/* Mobile compact cards */}
+          <div className="md:hidden space-y-1.5">
+            {paginated.map((order) => (
+              <div key={order.id} className="bg-aura-ink rounded-lg border border-aura-umber p-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                    <p className="text-sm font-bold text-aura-cream shrink-0">{order.orderNumber}</p>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full shrink-0 ${ORDER_STATUS_COLORS[order.status] || ''}`}>{ORDER_STATUS_LABELS[order.status] || order.status}</span>
+                  </div>
+                  <p className="text-sm font-bold text-aura-cream shrink-0">{formatETB(order.total)}</p>
+                </div>
+                <p className="text-xs text-aura-sand mt-1 truncate">
+                  {order.user?.name || 'Guest'} · {new Date(order.createdAt).toLocaleDateString()} · {order.items?.length || 0} item(s)
+                </p>
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <button onClick={() => viewOrder(order.id)} className="text-aura-clay hover:text-aura-sand" title="View">
+                    <EyeIcon className="w-4 h-4" />
+                  </button>
+                  {order.paymentStatus === 'PENDING' && order.paymentMethod !== 'CASH_ON_DELIVERY' && (
+                    <>
+                      <button onClick={() => handlePaymentVerify(order.id, 'VERIFIED')} className="text-[10px] px-2 py-0.5 rounded bg-green-900/30 text-green-300 hover:bg-green-900/50">Verify</button>
+                      <button onClick={() => handlePaymentVerify(order.id, 'REJECTED')} className="text-[10px] px-2 py-0.5 rounded bg-red-900/30 text-red-300 hover:bg-red-900/50">Reject</button>
+                    </>
+                  )}
+                  <select
+                    value={order.status}
+                    onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
+                    className="text-[10px] px-1.5 py-0.5 bg-aura-bark border border-aura-umber rounded text-aura-cream ml-auto"
+                  >
+                    <option value="PENDING">Pending</option>
+                    <option value="CONFIRMED">Confirmed</option>
+                    <option value="PROCESSING">Processing</option>
+                    <option value="SHIPPED">Shipped</option>
+                    <option value="DELIVERED">Delivered</option>
+                    <option value="CANCELLED">Cancelled</option>
+                    <option value="REFUNDED">Refunded</option>
+                  </select>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* Order detail modal */}
