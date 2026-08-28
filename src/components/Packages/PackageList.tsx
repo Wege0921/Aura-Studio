@@ -219,7 +219,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
         <div className="bg-aura-ink p-3 rounded-lg border border-aura-umber">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             <div>
-              <label htmlFor="pkg-classType" className="block text-xs font-medium text-aura-sand/70 mb-0.5">Type</label>
+              <label htmlFor="pkg-classType" className="block text-xs font-medium text-aura-sand mb-0.5">Type</label>
               <select
                 id="pkg-classType"
                 value={classTypeFilter}
@@ -235,7 +235,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
             </div>
 
             <div>
-              <label htmlFor="pkg-sessions" className="block text-xs font-medium text-aura-sand/70 mb-0.5">Sessions</label>
+              <label htmlFor="pkg-sessions" className="block text-xs font-medium text-aura-sand mb-0.5">Sessions</label>
               <select
                 id="pkg-sessions"
                 value={sessionsFilter}
@@ -252,7 +252,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
             </div>
 
             <div>
-              <label htmlFor="pkg-price" className="block text-xs font-medium text-aura-sand/70 mb-0.5">Price</label>
+              <label htmlFor="pkg-price" className="block text-xs font-medium text-aura-sand mb-0.5">Price</label>
               <select
                 id="pkg-price"
                 value={priceFilter}
@@ -267,7 +267,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
             </div>
 
             <div>
-              <label htmlFor="pkg-validity" className="block text-xs font-medium text-aura-sand/70 mb-0.5">Validity</label>
+              <label htmlFor="pkg-validity" className="block text-xs font-medium text-aura-sand mb-0.5">Validity</label>
               <select
                 id="pkg-validity"
                 value={validityFilter}
@@ -284,7 +284,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
           </div>
           <button
             onClick={() => { setClassTypeFilter(''); setSessionsFilter(''); setPriceFilter(''); setValidityFilter(''); setCurrentPage(1); }}
-            className="mt-2 text-xs text-aura-sand/70 hover:text-aura-cream"
+            className="mt-2 text-xs text-aura-sand hover:text-aura-cream"
           >
             Clear filters
           </button>

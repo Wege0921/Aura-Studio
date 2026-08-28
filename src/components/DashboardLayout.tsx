@@ -154,7 +154,7 @@ const DashboardLayout: React.FC = () => {
     {
       type: 'group',
       id: 'commerce',
-      label: 'Commerce',
+      label: 'E-Commerce',
       icon: <PackagesIcon className="w-5 h-5" />,
       children: [
         { id: 'admin-shop-products', label: 'Products', icon: <PackagesIcon className="w-5 h-5" /> },
@@ -488,7 +488,7 @@ const MobileDrawerNav: React.FC<{
             <button
               key={s.id}
               onClick={() => onTabChange(s.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium font-sans transition-colors duration-200 min-h-[44px] ${
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold font-sans transition-colors duration-200 min-h-[44px] ${
                 isActive
                   ? 'bg-aura-sand/20 text-aura-ivory'
                   : 'text-aura-cream hover:bg-aura-umber/40 hover:text-aura-ivory'
@@ -507,7 +507,7 @@ const MobileDrawerNav: React.FC<{
           <div key={s.id} className="space-y-1">
             <button
               onClick={() => toggleGroup(s.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium font-sans transition-colors duration-200 min-h-[44px] ${
+              className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base font-bold font-sans transition-colors duration-200 min-h-[48px] ${
                 hasActiveChild
                   ? 'text-aura-ivory'
                   : 'text-aura-cream hover:bg-aura-umber/40 hover:text-aura-ivory'
@@ -530,7 +530,7 @@ const MobileDrawerNav: React.FC<{
                     <button
                       key={child.id}
                       onClick={() => onTabChange(child.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium font-sans transition-colors duration-200 min-h-[40px] ${
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-bold font-sans transition-colors duration-200 min-h-[40px] ${
                         isActive
                           ? 'bg-aura-sand/20 text-aura-ivory'
                           : 'text-aura-sand hover:bg-aura-umber/40 hover:text-aura-ivory'

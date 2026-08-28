@@ -333,7 +333,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
       <div className="bg-aura-ink p-3 rounded-lg border border-aura-umber">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           <div>
-            <label htmlFor="date" className="block text-xs font-medium text-aura-sand/70 mb-0.5">Date</label>
+            <label htmlFor="date" className="block text-xs font-medium text-aura-sand mb-0.5">Date</label>
             <input
               type="date"
               id="date"
@@ -346,7 +346,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
           </div>
 
           <div>
-            <label htmlFor="classType" className="block text-xs font-medium text-aura-sand/70 mb-0.5">Type</label>
+            <label htmlFor="classType" className="block text-xs font-medium text-aura-sand mb-0.5">Type</label>
             <select
               id="classType"
               value={filters.classType}
@@ -362,7 +362,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
           </div>
 
           <div>
-            <label htmlFor="instructor" className="block text-xs font-medium text-aura-sand/70 mb-0.5">Instructor</label>
+            <label htmlFor="instructor" className="block text-xs font-medium text-aura-sand mb-0.5">Instructor</label>
             <select
               id="instructor"
               value={filters.instructor}
@@ -377,7 +377,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
           </div>
 
           <div>
-            <label htmlFor="class-price" className="block text-xs font-medium text-aura-sand/70 mb-0.5">Price</label>
+            <label htmlFor="class-price" className="block text-xs font-medium text-aura-sand mb-0.5">Price</label>
             <select
               id="class-price"
               value={filters.price}
@@ -395,7 +395,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
 
         <button
           onClick={() => { setFilters({ date: '', classType: '', instructor: '', price: '' }); setCurrentPage(1); }}
-          className="mt-2 text-xs text-aura-sand/70 hover:text-aura-cream"
+          className="mt-2 text-xs text-aura-sand hover:text-aura-cream"
         >
           Clear filters
         </button>

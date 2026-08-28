@@ -115,7 +115,7 @@ const PWAInstallBanner: React.FC = () => {
               <img src="/web-app-manifest-192x192.png" alt="AURA" className="w-12 h-12 rounded-2xl flex-shrink-0" />
               <div>
                 <p className="text-base font-bold text-aura-cream">Add AURA to Home Screen</p>
-                <p className="text-xs text-aura-sand/60">Install the app for the best experience</p>
+                <p className="text-xs text-aura-sand">Install the app for the best experience</p>
               </div>
             </div>
 
@@ -150,7 +150,7 @@ const PWAInstallBanner: React.FC = () => {
 
             <button
               onClick={handleDismiss}
-              className="w-full py-3 rounded-xl border border-aura-umber text-sm text-aura-sand/60 hover:text-aura-sand active:bg-aura-sand/10 transition-colors"
+              className="w-full py-3 rounded-xl border border-aura-umber text-sm text-aura-sand hover:text-aura-cream active:bg-aura-sand/10 transition-colors"
             >
               Maybe Later
             </button>
@@ -176,11 +176,11 @@ const PWAInstallBanner: React.FC = () => {
               <img src="/web-app-manifest-192x192.png" alt="AURA" className="w-10 h-10 rounded-xl flex-shrink-0" />
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-aura-cream truncate">Install AURA App</p>
-                <p className="text-xs text-aura-sand/50 truncate">Add to home screen for quick access</p>
+                <p className="text-xs text-aura-sand truncate">Add to home screen for quick access</p>
               </div>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-              <button onClick={handleDismiss} className="text-sm text-aura-sand/50 hover:text-aura-sand px-2 py-1 rounded min-h-[36px]">
+              <button onClick={handleDismiss} className="text-sm text-aura-sand hover:text-aura-cream px-2 py-1 rounded min-h-[36px]">
                 Not now
               </button>
               <button
@@ -202,9 +202,9 @@ const PWAInstallBanner: React.FC = () => {
               <img src="/web-app-manifest-192x192.png" alt="AURA" className="w-11 h-11 rounded-xl flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-aura-cream">Install AURA App</p>
-                <p className="text-xs text-aura-sand/50 mt-0.5 leading-relaxed">Install for a faster, app-like experience on your desktop.</p>
+                <p className="text-xs text-aura-sand mt-0.5 leading-relaxed">Install for a faster, app-like experience on your desktop.</p>
                 <div className="flex items-center gap-2 mt-3">
-                  <button onClick={handleDismiss} className="text-xs text-aura-sand/50 hover:text-aura-sand px-3 py-1.5 rounded-lg border border-aura-umber min-h-[32px]">
+                  <button onClick={handleDismiss} className="text-xs text-aura-sand hover:text-aura-cream px-3 py-1.5 rounded-lg border border-aura-umber min-h-[32px]">
                     Not now
                   </button>
                   <button
@@ -215,7 +215,7 @@ const PWAInstallBanner: React.FC = () => {
                   </button>
                 </div>
               </div>
-              <button onClick={handleDismiss} className="text-aura-sand/40 hover:text-aura-sand -mt-1 -mr-1 p-1">
+              <button onClick={handleDismiss} className="text-aura-sand hover:text-aura-cream -mt-1 -mr-1 p-1">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>

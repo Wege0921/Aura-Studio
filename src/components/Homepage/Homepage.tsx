@@ -220,7 +220,7 @@ const Homepage: React.FC = () => {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
             </div>
           ) : classes.length === 0 ? (
-            <div className="text-center py-12 text-aura-sand/50">No upcoming classes available.</div>
+            <div className="text-center py-12 text-aura-sand">No upcoming classes available.</div>
           ) : (
             <div className="class-grid">
               {classes.slice(0, 4).map(cls => (

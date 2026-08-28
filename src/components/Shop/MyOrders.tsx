@@ -139,7 +139,7 @@ const MyOrders: React.FC = () => {
             <div className="flex justify-between items-start mb-3">
               <div>
                 <p className="text-sm font-bold text-aura-cream">{order.orderNumber}</p>
-                <p className="text-xs text-aura-sand/60">{new Date(order.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+                <p className="text-xs text-aura-sand">{new Date(order.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</p>
               </div>
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${ORDER_STATUS_COLORS[order.status] || ''}`}>
                 {ORDER_STATUS_LABELS[order.status] || order.status}
@@ -151,12 +151,12 @@ const MyOrders: React.FC = () => {
                 <div key={item.id} className="flex justify-between text-sm">
                   <span className="text-aura-sand">
                     {item.name} × {item.quantity}
-                    {item.variantLabel && <span className="text-aura-sand/60"> ({item.variantLabel})</span>}
+                    {item.variantLabel && <span className="text-aura-sand"> ({item.variantLabel})</span>}
                   </span>
                 </div>
               ))}
               {order.items && order.items.length > 3 && (
-                <p className="text-xs text-aura-sand/60">+ {order.items.length - 3} more items</p>
+                <p className="text-xs text-aura-sand">+ {order.items.length - 3} more items</p>
               )}
             </div>
 

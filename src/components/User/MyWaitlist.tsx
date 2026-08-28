@@ -95,7 +95,7 @@ const MyWaitlist: React.FC = () => {
                 <p className="text-aura-sand text-sm">
                   {format(new Date(entry.class.date), 'MMM dd, yyyy')} at {entry.class.time}
                 </p>
-                <p className="text-aura-sand/70 text-sm">with {entry.class.instructor}</p>
+                <p className="text-aura-sand text-sm">with {entry.class.instructor}</p>
                 <span className="inline-block mt-2 text-xs px-2 py-1 rounded bg-aura-umber/40 text-aura-sand">
                   Position: #{entry.position} — {entry.status}
                 </span>

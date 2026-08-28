@@ -148,8 +148,8 @@ const ShopCategoryManagement: React.FC = () => {
                       disabled={imageUploading}
                       className="w-full text-sm text-aura-cream file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-aura-clay file:text-aura-ink file:font-medium file:cursor-pointer"
                     />
-                    {imageUploading && <p className="text-xs text-aura-sand/60 mt-1">Uploading...</p>}
-                    <p className="text-xs text-aura-sand/50 mt-1">Save the category first, then upload an image.</p>
+                    {imageUploading && <p className="text-xs text-aura-sand mt-1">Uploading...</p>}
+                    <p className="text-xs text-aura-sand mt-1">Save the category first, then upload an image.</p>
                   </>
                 ) : (
                   <input
@@ -192,7 +192,7 @@ const ShopCategoryManagement: React.FC = () => {
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <h3 className="text-sm font-semibold text-aura-cream">{cat.name}</h3>
-                  <p className="text-xs text-aura-sand/60">/{cat.slug}</p>
+                  <p className="text-xs text-aura-sand">/{cat.slug}</p>
                 </div>
                 <div className="flex gap-1">
                   <button onClick={() => handleEdit(cat)} className="p-1 text-aura-sand hover:text-aura-cream"><PencilIcon className="w-4 h-4" /></button>

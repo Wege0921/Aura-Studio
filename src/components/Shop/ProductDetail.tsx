@@ -176,7 +176,7 @@ const ProductDetail: React.FC = () => {
   return (
     <div className="space-y-8">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-aura-sand/60">
+      <div className="flex items-center gap-2 text-sm text-aura-sand">
         <button onClick={() => navigate('/shop')} className="hover:text-aura-clay">Shop</button>
         <span>/</span>
         {product.category && (
@@ -223,7 +223,7 @@ const ProductDetail: React.FC = () => {
         <div className="space-y-4">
           <div>
             {product.category && (
-              <p className="text-sm text-aura-sand/70 mb-1">{product.category.name}</p>
+              <p className="text-sm text-aura-sand mb-1">{product.category.name}</p>
             )}
             <h1 className="text-2xl md:text-3xl font-serif text-aura-ivory">{product.name}</h1>
           </div>
@@ -232,7 +232,7 @@ const ProductDetail: React.FC = () => {
           <div className="flex items-baseline gap-3">
             <span className="text-2xl font-bold text-aura-cream">{formatETB(currentPrice)}</span>
             {onSale && (
-              <span className="text-lg text-aura-sand/50 line-through">{formatETB(product.basePrice)}</span>
+              <span className="text-lg text-aura-sand line-through">{formatETB(product.basePrice)}</span>
             )}
           </div>
 
@@ -382,7 +382,7 @@ const ProductDetail: React.FC = () => {
           </div>
 
           {hasVariants && !selectedVariant && (
-            <p className="text-xs text-aura-sand/60">Please select a size, color, or style to add to cart.</p>
+            <p className="text-xs text-aura-sand">Please select a size, color, or style to add to cart.</p>
           )}
         </div>
       </div>

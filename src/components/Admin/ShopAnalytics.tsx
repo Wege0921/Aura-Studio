@@ -68,7 +68,7 @@ const ShopAnalytics: React.FC = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map((stat) => (
           <div key={stat.label} className="bg-aura-ink rounded-xl border border-aura-umber p-4">
-            <p className="text-xs text-aura-sand/60 mb-1">{stat.label}</p>
+            <p className="text-xs text-aura-sand mb-1">{stat.label}</p>
             <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
           </div>
         ))}
@@ -84,12 +84,12 @@ const ShopAnalytics: React.FC = () => {
             {data.topProducts.map((p, idx) => (
               <div key={p.productId} className="flex items-center justify-between bg-aura-bark rounded-lg p-3">
                 <div className="flex items-center gap-3">
-                  <span className="text-aura-sand/60 text-sm w-6">{idx + 1}.</span>
+                  <span className="text-aura-sand text-sm w-6">{idx + 1}.</span>
                   <span className="text-sm text-aura-cream">{p.name}</span>
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-aura-cream">{formatETB(p._sum.lineTotal)}</p>
-                  <p className="text-xs text-aura-sand/60">{p._sum.quantity} sold</p>
+                  <p className="text-xs text-aura-sand">{p._sum.quantity} sold</p>
                 </div>
               </div>
             ))}

@@ -167,7 +167,7 @@ const Register: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-aura-sand/50 hover:text-aura-sand"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-aura-sand hover:text-aura-cream"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
@@ -183,7 +183,7 @@ const Register: React.FC = () => {
                       />
                     ))}
                   </div>
-                  <p className="text-xs text-aura-sand/60 mt-1">
+                  <p className="text-xs text-aura-sand mt-1">
                     {strengthLabels[strength - 1] || 'Weak'} — Use 8+ chars with upper, lower, number & symbol
                   </p>
                 </div>
@@ -207,7 +207,7 @@ const Register: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-aura-sand/50 hover:text-aura-sand"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-aura-sand hover:text-aura-cream"
                   tabIndex={-1}
                 >
                   {showConfirmPassword ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
@@ -231,7 +231,7 @@ const Register: React.FC = () => {
               <div className="w-full border-t border-aura-umber" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-2 bg-aura-bark text-aura-sand/70">or</span>
+              <span className="px-2 bg-aura-bark text-aura-sand">or</span>
             </div>
           </div>
 

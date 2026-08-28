@@ -210,13 +210,13 @@ const CheckoutPage: React.FC = () => {
                     />
                     <span className="text-sm font-medium text-aura-cream">{PAYMENT_METHOD_LABELS[method]}</span>
                     {method === 'CASH_ON_DELIVERY' && (
-                      <span className="text-xs text-aura-sand/60 hidden sm:inline">— Pay with cash on arrival</span>
+                      <span className="text-xs text-aura-sand hidden sm:inline">— Pay with cash on arrival</span>
                     )}
                     {method === 'BANK_TRANSFER' && (
-                      <span className="text-xs text-aura-sand/60 hidden sm:inline">— Upload your receipt</span>
+                      <span className="text-xs text-aura-sand hidden sm:inline">— Upload your receipt</span>
                     )}
                     {method === 'MOBILE_MONEY' && (
-                      <span className="text-xs text-aura-sand/60 hidden sm:inline">— Upload transaction screenshot</span>
+                      <span className="text-xs text-aura-sand hidden sm:inline">— Upload transaction screenshot</span>
                     )}
                   </label>
                 ))}

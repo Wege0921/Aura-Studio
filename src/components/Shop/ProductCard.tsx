@@ -80,13 +80,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
       <div className="p-4">
         <h3 className="text-sm font-semibold text-aura-cream mb-1 line-clamp-2">{product.name}</h3>
         {product.category && (
-          <p className="text-xs text-aura-sand/70 mb-2">{product.category.name}</p>
+          <p className="text-xs text-aura-sand mb-2">{product.category.name}</p>
         )}
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-2">
             <span className="text-lg font-bold text-aura-cream">{formatETB(price)}</span>
             {onSale && (
-              <span className="text-sm text-aura-sand/50 line-through">{formatETB(product.basePrice)}</span>
+              <span className="text-sm text-aura-sand line-through">{formatETB(product.basePrice)}</span>
             )}
           </div>
         </div>

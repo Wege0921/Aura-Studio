@@ -47,7 +47,7 @@ const Navigation: React.FC = () => {
                   </a>
                 ))}
                 <div className="flex items-center space-x-3 ml-4 pl-4 border-l border-aura-umber">
-                  <span className="text-sm text-aura-sand/70">Welcome, {user.name}</span>
+                  <span className="text-sm text-aura-sand">Welcome, {user.name}</span>
                   <button
                     onClick={handleLogout}
                     className="bg-aura-clay text-aura-ink px-3 py-1 rounded-md text-sm font-medium hover:bg-aura-sand transition-colors duration-200"
@@ -88,7 +88,7 @@ const Navigation: React.FC = () => {
               <>
                 <div className="px-3 py-2 border-b border-aura-umber">
                   <p className="text-sm font-medium text-aura-ivory">Welcome, {user.name}</p>
-                  <p className="text-xs text-aura-sand/50">{user.email}</p>
+                  <p className="text-xs text-aura-sand">{user.email}</p>
                 </div>
                 {(user.role === 'ADMIN' ? adminNavigationItems : navigationItems).map((item) => (
                   <a

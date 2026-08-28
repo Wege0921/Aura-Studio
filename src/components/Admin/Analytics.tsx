@@ -115,7 +115,7 @@ const Analytics: React.FC = () => {
                       title={`ETB ${val.toLocaleString()}`}
                     />
                   </div>
-                  <span className="text-[10px] text-aura-sand/80">{label}</span>
+                  <span className="text-[10px] text-aura-sand">{label}</span>
                 </div>
               );
             })}
@@ -138,7 +138,7 @@ const Analytics: React.FC = () => {
                       title={`${val} users`}
                     />
                   </div>
-                  <span className="text-[10px] text-aura-sand/80">{label}</span>
+                  <span className="text-[10px] text-aura-sand">{label}</span>
                 </div>
               );
             })}
@@ -155,7 +155,7 @@ const Analytics: React.FC = () => {
               <div className={`w-3 h-3 rounded-full ${statusColors[b.status] || 'bg-gray-500'}`} />
               <span className="text-sm text-aura-sand">{b.status}</span>
               <span className="text-sm font-bold text-aura-cream">{b.count}</span>
-              <span className="text-xs text-aura-sand/80">
+              <span className="text-xs text-aura-sand">
                 ({totalBookings > 0 ? Math.round((b.count / totalBookings) * 100) : 0}%)
               </span>
             </div>

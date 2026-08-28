@@ -51,7 +51,7 @@ const QuickActionCard = ({
       {icon}
     </div>
     <h3 className="text-aura-cream font-semibold text-sm mb-1">{title}</h3>
-    <p className="text-aura-sand/70 text-xs">{description}</p>
+    <p className="text-aura-sand text-xs">{description}</p>
   </button>
 );
 
@@ -213,21 +213,21 @@ const UserDashboard: React.FC = () => {
       {/* Stats Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="bg-aura-ink rounded-xl border border-aura-umber p-4">
-          <p className="text-aura-sand/70 text-xs uppercase tracking-wider mb-1">Active Packages</p>
+          <p className="text-aura-sand text-xs uppercase tracking-wider mb-1">Active Packages</p>
           <p className="text-2xl font-bold text-aura-cream">{activePkgs.length}</p>
         </div>
         <div className="bg-aura-ink rounded-xl border border-aura-umber p-4">
-          <p className="text-aura-sand/70 text-xs uppercase tracking-wider mb-1">Total Sessions</p>
+          <p className="text-aura-sand text-xs uppercase tracking-wider mb-1">Total Sessions</p>
           <p className="text-2xl font-bold text-aura-cream">
             {activePkgs.reduce((sum, up) => sum + (up.remainingSessions || 0), 0)}
           </p>
         </div>
         <div className="bg-aura-ink rounded-xl border border-aura-umber p-4">
-          <p className="text-aura-sand/70 text-xs uppercase tracking-wider mb-1">Upcoming</p>
+          <p className="text-aura-sand text-xs uppercase tracking-wider mb-1">Upcoming</p>
           <p className="text-2xl font-bold text-aura-cream">{upcomingBookings.length}</p>
         </div>
         <div className="bg-aura-ink rounded-xl border border-aura-umber p-4">
-          <p className="text-aura-sand/70 text-xs uppercase tracking-wider mb-1">Member Since</p>
+          <p className="text-aura-sand text-xs uppercase tracking-wider mb-1">Member Since</p>
           <p className="text-sm font-semibold text-aura-cream mt-1">
             {user?.createdAt ? format(new Date(user.createdAt), 'MMM yyyy') : 'N/A'}
           </p>
@@ -247,7 +247,7 @@ const UserDashboard: React.FC = () => {
           <div className="space-y-3">
             {userPackages.length === 0 ? (
               <div className="text-center py-6">
-                <p className="text-aura-sand/70 text-sm mb-3">No active packages yet</p>
+                <p className="text-aura-sand text-sm mb-3">No active packages yet</p>
                 <button
                   onClick={goToPackages}
                   className="text-sm text-purple-400 hover:text-purple-300 font-medium"
@@ -286,7 +286,7 @@ const UserDashboard: React.FC = () => {
           <div className="space-y-3">
             {upcomingBookings.length === 0 ? (
               <div className="text-center py-6">
-                <p className="text-aura-sand/70 text-sm">No upcoming classes</p>
+                <p className="text-aura-sand text-sm">No upcoming classes</p>
               </div>
             ) : (
               upcomingBookings.map((booking) => (

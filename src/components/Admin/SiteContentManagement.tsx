@@ -157,7 +157,7 @@ const SiteContentManagement: React.FC = () => {
             className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors ${
               activeTab === tab.id
                 ? 'text-aura-ivory border-b-2 border-aura-umber'
-                : 'text-aura-sand/80 hover:text-aura-sand'
+                : 'text-aura-sand hover:text-aura-sand'
             }`}
           >
             {tab.label}
@@ -234,10 +234,10 @@ const ImageField: React.FC<{
         const file = e.target.files?.[0];
         if (file) onChange(field, file);
       }}
-      className="block w-full text-sm text-aura-sand/70 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-aura-sand/10 file:text-aura-sand hover:file:bg-aura-sand/20"
+      className="block w-full text-sm text-aura-sand file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-aura-sand/10 file:text-aura-sand hover:file:bg-aura-sand/20"
     />
     {value && (
-      <p className="text-xs text-aura-sand/80 mt-1 truncate">{value}</p>
+      <p className="text-xs text-aura-sand mt-1 truncate">{value}</p>
     )}
   </div>
 );

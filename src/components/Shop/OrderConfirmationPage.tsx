@@ -59,7 +59,7 @@ const OrderConfirmationPage: React.FC = () => {
       <div className="bg-aura-ink rounded-xl border border-aura-umber p-6 space-y-4">
         <div className="flex justify-between items-center">
           <div>
-            <p className="text-xs text-aura-sand/60">Order Number</p>
+            <p className="text-xs text-aura-sand">Order Number</p>
             <p className="text-lg font-bold text-aura-cream">{order.orderNumber}</p>
           </div>
           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${ORDER_STATUS_COLORS[order.status] || ''}`}>
@@ -74,7 +74,7 @@ const OrderConfirmationPage: React.FC = () => {
               <div key={item.id} className="flex justify-between text-sm">
                 <div>
                   <span className="text-aura-cream">{item.name}</span>
-                  {item.variantLabel && <span className="text-aura-sand/60"> — {item.variantLabel}</span>}
+                  {item.variantLabel && <span className="text-aura-sand"> — {item.variantLabel}</span>}
                   <span className="text-aura-sand"> × {item.quantity}</span>
                 </div>
                 <span className="text-aura-cream">{formatETB(item.lineTotal)}</span>
@@ -138,7 +138,7 @@ const OrderConfirmationPage: React.FC = () => {
               {order.statusHistory.map((h) => (
                 <div key={h.id} className="text-sm flex justify-between">
                   <span className="text-aura-cream">{ORDER_STATUS_LABELS[h.status] || h.status}</span>
-                  <span className="text-aura-sand/60 text-xs">{new Date(h.createdAt).toLocaleDateString()}</span>
+                  <span className="text-aura-sand text-xs">{new Date(h.createdAt).toLocaleDateString()}</span>
                 </div>
               ))}
             </div>

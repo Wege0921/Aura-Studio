@@ -125,8 +125,8 @@ const ProfilePage: React.FC = () => {
       <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-umber p-6">
         <h2 className="text-lg font-semibold text-aura-cream mb-2">Account Info</h2>
         <div className="text-sm text-aura-sand space-y-1">
-          <p><span className="text-aura-sand/70">Role:</span> {user?.role}</p>
-          <p><span className="text-aura-sand/70">Member since:</span> {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
+          <p><span className="text-aura-sand">Role:</span> {user?.role}</p>
+          <p><span className="text-aura-sand">Member since:</span> {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
         </div>
       </div>
     </div>

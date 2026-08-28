@@ -90,7 +90,7 @@ const CalendarView: React.FC = () => {
       <div className="bg-aura-ink rounded-xl border border-aura-umber p-4">
         <div className="grid grid-cols-7 gap-1 mb-2">
           {weekDays.map(d => (
-            <div key={d} className="text-center text-xs font-medium text-aura-sand/70 py-2">
+            <div key={d} className="text-center text-xs font-medium text-aura-sand py-2">
               {d}
             </div>
           ))}
@@ -113,7 +113,7 @@ const CalendarView: React.FC = () => {
                     : 'bg-aura-bark/50 border-transparent'
                 }`}
               >
-                <div className={`text-xs font-medium ${isCurrentMonth ? 'text-aura-cream' : 'text-aura-sand/40'}`}>
+                <div className={`text-xs font-medium ${isCurrentMonth ? 'text-aura-cream' : 'text-aura-sand'}`}>
                   {format(d, 'd')}
                 </div>
                 <div className="mt-1 space-y-1">
@@ -127,7 +127,7 @@ const CalendarView: React.FC = () => {
                     </div>
                   ))}
                   {dayClasses.length > 2 && (
-                    <div className="text-[10px] text-aura-sand/70 pl-1">+{dayClasses.length - 2} more</div>
+                    <div className="text-[10px] text-aura-sand pl-1">+{dayClasses.length - 2} more</div>
                   )}
                 </div>
               </div>

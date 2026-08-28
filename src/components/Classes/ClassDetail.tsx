@@ -258,28 +258,28 @@ const ClassDetail: React.FC = () => {
 
           <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-aura-bark rounded-lg p-4 border border-aura-umber">
-              <p className="text-xs text-aura-sand/70 uppercase tracking-wider">Date</p>
+              <p className="text-xs text-aura-sand uppercase tracking-wider">Date</p>
               <p className="text-aura-cream font-medium">{format(new Date(cls.date), 'MMM dd, yyyy')}</p>
             </div>
             <div className="bg-aura-bark rounded-lg p-4 border border-aura-umber">
-              <p className="text-xs text-aura-sand/70 uppercase tracking-wider">Time</p>
+              <p className="text-xs text-aura-sand uppercase tracking-wider">Time</p>
               <p className="text-aura-cream font-medium">{cls.time}</p>
             </div>
             <div className="bg-aura-bark rounded-lg p-4 border border-aura-umber">
-              <p className="text-xs text-aura-sand/70 uppercase tracking-wider">Duration</p>
+              <p className="text-xs text-aura-sand uppercase tracking-wider">Duration</p>
               <p className="text-aura-cream font-medium">{cls.duration} min</p>
             </div>
             {(!cls.hideInstructor || !cls.hideSpots) && (
               <>
                 {!cls.hideInstructor && (
                   <div className="bg-aura-bark rounded-lg p-4 border border-aura-umber">
-                    <p className="text-xs text-aura-sand/70 uppercase tracking-wider">Instructor</p>
+                    <p className="text-xs text-aura-sand uppercase tracking-wider">Instructor</p>
                     <p className="text-aura-cream font-medium">{cls.instructor}</p>
                   </div>
                 )}
                 {!cls.hideSpots && (
                   <div className="bg-aura-bark rounded-lg p-4 border border-aura-umber">
-                    <p className="text-xs text-aura-sand/70 uppercase tracking-wider">Availability</p>
+                    <p className="text-xs text-aura-sand uppercase tracking-wider">Availability</p>
                     <p className="text-aura-cream font-medium">{cls.availableSpots} of {cls.capacity} spots</p>
                   </div>
                 )}
@@ -354,7 +354,7 @@ const ClassDetail: React.FC = () => {
         </div>
 
         {reviews.length === 0 ? (
-          <p className="text-aura-sand/70 text-sm">No reviews yet. Be the first to review after attending!</p>
+          <p className="text-aura-sand text-sm">No reviews yet. Be the first to review after attending!</p>
         ) : (
           <div className="space-y-4">
             {reviews.map((r: any) => (
@@ -364,7 +364,7 @@ const ClassDetail: React.FC = () => {
                   <span className="text-yellow-400 text-xs">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span>
                 </div>
                 {r.comment && <p className="text-aura-sand text-sm">{r.comment}</p>}
-                <p className="text-aura-sand/50 text-xs mt-1">{format(new Date(r.createdAt), 'MMM dd, yyyy')}</p>
+                <p className="text-aura-sand text-xs mt-1">{format(new Date(r.createdAt), 'MMM dd, yyyy')}</p>
               </div>
             ))}
           </div>

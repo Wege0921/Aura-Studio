@@ -310,22 +310,22 @@ const BookingManagement: React.FC = () => {
           <table className="min-w-full divide-y divide-aura-sand/10">
             <thead className="bg-aura-umber/30">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Class
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Schedule
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Booked
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -336,14 +336,14 @@ const BookingManagement: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-aura-cream">{booking.user?.name || 'Unknown'}</div>
-                      <div className="text-sm text-aura-sand/80">{booking.user?.email || ''}</div>
-                      <div className="text-xs text-aura-sand/70">{booking.user?.phone || ''}</div>
+                      <div className="text-sm text-aura-sand">{booking.user?.email || ''}</div>
+                      <div className="text-xs text-aura-sand">{booking.user?.phone || ''}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-aura-cream">{booking.class?.name || 'N/A'}</div>
-                      <div className="text-sm text-aura-sand/80">{booking.class?.instructor || ''}</div>
+                      <div className="text-sm text-aura-sand">{booking.class?.instructor || ''}</div>
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full mt-1 ${getClassTypeColor(booking.class?.classType || '')}`}>
                         {booking.class?.classType || ''}
                       </span>
@@ -353,15 +353,15 @@ const BookingManagement: React.FC = () => {
                     <div className="text-sm text-aura-cream">
                       {booking.class?.date ? format(new Date(booking.class.date), 'MMM dd, yyyy') : 'N/A'}
                     </div>
-                    <div className="text-sm text-aura-sand/80">{booking.class?.time || ''}</div>
-                    <div className="text-xs text-aura-sand/70">{booking.class?.duration ? `${booking.class.duration} min` : ''}</div>
+                    <div className="text-sm text-aura-sand">{booking.class?.time || ''}</div>
+                    <div className="text-xs text-aura-sand">{booking.class?.duration ? `${booking.class.duration} min` : ''}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(booking.status)}`}>
                       {booking.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-aura-sand/80">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-aura-sand">
                     {booking.createdAt ? format(new Date(booking.createdAt), 'MMM dd, yyyy') : ''}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -409,7 +409,7 @@ const BookingManagement: React.FC = () => {
 
         {bookings.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-aura-sand/80">No bookings found matching your criteria.</p>
+            <p className="text-aura-sand">No bookings found matching your criteria.</p>
           </div>
         )}
 

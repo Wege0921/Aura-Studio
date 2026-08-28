@@ -131,7 +131,7 @@ const ShopOrderManagement: React.FC = () => {
                     <span className={`text-xs px-2 py-0.5 rounded-full ${ORDER_STATUS_COLORS[order.status] || ''}`}>{ORDER_STATUS_LABELS[order.status] || order.status}</span>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${PAYMENT_STATUS_COLORS[order.paymentStatus] || ''}`}>Pay: {order.paymentStatus}</span>
                   </div>
-                  <p className="text-xs text-aura-sand/60">
+                  <p className="text-xs text-aura-sand">
                     {order.user?.name || 'Guest'} · {order.user?.email || '—'} · {new Date(order.createdAt).toLocaleDateString()}
                   </p>
                   <p className="text-xs text-aura-sand mt-1">
@@ -185,16 +185,16 @@ const ShopOrderManagement: React.FC = () => {
             {/* Customer info */}
             <div className="grid sm:grid-cols-2 gap-4 mb-4">
               <div className="bg-aura-bark rounded-lg p-3">
-                <p className="text-xs text-aura-sand/60 mb-1">Customer</p>
+                <p className="text-xs text-aura-sand mb-1">Customer</p>
                 <p className="text-sm text-aura-cream">{selectedOrder.user?.name || 'Guest'}</p>
                 <p className="text-xs text-aura-sand">{selectedOrder.user?.email}</p>
                 <p className="text-xs text-aura-sand">{selectedOrder.user?.phone}</p>
               </div>
               <div className="bg-aura-bark rounded-lg p-3">
-                <p className="text-xs text-aura-sand/60 mb-1">Shipping Address</p>
+                <p className="text-xs text-aura-sand mb-1">Shipping Address</p>
                 <p className="text-sm text-aura-cream">{selectedOrder.shippingAddress?.fullName}</p>
                 <p className="text-xs text-aura-sand">{selectedOrder.shippingAddress?.phone}</p>
-                <p className="text-xs text-aura-sand">{selectedOrder.shippingAddress?.address}, {selectedOrder.shippingAddress?.city}, {selectedOrder.shippingAddress?.region}</p>
+                <p className="text-xs text-aura-sand">{selectedOrder.shippingAddress?.address}</p>
               </div>
             </div>
 
@@ -207,7 +207,7 @@ const ShopOrderManagement: React.FC = () => {
                     {item.product?.images?.[0] && <img src={item.product.images[0].url} alt="" className="w-10 h-10 rounded object-cover" />}
                     <div>
                       <p className="text-aura-cream">{item.name} × {item.quantity}</p>
-                      {item.variantLabel && <p className="text-xs text-aura-sand/60">{item.variantLabel}</p>}
+                      {item.variantLabel && <p className="text-xs text-aura-sand">{item.variantLabel}</p>}
                     </div>
                   </div>
                   <span className="text-aura-cream">{formatETB(item.lineTotal)}</span>
@@ -291,7 +291,7 @@ const ShopOrderManagement: React.FC = () => {
                   {selectedOrder.statusHistory.map((h) => (
                     <div key={h.id} className="text-xs flex justify-between">
                       <span className="text-aura-cream">{ORDER_STATUS_LABELS[h.status] || h.status} {h.note && `— ${h.note}`}</span>
-                      <span className="text-aura-sand/60">{new Date(h.createdAt).toLocaleString()}</span>
+                      <span className="text-aura-sand">{new Date(h.createdAt).toLocaleString()}</span>
                     </div>
                   ))}
                 </div>

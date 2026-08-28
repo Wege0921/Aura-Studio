@@ -172,7 +172,7 @@ const ShopLanding: React.FC = () => {
       {/* Mobile: Search + Sort + Filter toggle (one line) */}
       <div className="flex items-center gap-2 md:hidden">
         <div className="relative flex-1 min-w-0">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-aura-sand/50" />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-aura-sand" />
           <input
             type="text"
             placeholder="Search products..."
@@ -275,7 +275,7 @@ const ShopLanding: React.FC = () => {
         <aside className="w-64 shrink-0 space-y-4">
           {/* Search */}
           <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-aura-sand/50" />
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-aura-sand" />
             <input
               type="text"
               placeholder="Search products..."

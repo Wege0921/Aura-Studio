@@ -221,7 +221,7 @@ const ShopProductManagement: React.FC = () => {
                 <div>
                   <label className="text-sm text-aura-sand mb-1 block">
                     Product Stock
-                    <span className="text-xs text-aura-sand/60 ml-1">(blank = unlimited / use variant stock)</span>
+                    <span className="text-xs text-aura-sand ml-1">(blank = unlimited / use variant stock)</span>
                   </label>
                   <input type="number" min="0" placeholder="blank = untracked" value={formData.stock} onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
                     className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
@@ -275,7 +275,7 @@ const ShopProductManagement: React.FC = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-aura-cream truncate">{product.name}</p>
-                  <p className="text-xs text-aura-sand/60">{product.category?.name} · {formatETB(price)} · Stock: {totalStock}</p>
+                  <p className="text-xs text-aura-sand">{product.category?.name} · {formatETB(price)} · Stock: {totalStock}</p>
                   <div className="flex gap-2 mt-1">
                     <span className={`text-xs px-2 py-0.5 rounded ${product.status === 'ACTIVE' ? 'bg-green-900/30 text-green-300' : 'bg-gray-700/50 text-gray-400'}`}>{product.status}</span>
                     {product.isFeatured && <span className="text-xs px-2 py-0.5 rounded bg-aura-clay/20 text-aura-cream">Featured</span>}
@@ -396,7 +396,7 @@ const VariantsModal: React.FC<{ product: Product; onClose: () => void }> = ({ pr
               <div key={v.id} className="flex items-center gap-2 bg-aura-bark rounded-lg p-3">
                 <div className="flex-1">
                   <p className="text-sm text-aura-cream">{[v.size, v.color, v.style].filter(Boolean).join(' / ') || 'Default'}</p>
-                  <p className="text-xs text-aura-sand/60">+{formatETB(v.priceDelta)} · SKU: {v.sku || '—'}</p>
+                  <p className="text-xs text-aura-sand">+{formatETB(v.priceDelta)} · SKU: {v.sku || '—'}</p>
                 </div>
                 <input
                   type="number"
@@ -538,7 +538,7 @@ const ImagesModal: React.FC<{ product: Product; onClose: () => void }> = ({ prod
             disabled={uploading}
             className="w-full text-sm text-aura-cream file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-aura-clay file:text-aura-ink file:font-medium file:cursor-pointer"
           />
-          {uploading && <p className="text-xs text-aura-sand/60 mt-2">Uploading...</p>}
+          {uploading && <p className="text-xs text-aura-sand mt-2">Uploading...</p>}
         </div>
       </div>
 

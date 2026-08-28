@@ -89,7 +89,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
                 key={s.id}
                 onClick={() => onTabChange(s.id)}
                 className={`
-                  w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium font-sans
+                  w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold font-sans
                   transition-colors duration-200 min-h-[44px]
                   ${isActive
                     ? 'bg-aura-sand/20 text-aura-ivory'
@@ -112,8 +112,8 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
               <button
                 onClick={() => toggleGroup(s.id)}
                 className={`
-                  w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium font-sans
-                  transition-colors duration-200 min-h-[44px]
+                  w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base font-bold font-sans
+                  transition-colors duration-200 min-h-[48px]
                   ${hasActiveChild
                     ? 'text-aura-ivory'
                     : 'text-aura-sand hover:bg-aura-umber/40 hover:text-aura-ivory'
@@ -139,7 +139,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
                         key={child.id}
                         onClick={() => onTabChange(child.id)}
                         className={`
-                          w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium font-sans
+                          w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-bold font-sans
                           transition-colors duration-200 min-h-[40px]
                           ${isActive
                             ? 'bg-aura-sand/20 text-aura-ivory'

@@ -241,25 +241,25 @@ const PaymentManagement: React.FC = () => {
           <table className="min-w-full divide-y divide-aura-sand/10">
             <thead className="bg-aura-umber/30">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Method
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Package
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -270,7 +270,7 @@ const PaymentManagement: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-aura-cream">{payment.user?.name || 'Unknown'}</div>
-                      <div className="text-sm text-aura-sand/80">{payment.user?.email || ''}</div>
+                      <div className="text-sm text-aura-sand">{payment.user?.email || ''}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -295,7 +295,7 @@ const PaymentManagement: React.FC = () => {
                     <div className="text-sm text-aura-cream">
                       {payment.createdAt ? format(new Date(payment.createdAt), 'MMM dd, yyyy') : ''}
                     </div>
-                    <div className="text-xs text-aura-sand/80">
+                    <div className="text-xs text-aura-sand">
                       {payment.createdAt ? format(new Date(payment.createdAt), 'HH:mm') : ''}
                     </div>
                   </td>
@@ -343,7 +343,7 @@ const PaymentManagement: React.FC = () => {
         
         {payments.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-aura-sand/80">No payments found</p>
+            <p className="text-aura-sand">No payments found</p>
           </div>
         )}
       </div>

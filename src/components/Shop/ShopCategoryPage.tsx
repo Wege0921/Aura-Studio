@@ -68,7 +68,7 @@ const ShopCategoryPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <div className="flex items-center gap-2 text-sm text-aura-sand/60 mb-2">
+        <div className="flex items-center gap-2 text-sm text-aura-sand mb-2">
           <button onClick={() => navigate('/shop')} className="hover:text-aura-clay">Shop</button>
           <span>/</span>
           <span className="text-aura-cream">{currentCategory?.name || 'All Products'}</span>
@@ -81,7 +81,7 @@ const ShopCategoryPage: React.FC = () => {
       {/* Search + Sort */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-aura-sand/50" />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-aura-sand" />
           <input
             type="text"
             placeholder="Search products..."

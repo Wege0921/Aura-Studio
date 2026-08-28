@@ -176,7 +176,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                 />
                 <div className="ml-3">
                   <span className="text-sm font-medium text-aura-cream">{method.label}</span>
-                  <p className="text-xs text-aura-sand/50">{method.description}</p>
+                  <p className="text-xs text-aura-sand">{method.description}</p>
                 </div>
               </label>
             ))}
@@ -193,7 +193,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
               <p><strong>Account Number:</strong> {bankDetails.accountNumber}</p>
               <p><strong>Branch:</strong> {bankDetails.branch}</p>
             </div>
-            <p className="text-xs text-aura-sand/70 mt-2">
+            <p className="text-xs text-aura-sand mt-2">
               Please upload your transfer receipt after making the payment.
             </p>
           </div>
@@ -206,7 +206,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             <div className="space-y-1 text-sm">
               <p><strong>Telebirr:</strong> +251 900 410 603</p>
             </div>
-            <p className="text-xs text-aura-sand/70 mt-2">
+            <p className="text-xs text-aura-sand mt-2">
               Please upload your transaction receipt after making the payment.
             </p>
           </div>
@@ -247,15 +247,15 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <p className="text-sm text-green-600">{formData.receipt.name}</p>
-                    <p className="text-xs text-aura-sand/50">Click to change file</p>
+                    <p className="text-xs text-aura-sand">Click to change file</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <svg className="mx-auto h-12 w-12 text-aura-sand/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="mx-auto h-12 w-12 text-aura-sand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
-                    <p className="text-sm text-aura-sand/70">Click to upload receipt</p>
-                    <p className="text-xs text-aura-sand/50">JPEG, PNG, GIF, or PDF (max 5MB)</p>
+                    <p className="text-sm text-aura-sand">Click to upload receipt</p>
+                    <p className="text-xs text-aura-sand">JPEG, PNG, GIF, or PDF (max 5MB)</p>
                   </div>
                 )}
               </label>

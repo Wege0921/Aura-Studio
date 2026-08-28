@@ -114,7 +114,7 @@ const PaymentUploadModal: React.FC<PaymentUploadModalProps> = ({
             <h3 className="text-lg font-medium text-aura-cream">Upload Payment Receipt</h3>
             <button
               onClick={onClose}
-              className="text-aura-sand/40 hover:text-aura-sand/70"
+              className="text-aura-sand hover:text-aura-cream"
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -123,7 +123,7 @@ const PaymentUploadModal: React.FC<PaymentUploadModalProps> = ({
           </div>
           
           <div className="mb-6">
-            <p className="text-sm text-aura-sand/70 mb-4">Please upload your payment receipt for:</p>
+            <p className="text-sm text-aura-sand mb-4">Please upload your payment receipt for:</p>
             <div className="bg-purple-900/20 p-4 rounded-lg">
               <h4 className="font-semibold text-purple-200 mb-2">{classInfo.name}</h4>
               <div className="space-y-1 text-sm text-purple-300">
@@ -158,7 +158,7 @@ const PaymentUploadModal: React.FC<PaymentUploadModalProps> = ({
             {paymentMethod === 'BANK_TRANSFER' && (
               <div className="bg-aura-umber/30 border border-aura-umber rounded-md p-3">
                 <p className="text-xs font-medium text-aura-cream mb-1">Bank Transfer Details</p>
-                <div className="space-y-1 text-xs text-aura-sand/70">
+                <div className="space-y-1 text-xs text-aura-sand">
                   <p><strong>Account:</strong> {bankDetails.accountName}</p>
                   <p><strong>Bank:</strong> {bankDetails.bankName}</p>
                   <p><strong>Number:</strong> {bankDetails.accountNumber}</p>
@@ -186,15 +186,15 @@ const PaymentUploadModal: React.FC<PaymentUploadModalProps> = ({
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       <p className="text-sm text-green-400">{receiptFile.name}</p>
-                      <p className="text-xs text-aura-sand/50">Click to change file</p>
+                      <p className="text-xs text-aura-sand">Click to change file</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <svg className="mx-auto h-12 w-12 text-aura-sand/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="mx-auto h-12 w-12 text-aura-sand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                       </svg>
-                      <p className="text-sm text-aura-sand/70">Click to upload receipt</p>
-                      <p className="text-xs text-aura-sand/50">JPEG, PNG, GIF, or PDF (max 5MB)</p>
+                      <p className="text-sm text-aura-sand">Click to upload receipt</p>
+                      <p className="text-xs text-aura-sand">JPEG, PNG, GIF, or PDF (max 5MB)</p>
                     </div>
                   )}
                 </label>

@@ -30,7 +30,7 @@ const CartPage: React.FC = () => {
         <h1 className="text-2xl font-serif text-aura-ivory">Shopping Cart ({totalItems})</h1>
         <button
           onClick={clearCart}
-          className="text-sm text-aura-sand/60 hover:text-red-400"
+          className="text-sm text-aura-sand hover:text-red-400"
         >
           Clear cart
         </button>

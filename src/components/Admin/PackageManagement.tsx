@@ -312,7 +312,7 @@ const PackageManagement: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-aura-cream">Package Management</h1>
-          <p className="text-aura-sand/70">Create and manage membership packages</p>
+          <p className="text-aura-sand">Create and manage membership packages</p>
         </div>
         <button
           onClick={() => setShowForm(true)}
@@ -452,25 +452,25 @@ const PackageManagement: React.FC = () => {
           <table className="min-w-full divide-y divide-aura-sand/10">
             <thead className="bg-aura-umber/30">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Package Details
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Class Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Sessions
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Validity
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Usage
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -481,7 +481,7 @@ const PackageManagement: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-aura-cream">{pkg.name}</div>
-                      <div className="text-sm text-aura-sand/80">{pkg.description || `ETB ${pkg.price}`}</div>
+                      <div className="text-sm text-aura-sand">{pkg.description || `ETB ${pkg.price}`}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -548,7 +548,7 @@ const PackageManagement: React.FC = () => {
         
         {packages.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-aura-sand/80">No packages found. Create your first package!</p>
+            <p className="text-aura-sand">No packages found. Create your first package!</p>
           </div>
         )}
 

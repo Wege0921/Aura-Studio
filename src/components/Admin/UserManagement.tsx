@@ -278,7 +278,7 @@ const UserManagement: React.FC = () => {
 
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-aura-cream">Users</h2>
-        <span className="text-sm text-aura-sand/80">
+        <span className="text-sm text-aura-sand">
           Showing {users.length} users
         </span>
       </div>
@@ -340,19 +340,19 @@ const UserManagement: React.FC = () => {
           <table className="min-w-full divide-y divide-aura-sand/10">
             <thead className="bg-aura-umber/30">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Role
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Activity
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Joined
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -363,7 +363,7 @@ const UserManagement: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-aura-cream">{user.name}</div>
-                      <div className="text-sm text-aura-sand/80">{user.email}</div>
+                      <div className="text-sm text-aura-sand">{user.email}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -375,10 +375,10 @@ const UserManagement: React.FC = () => {
                     <div className="text-sm text-aura-cream">
                       {user._count?.bookings ?? 0} bookings
                     </div>
-                    <div className="text-sm text-aura-sand/80">
+                    <div className="text-sm text-aura-sand">
                       {user._count?.payments ?? 0} payments
                     </div>
-                    <div className="text-xs text-aura-sand/70">
+                    <div className="text-xs text-aura-sand">
                       {user._count?.userPackages ?? 0} packages
                     </div>
                   </td>
@@ -433,7 +433,7 @@ const UserManagement: React.FC = () => {
 
         {users.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-aura-sand/80">No users found matching your criteria.</p>
+            <p className="text-aura-sand">No users found matching your criteria.</p>
           </div>
         )}
 

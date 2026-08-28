@@ -137,7 +137,7 @@ const Login: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-aura-sand/50 hover:text-aura-sand"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-aura-sand hover:text-aura-cream"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}

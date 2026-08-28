@@ -128,7 +128,7 @@ const NotificationSettings: React.FC = () => {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-lg font-semibold text-aura-cream">Push Notifications</h3>
-            <p className="text-sm text-aura-sand/70">Receive notifications even when the app is closed</p>
+            <p className="text-sm text-aura-sand">Receive notifications even when the app is closed</p>
           </div>
           <button
             onClick={handleTogglePush}
@@ -156,7 +156,7 @@ const NotificationSettings: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <label className="text-sm font-medium text-aura-cream">Booking Reminders</label>
-              <p className="text-xs text-aura-sand/50">Get reminded about upcoming classes</p>
+              <p className="text-xs text-aura-sand">Get reminded about upcoming classes</p>
             </div>
             <button
               onClick={() => handlePreferenceChange('bookingReminders')}
@@ -175,7 +175,7 @@ const NotificationSettings: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <label className="text-sm font-medium text-aura-cream">Class Reminders</label>
-              <p className="text-xs text-aura-sand/50">Notifications 1 hour before class starts</p>
+              <p className="text-xs text-aura-sand">Notifications 1 hour before class starts</p>
             </div>
             <button
               onClick={() => handlePreferenceChange('classReminders')}
@@ -194,7 +194,7 @@ const NotificationSettings: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <label className="text-sm font-medium text-aura-cream">Payment Confirmations</label>
-              <p className="text-xs text-aura-sand/50">Confirmations when payments are processed</p>
+              <p className="text-xs text-aura-sand">Confirmations when payments are processed</p>
             </div>
             <button
               onClick={() => handlePreferenceChange('paymentConfirmations')}
@@ -213,7 +213,7 @@ const NotificationSettings: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <label className="text-sm font-medium text-aura-cream">Promotional Offers</label>
-              <p className="text-xs text-aura-sand/50">Special deals and package discounts</p>
+              <p className="text-xs text-aura-sand">Special deals and package discounts</p>
             </div>
             <button
               onClick={() => handlePreferenceChange('promotionalOffers')}
@@ -232,7 +232,7 @@ const NotificationSettings: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <label className="text-sm font-medium text-aura-cream">Newsletter</label>
-              <p className="text-xs text-aura-sand/50">Weekly wellness tips and studio updates</p>
+              <p className="text-xs text-aura-sand">Weekly wellness tips and studio updates</p>
             </div>
             <button
               onClick={() => handlePreferenceChange('newsletter')}

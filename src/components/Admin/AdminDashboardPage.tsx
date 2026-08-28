@@ -198,7 +198,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
         <h2 className="text-xl font-semibold text-aura-cream mb-4">Quick Actions</h2>
 
         {/* Academy */}
-        <p className="text-[10px] font-semibold tracking-[0.18em] uppercase text-aura-sand/50 mb-3">Academy</p>
+        <p className="text-[10px] font-semibold tracking-[0.18em] uppercase text-aura-sand mb-3">Academy</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <button onClick={() => onTabChange && onTabChange('admin-classes')} className="block w-full text-left px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
             <div className="flex items-center">
@@ -228,7 +228,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
 
         {/* Users */}
         <div className="border-t border-aura-umber/40 pt-5 mb-6">
-          <p className="text-[10px] font-semibold tracking-[0.18em] uppercase text-aura-sand/50 mb-3">Users</p>
+          <p className="text-[10px] font-semibold tracking-[0.18em] uppercase text-aura-sand mb-3">Users</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <button onClick={() => onTabChange && onTabChange('admin-users')} className="block w-full text-left px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
               <div className="flex items-center">
@@ -243,7 +243,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
 
         {/* Commerce */}
         <div className="border-t border-aura-umber/40 pt-5">
-          <p className="text-[10px] font-semibold tracking-[0.18em] uppercase text-aura-sand/50 mb-3">Commerce</p>
+          <p className="text-[10px] font-semibold tracking-[0.18em] uppercase text-aura-sand mb-3">Commerce</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <button onClick={() => onTabChange && onTabChange('admin-shop-products')} className="block w-full text-left px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
               <div className="flex items-center">
@@ -290,15 +290,15 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
           </div>
           <div className="p-6">
             {recentBookings.length === 0 ? (
-              <p className="text-aura-sand/70 text-center py-4">No recent bookings</p>
+              <p className="text-aura-sand text-center py-4">No recent bookings</p>
             ) : (
               <div className="space-y-4">
                 {recentBookings.map((booking) => (
                   <div key={booking.id} className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-aura-cream">{booking.user?.name || 'Unknown'}</p>
-                      <p className="text-sm text-aura-sand/70">{booking.class?.name || ''}</p>
-                      <p className="text-xs text-aura-sand/80">
+                      <p className="text-sm text-aura-sand">{booking.class?.name || ''}</p>
+                      <p className="text-xs text-aura-sand">
                         {booking.class?.date ? format(new Date(booking.class.date), 'MMM dd') : ''} at {booking.class?.time || ''}
                       </p>
                     </div>
@@ -319,15 +319,15 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = React.memo(({ onTa
           </div>
           <div className="p-6">
             {recentPayments.length === 0 ? (
-              <p className="text-aura-sand/70 text-center py-4">No recent payments</p>
+              <p className="text-aura-sand text-center py-4">No recent payments</p>
             ) : (
               <div className="space-y-4">
                 {recentPayments.map((payment) => (
                   <div key={payment.id} className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-aura-cream">{payment.user?.name || 'Unknown'}</p>
-                      <p className="text-sm text-aura-sand/70">ETB {(payment.amount ?? 0).toLocaleString()}</p>
-                      <p className="text-xs text-aura-sand/80">
+                      <p className="text-sm text-aura-sand">ETB {(payment.amount ?? 0).toLocaleString()}</p>
+                      <p className="text-xs text-aura-sand">
                         {payment.createdAt ? format(new Date(payment.createdAt), 'MMM dd, yyyy') : ''}
                       </p>
                     </div>

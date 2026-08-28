@@ -295,19 +295,19 @@ const InstructorManagement: React.FC = () => {
           <table className="min-w-full divide-y divide-aura-sand/10">
             <thead className="bg-aura-umber/30">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Instructor
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Contact
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Activity
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Joined
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand/80 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-aura-sand uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -318,7 +318,7 @@ const InstructorManagement: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-aura-cream">{instructor.name}</div>
-                      <div className="text-sm text-aura-sand/80">{instructor.email}</div>
+                      <div className="text-sm text-aura-sand">{instructor.email}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -328,7 +328,7 @@ const InstructorManagement: React.FC = () => {
                     <div className="text-sm text-aura-cream">
                       {instructor._count?.classes || 0} classes
                     </div>
-                    <div className="text-xs text-aura-sand/70">
+                    <div className="text-xs text-aura-sand">
                       {instructor._count?.bookings || 0} bookings
                     </div>
                   </td>
@@ -365,7 +365,7 @@ const InstructorManagement: React.FC = () => {
 
         {instructors.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-aura-sand/80">No instructors found. Add your first instructor!</p>
+            <p className="text-aura-sand">No instructors found. Add your first instructor!</p>
           </div>
         )}
 
