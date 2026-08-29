@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import { prisma } from '../lib/prisma';
 import { authenticateToken, requireAdmin } from '../middleware/auth';
 import { uploadToSupabase, deleteFromSupabase, detectMimetype } from '../lib/upload';
+import { getFrontendUrl } from '../lib/frontendUrl';
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -31,7 +32,7 @@ const adminShopLimiter = rateLimit({
 // Apply the admin rate limiter to all routes on this router.
 router.use(adminShopLimiter);
 
-// Multer for product image uploads (memory → Supabase 'products' bucket)
+// Multer for product image uploads (memory â†’ Supabase 'products' bucket)
 const imageUpload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 },
@@ -66,7 +67,7 @@ async function ensureUniqueSlug(baseSlug: string, excludeId?: string): Promise<s
 
 // Allowed forward transitions. CANCELLED is additionally allowed from any
 // non-terminal state (handled in isValidStatusTransition). REFUNDED and
-// CANCELLED are terminal — no transitions out.
+// CANCELLED are terminal â€” no transitions out.
 const VALID_STATUS_TRANSITIONS: Record<string, string[]> = {
   PENDING: ['CONFIRMED', 'CANCELLED'],
   CONFIRMED: ['PROCESSING', 'CANCELLED'],
@@ -150,7 +151,7 @@ router.put('/categories/:id', authenticateToken, requireAdmin, [
     const { name, description, imageUrl, sortOrder, isActive, slug } = req.body;
     const updateData: any = {};
     if (name !== undefined) updateData.name = name;
-    // Slug is NOT auto-regenerated from name on update — that would break
+    // Slug is NOT auto-regenerated from name on update â€” that would break
     // existing /shop/:categorySlug URLs and inbound links. Slug is only
     // changed when explicitly provided by the admin.
     if (slug !== undefined && slug) {
@@ -523,7 +524,7 @@ router.delete('/variants/:variantId', authenticateToken, requireAdmin, async (re
 
     const inOrders = await prisma.shopOrderItem.count({ where: { variantId } });
     if (inOrders > 0) {
-      // Don't delete — just deactivate
+      // Don't delete â€” just deactivate
       await prisma.productVariant.update({ where: { id: variantId }, data: { isActive: false } });
       return res.json({ message: 'Variant deactivated (has order history)' });
     }
@@ -769,7 +770,7 @@ router.patch('/orders/:id/status', authenticateToken, requireAdmin, [
           });
           if (!fullOrder || !fullOrder.user?.email) return;
 
-          const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',')[0].trim().replace(/\/$/, '');
+const frontendUrl = getFrontendUrl();
           const orderUrl = `${frontendUrl}/shop/orders/${fullOrder.id}`;
           const { sendShopOrderShipped, sendShopOrderDelivered } = await import('../services/emailService');
 
@@ -852,7 +853,7 @@ router.patch('/orders/:id/payment', authenticateToken, requireAdmin, [
           });
           if (!fullOrder || !fullOrder.user?.email) return;
 
-          const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',')[0].trim().replace(/\/$/, '');
+const frontendUrl = getFrontendUrl();
           const orderUrl = `${frontendUrl}/shop/orders/${fullOrder.id}`;
 
           const { sendShopPaymentVerified } = await import('../services/emailService');
@@ -1191,3 +1192,4 @@ router.get('/analytics/summary', authenticateToken, requireAdmin, async (req, re
 });
 
 export default router;
+

@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import { prisma } from '../lib/prisma';
 import { authenticateToken, optionalAuth } from '../middleware/auth';
 import { uploadToSupabase, detectMimetype } from '../lib/upload';
+import { getFrontendUrl } from '../lib/frontendUrl';
 import crypto from 'crypto';
 
 interface AuthenticatedRequest extends Request {
@@ -796,7 +797,7 @@ router.post('/orders', orderCreationLimiter, optionalAuth, receiptUpload.single(
     // Send confirmation emails (fire-and-forget — don't block the response)
     setImmediate(async () => {
       try {
-        const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',')[0].trim().replace(/\/$/, '');
+        const frontendUrl = getFrontendUrl();
         const orderUrl = `${frontendUrl}/shop/orders/${order.id}${guestToken ? `?guestToken=${guestToken}` : ''}`;
         const adminUrl = `${frontendUrl}/admin/shop/orders/${order.id}`;
 

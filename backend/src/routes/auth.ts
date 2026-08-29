@@ -5,6 +5,7 @@ import { prisma } from '../lib/prisma';
 import { supabase, supabaseAuth } from '../lib/supabase';
 import { authenticateToken } from '../middleware/auth';
 import { ensureUserProfile } from '../lib/userProfile';
+import { getFrontendUrl } from '../lib/frontendUrl';
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -235,9 +236,7 @@ router.post('/forgot-password', authLimiter, [
     const { email } = req.body;
 
     // In a real app, set the redirect URL to your frontend reset-password page
-    const redirectUrl = process.env.FRONTEND_URL
-      ? `${process.env.FRONTEND_URL}/reset-password`
-      : 'http://localhost:3000/reset-password';
+    const redirectUrl = `${getFrontendUrl()}/reset-password`;
 
     const { error } = await supabaseAuth.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,

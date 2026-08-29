@@ -23,7 +23,16 @@ import sitemapRoutes from './routes/sitemap';
 import shopRoutes from './routes/shop';
 import adminShopRoutes from './routes/adminShop';
 
-dotenv.config();
+if (process.env.NODE_ENV === 'production') {
+  const prodEnvPath = path.join(__dirname, '..', '.env.production');
+  if (fs.existsSync(prodEnvPath)) {
+    dotenv.config({ path: prodEnvPath });
+  } else {
+    dotenv.config();
+  }
+} else {
+  dotenv.config();
+}
 
 const app = express();
 

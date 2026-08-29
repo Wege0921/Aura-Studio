@@ -1,9 +1,10 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
+import { getFrontendUrl } from '../lib/frontendUrl';
 
 const router = express.Router();
 
-const BASE_URL = process.env.FRONTEND_URL?.split(',')[0]?.trim()?.replace(/\/$/, '') || 'https://aurastudio.et';
+const BASE_URL = getFrontendUrl();
 
 router.get('/sitemap.xml', async (_req: Request, res: Response) => {
   try {
