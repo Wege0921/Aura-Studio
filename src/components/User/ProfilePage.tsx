@@ -64,69 +64,69 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-umber p-6">
-        <h1 className="text-2xl font-bold text-aura-cream mb-2">Your Profile</h1>
-        <p className="text-aura-sand mb-6">Update your personal information</p>
+      <div className="bg-surface rounded-xl shadow-elev-1 border border-edge p-6">
+        <h1 className="text-2xl font-bold text-content mb-2">Your Profile</h1>
+        <p className="text-content-secondary mb-6">Update your personal information</p>
 
         {message && (
-          <div className="bg-green-900/40 border border-green-600/30 text-green-200 px-4 py-3 rounded mb-4">
+          <div className="bg-success-bg border border-success-border text-success px-4 py-3 rounded mb-4">
             {message}
           </div>
         )}
         {error && (
-          <div className="bg-red-900/40 border border-red-600/30 text-red-200 px-4 py-3 rounded mb-4">
+          <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded mb-4">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-aura-cream mb-1">Name</label>
+            <label className="block text-sm font-medium text-content mb-1">Name</label>
             <input
               type="text"
               name="name"
               value={form.name}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:ring-2 focus:ring-aura-sand"
+              className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:ring-2 focus:ring-content-secondary"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-aura-cream mb-1">Email</label>
+            <label className="block text-sm font-medium text-content mb-1">Email</label>
             <input
               type="email"
               name="email"
               value={form.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:ring-2 focus:ring-aura-sand"
+              className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:ring-2 focus:ring-content-secondary"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-aura-cream mb-1">Phone</label>
+            <label className="block text-sm font-medium text-content mb-1">Phone</label>
             <input
               type="tel"
               name="phone"
               value={form.phone}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:ring-2 focus:ring-aura-sand"
+              className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:ring-2 focus:ring-content-secondary"
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+            className="bg-accent-600 text-content-on-accent px-6 py-2 rounded-lg hover:bg-accent-700 transition-colors disabled:opacity-50"
           >
             {loading ? 'Saving...' : 'Save Changes'}
           </button>
         </form>
       </div>
 
-      <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-umber p-6">
-        <h2 className="text-lg font-semibold text-aura-cream mb-2">Account Info</h2>
-        <div className="text-sm text-aura-sand space-y-1">
-          <p><span className="text-aura-sand">Role:</span> {user?.role}</p>
-          <p><span className="text-aura-sand">Member since:</span> {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
+      <div className="bg-surface rounded-xl shadow-elev-1 border border-edge p-6">
+        <h2 className="text-lg font-semibold text-content mb-2">Account Info</h2>
+        <div className="text-sm text-content-secondary space-y-1">
+          <p><span className="text-content-secondary">Role:</span> {user?.role}</p>
+          <p><span className="text-content-secondary">Member since:</span> {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
         </div>
       </div>
     </div>

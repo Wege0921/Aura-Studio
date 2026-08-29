@@ -116,11 +116,11 @@ const PaymentManagement: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'VERIFIED':
-        return 'bg-green-900/40 text-green-200';
+        return 'bg-success-bg text-success border border-success-border';
       case 'REJECTED':
-        return 'bg-red-900/40 text-red-200';
+        return 'bg-danger-bg text-danger border border-danger-border';
       case 'PENDING':
-        return 'bg-amber-900/40 text-amber-200';
+        return 'bg-warning-bg text-warning border border-warning-border';
       default:
         return 'bg-aura-umber/40 text-aura-sand';
     }
@@ -129,11 +129,11 @@ const PaymentManagement: React.FC = () => {
   const getPaymentMethodColor = (method: string) => {
     switch (method) {
       case 'BANK_TRANSFER':
-        return 'bg-blue-900/40 text-blue-200';
+        return 'bg-info-bg text-info border border-info-border';
       case 'MOBILE_MONEY':
-        return 'bg-purple-900/40 text-purple-200';
+        return 'bg-accent-100 text-accent-900 border border-accent-400';
       case 'CASH':
-        return 'bg-green-900/40 text-green-200';
+        return 'bg-success-bg text-success border border-success-border';
       default:
         return 'bg-aura-umber/40 text-aura-sand';
     }
@@ -152,7 +152,7 @@ const PaymentManagement: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600"></div>
       </div>
     );
   }
@@ -167,15 +167,15 @@ const PaymentManagement: React.FC = () => {
 
       {/* Messages */}
       {successMessage && (
-        <div className="bg-green-900/60 border border-green-600/40 text-green-200 px-4 py-3 rounded">
+        <div className="bg-success-bg border border-success-border text-success px-4 py-3 rounded">
           {successMessage}
         </div>
       )}
 
       {error && (
-        <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
+        <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded">
           {error}
-          <button onClick={() => setError('')} className="ml-4 text-green-300 hover:text-green-200">×</button>
+          <button onClick={() => setError('')} className="ml-4 text-success hover:text-success">×</button>
         </div>
       )}
 
@@ -188,7 +188,7 @@ const PaymentManagement: React.FC = () => {
               name="status"
               value={filter.status}
               onChange={handleFilterChange}
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
             >
               <option value="">All</option>
               <option value="PENDING">Pending</option>
@@ -203,7 +203,7 @@ const PaymentManagement: React.FC = () => {
               name="paymentMethod"
               value={filter.paymentMethod}
               onChange={handleFilterChange}
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
             >
               <option value="">All</option>
               <option value="BANK_TRANSFER">Bank</option>
@@ -220,7 +220,7 @@ const PaymentManagement: React.FC = () => {
               value={filter.search}
               onChange={handleFilterChange}
               placeholder="Name or email"
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
             />
           </div>
 
@@ -313,7 +313,7 @@ const PaymentManagement: React.FC = () => {
                             onClick={() => { viewPaymentDetails(payment); setOpenDropdown(null); }}
                             className="flex items-center w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30"
                           >
-                            <EyeIcon className="w-4 h-4 mr-2 text-indigo-400" /> View
+                            <EyeIcon className="w-4 h-4 mr-2 text-accent-400" /> View
                           </button>
                           {payment.status === 'PENDING' && (
                             <>
@@ -321,11 +321,11 @@ const PaymentManagement: React.FC = () => {
                                 onClick={() => { handleVerifyPayment(payment.id, 'VERIFIED'); setOpenDropdown(null); }}
                                 className="flex items-center w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30"
                               >
-                                <CheckCircleIcon className="w-4 h-4 mr-2 text-green-400" /> Verify
+                                <CheckCircleIcon className="w-4 h-4 mr-2 text-success" /> Verify
                               </button>
                               <button
                                 onClick={() => { handleVerifyPayment(payment.id, 'REJECTED'); setOpenDropdown(null); }}
-                                className="flex items-center w-full px-4 py-2 text-sm text-red-400 hover:bg-aura-umber/30"
+                                className="flex items-center w-full px-4 py-2 text-sm text-danger hover:bg-[var(--state-hover)]"
                               >
                                 <XCircleIcon className="w-4 h-4 mr-2" /> Reject
                               </button>
@@ -373,7 +373,7 @@ const PaymentManagement: React.FC = () => {
 
       {/* Payment Details Modal */}
       {showDetails && selectedPayment && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">Payment Details</h2>
             
@@ -415,7 +415,7 @@ const PaymentManagement: React.FC = () => {
                     href={selectedPayment.receiptUrl} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-blue-400 hover:text-blue-300 text-sm"
+                    className="text-accent-400 hover:text-accent-700 text-sm"
                   >
                     View Receipt
                   </a>
@@ -431,7 +431,7 @@ const PaymentManagement: React.FC = () => {
                       handleVerifyPayment(selectedPayment.id, 'VERIFIED');
                       closeModal();
                     }}
-                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                    className="px-4 py-2 bg-success text-content-on-accent rounded-md hover:opacity-90"
                   >
                     Verify
                   </button>
@@ -440,7 +440,7 @@ const PaymentManagement: React.FC = () => {
                       handleVerifyPayment(selectedPayment.id, 'REJECTED');
                       closeModal();
                     }}
-                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                    className="px-4 py-2 bg-danger text-content-on-accent rounded-md hover:opacity-90"
                   >
                     Reject
                   </button>

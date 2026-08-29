@@ -86,49 +86,49 @@ const ShopCategoryManagement: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-serif text-aura-ivory">Shop Categories</h1>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700">
+        <h1 className="text-2xl font-serif text-content-emphasis">Shop Categories</h1>
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-600 text-content-on-accent text-sm font-medium hover:bg-accent-700">
           <PlusIcon className="w-4 h-4" /> Add Category
         </button>
       </div>
 
-      {error && <div className="bg-red-900/20 text-red-300 rounded-lg p-3 text-sm">{error}</div>}
-      {successMsg && <div className="bg-green-900/20 text-green-300 rounded-lg p-3 text-sm">{successMsg}</div>}
+      {error && <div className="bg-danger-bg text-danger rounded-lg p-3 text-sm">{error}</div>}
+      {successMsg && <div className="bg-success-bg text-success rounded-lg p-3 text-sm">{successMsg}</div>}
 
       {showForm && (
-        <div className="fixed inset-0 bg-black/60 z-[70] flex items-center justify-center p-4" onClick={resetForm}>
-          <div className="bg-aura-ink border border-aura-umber rounded-xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:pb-6" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-serif text-aura-ivory mb-4">{editing ? 'Edit Category' : 'Add Category'}</h2>
+        <div className="fixed inset-0 bg-overlay z-[70] flex items-center justify-center p-4" onClick={resetForm}>
+          <div className="bg-surface border border-edge rounded-xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:pb-6" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-serif text-content-emphasis mb-4">{editing ? 'Edit Category' : 'Add Category'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="text-sm text-aura-sand mb-1 block">Name *</label>
-                <input required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
+                <label className="text-sm text-content-secondary mb-1 block">Name *</label>
+                <input required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus" />
               </div>
               <div>
-                <label className="text-sm text-aura-sand mb-1 block">Slug (URL)</label>
-                <input value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} placeholder="auto-generated from name" className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
+                <label className="text-sm text-content-secondary mb-1 block">Slug (URL)</label>
+                <input value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} placeholder="auto-generated from name" className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus" />
               </div>
               <div>
-                <label className="text-sm text-aura-sand mb-1 block">Description</label>
-                <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={2} className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
+                <label className="text-sm text-content-secondary mb-1 block">Description</label>
+                <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={2} className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus" />
               </div>
               <div>
-                <label className="text-sm text-aura-sand mb-1 block">Category Image</label>
+                <label className="text-sm text-content-secondary mb-1 block">Category Image</label>
                 {formData.imageUrl ? (
                   <div className="relative mb-2">
-                    <img src={formData.imageUrl} alt="Category" className="w-full h-32 object-cover rounded-lg border border-aura-umber" />
+                    <img src={formData.imageUrl} alt="Category" className="w-full h-32 object-cover rounded-lg border border-edge" />
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, imageUrl: '' })}
                       style={{ position: 'absolute', top: '4px', right: '4px' }}
-                      className="icon-btn text-red-400 hover:text-red-300 transition-colors z-10"
+                      className="icon-btn text-danger hover:opacity-80 transition-colors z-10"
                     >
                       <TrashIcon className="w-4 h-4" />
                     </button>
                   </div>
                 ) : (
-                  <div className="w-full h-32 bg-aura-bark border border-aura-umber rounded-lg flex items-center justify-center mb-2">
-                    <PhotoIcon className="w-8 h-8 text-aura-umber" />
+                  <div className="w-full h-32 bg-canvas border border-edge rounded-lg flex items-center justify-center mb-2">
+                    <PhotoIcon className="w-8 h-8 text-content-secondary" />
                   </div>
                 )}
                 {editing ? (
@@ -139,32 +139,32 @@ const ShopCategoryManagement: React.FC = () => {
                       accept="image/jpeg,image/png,image/webp,image/gif"
                       onChange={handleImageUpload}
                       disabled={imageUploading}
-                      className="w-full text-sm text-aura-cream file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-aura-clay file:text-aura-ink file:font-medium file:cursor-pointer"
+                      className="w-full text-sm text-content file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-accent-600 file:text-content-on-accent file:font-medium file:cursor-pointer"
                     />
-                    {imageUploading && <p className="text-xs text-aura-sand mt-1">Uploading...</p>}
-                    <p className="text-xs text-aura-sand mt-1">Save the category first, then upload an image.</p>
+                    {imageUploading && <p className="text-xs text-content-secondary mt-1">Uploading...</p>}
+                    <p className="text-xs text-content-secondary mt-1">Save the category first, then upload an image.</p>
                   </>
                 ) : (
                   <input
                     value={formData.imageUrl}
                     onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
                     placeholder="Image URL (or upload after creating)"
-                    className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay text-sm"
+                    className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus text-sm"
                   />
                 )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-aura-sand mb-1 block">Sort Order</label>
-                  <input type="number" value={formData.sortOrder} onChange={(e) => setFormData({ ...formData, sortOrder: Number(e.target.value) })} className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
+                  <label className="text-sm text-content-secondary mb-1 block">Sort Order</label>
+                  <input type="number" value={formData.sortOrder} onChange={(e) => setFormData({ ...formData, sortOrder: Number(e.target.value) })} className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus" />
                 </div>
-                <label className="flex items-center gap-2 text-sm text-aura-cream pt-6">
+                <label className="flex items-center gap-2 text-sm text-content pt-6">
                   <input type="checkbox" checked={formData.isActive} onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })} /> Active
                 </label>
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="submit" className="flex-1 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700">{editing ? 'Update' : 'Create'}</button>
-                <button type="button" onClick={resetForm} className="px-4 py-2 rounded-lg border border-aura-umber text-aura-cream text-sm">Cancel</button>
+                <button type="submit" className="flex-1 px-4 py-2 rounded-lg bg-accent-600 text-content-on-accent text-sm font-medium hover:bg-accent-700">{editing ? 'Update' : 'Create'}</button>
+                <button type="button" onClick={resetForm} className="px-4 py-2 rounded-lg border border-edge text-content text-sm">Cancel</button>
               </div>
             </form>
           </div>
@@ -172,30 +172,30 @@ const ShopCategoryManagement: React.FC = () => {
       )}
 
       {loading ? (
-        <div className="flex justify-center py-10"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-aura-umber"></div></div>
+        <div className="flex justify-center py-10"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-edge"></div></div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((cat) => (
-            <div key={cat.id} className="bg-aura-ink rounded-xl border border-aura-umber p-4">
+            <div key={cat.id} className="bg-surface rounded-xl border border-edge p-4">
               {cat.imageUrl && (
-                <div className="w-full h-24 rounded-lg overflow-hidden mb-3 bg-aura-bark">
+                <div className="w-full h-24 rounded-lg overflow-hidden mb-3 bg-canvas">
                   <img src={cat.imageUrl} alt={cat.name} className="w-full h-full object-cover" />
                 </div>
               )}
               <div className="flex justify-between items-start mb-2">
                 <div>
-                  <h3 className="text-sm font-semibold text-aura-cream">{cat.name}</h3>
-                  <p className="text-xs text-aura-sand">/{cat.slug}</p>
+                  <h3 className="text-sm font-semibold text-content">{cat.name}</h3>
+                  <p className="text-xs text-content-secondary">/{cat.slug}</p>
                 </div>
                 <div className="flex gap-1">
-                  <button onClick={() => handleEdit(cat)} className="p-1 text-aura-sand hover:text-aura-cream"><PencilIcon className="w-4 h-4" /></button>
-                  <button onClick={() => setDeleteTarget(cat)} className="icon-btn p-1 text-red-400 hover:text-red-300"><TrashIcon className="w-4 h-4" /></button>
+                  <button onClick={() => handleEdit(cat)} className="p-1 text-content-secondary hover:text-content"><PencilIcon className="w-4 h-4" /></button>
+                  <button onClick={() => setDeleteTarget(cat)} className="icon-btn p-1 text-danger hover:opacity-80"><TrashIcon className="w-4 h-4" /></button>
                 </div>
               </div>
-              {cat.description && <p className="text-xs text-aura-sand mb-2">{cat.description}</p>}
+              {cat.description && <p className="text-xs text-content-secondary mb-2">{cat.description}</p>}
               <div className="flex gap-2">
-                <span className={`text-xs px-2 py-0.5 rounded ${cat.isActive ? 'bg-green-900/30 text-green-300' : 'bg-gray-700/50 text-gray-400'}`}>{cat.isActive ? 'Active' : 'Inactive'}</span>
-                <span className="text-xs px-2 py-0.5 rounded bg-aura-umber/30 text-aura-cream">{cat._count?.products || 0} products</span>
+                <span className={`text-xs px-2 py-0.5 rounded ${cat.isActive ? 'bg-success-bg text-success' : 'bg-surface-sunken text-content-muted'}`}>{cat.isActive ? 'Active' : 'Inactive'}</span>
+                <span className="text-xs px-2 py-0.5 rounded bg-surface-sunken text-content">{cat._count?.products || 0} products</span>
               </div>
             </div>
           ))}
@@ -203,28 +203,28 @@ const ShopCategoryManagement: React.FC = () => {
       )}
       {/* Delete Confirmation Modal */}
       {deleteTarget && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[70]" onClick={() => setDeleteTarget(null)}>
-          <div className="bg-aura-ink rounded-lg p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center p-4 z-[70]" onClick={() => setDeleteTarget(null)}>
+          <div className="bg-surface rounded-lg p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center mb-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-900/60 flex items-center justify-center mr-3">
-                <ExclamationTriangleIcon className="w-6 h-6 text-red-400" />
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-danger-bg flex items-center justify-center mr-3">
+                <ExclamationTriangleIcon className="w-6 h-6 text-danger" />
               </div>
-              <h3 className="text-lg font-bold text-aura-cream">Delete Category</h3>
+              <h3 className="text-lg font-bold text-content">Delete Category</h3>
             </div>
-            <p className="text-aura-sand mb-6">
-              Are you sure you want to delete <strong className="text-aura-cream">{deleteTarget.name}</strong>?
+            <p className="text-content-secondary mb-6">
+              Are you sure you want to delete <strong className="text-content">{deleteTarget.name}</strong>?
               Products in this category must be moved first. This action cannot be undone.
             </p>
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setDeleteTarget(null)}
-                className="px-4 py-2 border border-aura-umber rounded-md text-aura-sand hover:bg-aura-umber/30 transition-colors"
+                className="px-4 py-2 border border-edge rounded-md text-content-secondary hover:bg-surface-sunken transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                className="px-4 py-2 bg-danger text-content-on-accent rounded-md hover:opacity-90 transition-colors"
               >
                 Delete
               </button>

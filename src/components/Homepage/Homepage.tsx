@@ -217,10 +217,10 @@ const Homepage: React.FC = () => {
           <h2>Explore Our Classes</h2>
           {classesLoading ? (
             <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600"></div>
             </div>
           ) : classes.length === 0 ? (
-            <div className="text-center py-12 text-aura-sand">No upcoming classes available.</div>
+            <div className="text-center py-12 text-content-secondary">No upcoming classes available.</div>
           ) : (
             <div className="class-grid">
               {classes.slice(0, 4).map(cls => (
@@ -245,7 +245,7 @@ const Homepage: React.FC = () => {
                     </div>
                     <div className="class-card-meta">
                       {!cls.hideSpots && (
-                        <span className={cls.isFullyBooked ? 'text-red-500' : ''}>
+                        <span className={cls.isFullyBooked ? 'text-danger' : ''}>
                           {cls.isFullyBooked ? '🔴 Fully Booked' : `🏃‍♀️ ${cls.availableSpots} spots left`}
                         </span>
                       )}

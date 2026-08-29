@@ -277,7 +277,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-aura-umber"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600"></div>
       </div>
     );
   }
@@ -301,8 +301,8 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
     <div className="space-y-6">
       {/* Page Title */}
       <div>
-        <h1 className="text-2xl font-bold text-aura-cream">{typeLabel}</h1>
-        <p className="text-aura-sand">
+        <h1 className="text-2xl font-bold text-content">{typeLabel}</h1>
+        <p className="text-content-secondary">
           {filters.classType
             ? `Book ${filters.classType.toLowerCase()} classes created by our instructors`
             : 'Browse and book classes created by our instructors'}
@@ -311,18 +311,18 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
 
       {/* Success Message */}
       {successMessage && (
-        <div className="bg-green-900/60 border border-green-600/40 text-green-200 px-4 py-3 rounded">
+        <div className="bg-success-bg border border-success-border text-success px-4 py-3 rounded">
           {successMessage}
         </div>
       )}
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
+        <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded">
           {error}
           <button
             onClick={() => setError('')}
-            className="ml-4 text-red-200 hover:text-white"
+            className="ml-4 text-danger hover:text-content"
           >
             ×
           </button>
@@ -330,28 +330,28 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
       )}
 
       {/* Filters */}
-      <div className="bg-aura-ink p-3 rounded-lg border border-aura-umber">
+      <div className="bg-surface p-3 rounded-lg border border-accent-600">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           <div>
-            <label htmlFor="date" className="block text-xs font-medium text-aura-sand mb-0.5">Date</label>
+            <label htmlFor="date" className="block text-xs font-medium text-content-secondary mb-0.5">Date</label>
             <input
               type="date"
               id="date"
               value={filters.date}
               min={new Date().toISOString().split('T')[0]}
               onChange={(e) => handleFilterChange('date', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+              className="w-full px-2.5 py-1.5 text-sm border border-accent-600 rounded-md focus:outline-none focus:ring-content-secondary focus:border-accent-600 bg-canvas text-content placeholder:text-content-muted/70"
               style={{ colorScheme: 'dark' }}
             />
           </div>
 
           <div>
-            <label htmlFor="classType" className="block text-xs font-medium text-aura-sand mb-0.5">Type</label>
+            <label htmlFor="classType" className="block text-xs font-medium text-content-secondary mb-0.5">Type</label>
             <select
               id="classType"
               value={filters.classType}
               onChange={(e) => handleFilterChange('classType', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+              className="w-full px-2.5 py-1.5 text-sm border border-accent-600 rounded-md focus:outline-none focus:ring-content-secondary focus:border-accent-600 bg-canvas text-content placeholder:text-content-muted/70"
             >
               <option value="">All</option>
               <option value="PILATES">Pilates</option>
@@ -362,12 +362,12 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
           </div>
 
           <div>
-            <label htmlFor="instructor" className="block text-xs font-medium text-aura-sand mb-0.5">Instructor</label>
+            <label htmlFor="instructor" className="block text-xs font-medium text-content-secondary mb-0.5">Instructor</label>
             <select
               id="instructor"
               value={filters.instructor}
               onChange={(e) => handleFilterChange('instructor', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+              className="w-full px-2.5 py-1.5 text-sm border border-accent-600 rounded-md focus:outline-none focus:ring-content-secondary focus:border-accent-600 bg-canvas text-content placeholder:text-content-muted/70"
             >
               <option value="">All</option>
               {Array.from(new Set(classes.map(c => c.instructor).filter(Boolean))).sort().map(name => (
@@ -377,12 +377,12 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
           </div>
 
           <div>
-            <label htmlFor="class-price" className="block text-xs font-medium text-aura-sand mb-0.5">Price</label>
+            <label htmlFor="class-price" className="block text-xs font-medium text-content-secondary mb-0.5">Price</label>
             <select
               id="class-price"
               value={filters.price}
               onChange={(e) => handleFilterChange('price', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+              className="w-full px-2.5 py-1.5 text-sm border border-accent-600 rounded-md focus:outline-none focus:ring-content-secondary focus:border-accent-600 bg-canvas text-content placeholder:text-content-muted/70"
             >
               <option value="">All</option>
               <option value="under3000">Under ETB 3,000</option>
@@ -395,7 +395,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
 
         <button
           onClick={() => { setFilters({ date: '', classType: '', instructor: '', price: '' }); setCurrentPage(1); }}
-          className="mt-2 text-xs text-aura-sand hover:text-aura-cream"
+          className="mt-2 text-xs text-content-secondary hover:text-content"
         >
           Clear filters
         </button>
@@ -404,7 +404,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
       {/* Classes Grid */}
       {filteredClasses.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-aura-cream">No classes found matching your criteria.</p>
+          <p className="text-content">No classes found matching your criteria.</p>
         </div>
       ) : (
         <>
@@ -422,26 +422,26 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
 
           {/* Pagination */}
           {filteredClasses.length > ITEMS_PER_PAGE && (
-            <div className="bg-aura-ink px-4 py-3 mt-6 flex items-center justify-between border border-aura-umber rounded-lg">
+            <div className="bg-surface px-4 py-3 mt-6 flex items-center justify-between border border-accent-600 rounded-lg">
               <div className="flex-1 flex justify-between sm:hidden">
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                  className="relative inline-flex items-center px-4 py-2 border border-accent-600 text-sm font-medium rounded-md text-content-secondary bg-surface hover:bg-[var(--state-hover)] disabled:opacity-50"
                 >
                   Previous
                 </button>
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredClasses.length / ITEMS_PER_PAGE), prev + 1))}
                   disabled={currentPage === Math.ceil(filteredClasses.length / ITEMS_PER_PAGE)}
-                  className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                  className="relative inline-flex items-center px-4 py-2 border border-accent-600 text-sm font-medium rounded-md text-content-secondary bg-surface hover:bg-[var(--state-hover)] disabled:opacity-50"
                 >
                   Next
                 </button>
               </div>
               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm text-aura-sand">
+                  <p className="text-sm text-content-secondary">
                     Showing <span className="font-medium">{((currentPage - 1) * ITEMS_PER_PAGE) + 1}</span> to <span className="font-medium">{Math.min(currentPage * ITEMS_PER_PAGE, filteredClasses.length)}</span> of <span className="font-medium">{filteredClasses.length}</span> results
                   </p>
                 </div>
@@ -450,7 +450,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
                     <button
                       onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                       disabled={currentPage === 1}
-                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-accent-600 bg-surface text-sm font-medium text-content-secondary hover:bg-[var(--state-hover)] disabled:opacity-50"
                     >
                       Previous
                     </button>
@@ -460,8 +460,8 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
                         onClick={() => setCurrentPage(page)}
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                           page === currentPage
-                            ? 'z-10 bg-purple-600 border-purple-600 text-white'
-                            : 'bg-aura-ink border-aura-umber text-aura-sand hover:bg-aura-umber/30'
+                            ? 'z-10 bg-accent-600 border-accent-600 text-content-on-accent'
+                            : 'bg-surface border-accent-600 text-content-secondary hover:bg-[var(--state-hover)]'
                         }`}
                       >
                         {page}
@@ -470,7 +470,7 @@ const ClassList: React.FC<ClassListProps> = ({ onBookClass }) => {
                     <button
                       onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredClasses.length / ITEMS_PER_PAGE), prev + 1))}
                       disabled={currentPage === Math.ceil(filteredClasses.length / ITEMS_PER_PAGE)}
-                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-accent-600 bg-surface text-sm font-medium text-content-secondary hover:bg-[var(--state-hover)] disabled:opacity-50"
                     >
                       Next
                     </button>

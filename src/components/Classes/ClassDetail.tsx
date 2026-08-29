@@ -196,7 +196,7 @@ const ClassDetail: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600" />
       </div>
     );
   }
@@ -204,12 +204,12 @@ const ClassDetail: React.FC = () => {
   if (error || !cls) {
     return (
       <div className="max-w-3xl mx-auto py-12">
-        <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
+        <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded">
           {error || 'Class not found'}
         </div>
         <button
           onClick={() => navigate('/classes')}
-          className="mt-4 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+          className="mt-4 bg-accent-600 text-content-on-accent px-4 py-2 rounded-lg hover:bg-accent-700"
         >
           Back to Classes
         </button>
@@ -225,7 +225,7 @@ const ClassDetail: React.FC = () => {
     <div className="max-w-4xl mx-auto space-y-6">
       <button
         onClick={() => navigate('/classes')}
-        className="text-aura-sand hover:text-aura-cream text-sm flex items-center gap-1"
+        className="text-content-secondary hover:text-content text-sm flex items-center gap-1"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -233,21 +233,21 @@ const ClassDetail: React.FC = () => {
         Back to Classes
       </button>
 
-      <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-umber overflow-hidden">
+      <div className="bg-surface rounded-xl shadow-elev-1 border border-edge overflow-hidden">
         {cls.imageUrl && (
-          <div className="h-48 md:h-64 w-full bg-aura-bark">
+          <div className="h-48 md:h-64 w-full bg-canvas">
             <img src={cls.imageUrl} alt={cls.name} className="w-full h-full object-cover" />
           </div>
         )}
         <div className="p-6 md:p-8">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-aura-cream mb-2">{cls.name}</h1>
-              <p className="text-aura-sand">{cls.description || 'A rejuvenating pilates session.'}</p>
+              <h1 className="text-3xl font-bold text-content mb-2">{cls.name}</h1>
+              <p className="text-content-secondary">{cls.description || 'A rejuvenating pilates session.'}</p>
             </div>
             <button
               onClick={handleShare}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-aura-bark border border-aura-umber text-aura-sand hover:text-aura-cream transition-colors"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-canvas border border-edge text-content-secondary hover:text-content transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -257,30 +257,30 @@ const ClassDetail: React.FC = () => {
           </div>
 
           <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-aura-bark rounded-lg p-4 border border-aura-umber">
-              <p className="text-xs text-aura-sand uppercase tracking-wider">Date</p>
-              <p className="text-aura-cream font-medium">{format(new Date(cls.date), 'MMM dd, yyyy')}</p>
+            <div className="bg-canvas rounded-lg p-4 border border-edge">
+              <p className="text-xs text-content-secondary uppercase tracking-wider">Date</p>
+              <p className="text-content font-medium">{format(new Date(cls.date), 'MMM dd, yyyy')}</p>
             </div>
-            <div className="bg-aura-bark rounded-lg p-4 border border-aura-umber">
-              <p className="text-xs text-aura-sand uppercase tracking-wider">Time</p>
-              <p className="text-aura-cream font-medium">{cls.time}</p>
+            <div className="bg-canvas rounded-lg p-4 border border-edge">
+              <p className="text-xs text-content-secondary uppercase tracking-wider">Time</p>
+              <p className="text-content font-medium">{cls.time}</p>
             </div>
-            <div className="bg-aura-bark rounded-lg p-4 border border-aura-umber">
-              <p className="text-xs text-aura-sand uppercase tracking-wider">Duration</p>
-              <p className="text-aura-cream font-medium">{cls.duration} min</p>
+            <div className="bg-canvas rounded-lg p-4 border border-edge">
+              <p className="text-xs text-content-secondary uppercase tracking-wider">Duration</p>
+              <p className="text-content font-medium">{cls.duration} min</p>
             </div>
             {(!cls.hideInstructor || !cls.hideSpots) && (
               <>
                 {!cls.hideInstructor && (
-                  <div className="bg-aura-bark rounded-lg p-4 border border-aura-umber">
-                    <p className="text-xs text-aura-sand uppercase tracking-wider">Instructor</p>
-                    <p className="text-aura-cream font-medium">{cls.instructor}</p>
+                  <div className="bg-canvas rounded-lg p-4 border border-edge">
+                    <p className="text-xs text-content-secondary uppercase tracking-wider">Instructor</p>
+                    <p className="text-content font-medium">{cls.instructor}</p>
                   </div>
                 )}
                 {!cls.hideSpots && (
-                  <div className="bg-aura-bark rounded-lg p-4 border border-aura-umber">
-                    <p className="text-xs text-aura-sand uppercase tracking-wider">Availability</p>
-                    <p className="text-aura-cream font-medium">{cls.availableSpots} of {cls.capacity} spots</p>
+                  <div className="bg-canvas rounded-lg p-4 border border-edge">
+                    <p className="text-xs text-content-secondary uppercase tracking-wider">Availability</p>
+                    <p className="text-content font-medium">{cls.availableSpots} of {cls.capacity} spots</p>
                   </div>
                 )}
               </>
@@ -289,15 +289,15 @@ const ClassDetail: React.FC = () => {
 
           <div className="mt-6 flex flex-wrap items-center gap-4">
             {!cls.hideSpots && (
-              <span className="text-sm text-aura-sand">
+              <span className="text-sm text-content-secondary">
                 {cls.availableSpots} of {cls.capacity} spots available
               </span>
             )}
             {cls.isFullyBooked && (
-              <span className="px-2 py-1 rounded bg-red-900/40 text-red-200 text-xs font-medium">Fully Booked</span>
+              <span className="px-2 py-1 rounded bg-danger-bg text-danger text-xs font-medium">Fully Booked</span>
             )}
             {cls.price !== undefined && cls.price > 0 && (
-              <span className="px-2 py-1 rounded bg-purple-900/40 text-purple-200 text-xs font-medium">
+              <span className="px-2 py-1 rounded bg-accent-700/40 text-accent-100 text-xs font-medium">
                 ETB {cls.price.toLocaleString()}
               </span>
             )}
@@ -310,8 +310,8 @@ const ClassDetail: React.FC = () => {
                 disabled={cls.isFullyBooked || isWithin2Hours}
                 className={`px-6 py-3 rounded-lg text-sm font-medium transition-colors ${
                   cls.isFullyBooked || isWithin2Hours
-                    ? 'bg-purple-300/40 text-purple-200 cursor-not-allowed'
-                    : 'bg-purple-600 text-white hover:bg-purple-700'
+                    ? 'bg-accent-200/40 text-accent-200 cursor-not-allowed'
+                    : 'bg-accent-600 text-content-on-accent hover:bg-accent-700'
                 }`}
               >
                 {cls.isFullyBooked
@@ -343,42 +343,42 @@ const ClassDetail: React.FC = () => {
       />
 
       {/* Reviews */}
-      <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-umber p-6 md:p-8">
+      <div className="bg-surface rounded-xl shadow-elev-1 border border-edge p-6 md:p-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-aura-cream">Reviews</h2>
+          <h2 className="text-xl font-semibold text-content">Reviews</h2>
           {reviewCount > 0 && (
-            <span className="text-aura-sand text-sm">
+            <span className="text-content-secondary text-sm">
               {reviewAvg} ★ ({reviewCount})
             </span>
           )}
         </div>
 
         {reviews.length === 0 ? (
-          <p className="text-aura-sand text-sm">No reviews yet. Be the first to review after attending!</p>
+          <p className="text-content-secondary text-sm">No reviews yet. Be the first to review after attending!</p>
         ) : (
           <div className="space-y-4">
             {reviews.map((r: any) => (
-              <div key={r.id} className="border-b border-aura-umber pb-3 last:border-0">
+              <div key={r.id} className="border-b border-edge pb-3 last:border-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-aura-cream font-medium text-sm">{r.user?.name || 'Anonymous'}</span>
-                  <span className="text-yellow-400 text-xs">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span>
+                  <span className="text-content font-medium text-sm">{r.user?.name || 'Anonymous'}</span>
+                  <span className="text-warning text-xs">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span>
                 </div>
-                {r.comment && <p className="text-aura-sand text-sm">{r.comment}</p>}
-                <p className="text-aura-sand text-xs mt-1">{format(new Date(r.createdAt), 'MMM dd, yyyy')}</p>
+                {r.comment && <p className="text-content-secondary text-sm">{r.comment}</p>}
+                <p className="text-content-secondary text-xs mt-1">{format(new Date(r.createdAt), 'MMM dd, yyyy')}</p>
               </div>
             ))}
           </div>
         )}
 
         {user && (
-          <div className="mt-6 pt-4 border-t border-aura-umber">
-            <h3 className="text-sm font-medium text-aura-cream mb-2">Write a Review</h3>
+          <div className="mt-6 pt-4 border-t border-edge">
+            <h3 className="text-sm font-medium text-content mb-2">Write a Review</h3>
             <div className="flex items-center gap-2 mb-2">
-              <label className="text-xs text-aura-sand">Rating:</label>
+              <label className="text-xs text-content-secondary">Rating:</label>
               <select
                 value={reviewForm.rating}
                 onChange={e => setReviewForm(prev => ({ ...prev, rating: Number(e.target.value) }))}
-                className="bg-aura-bark border border-aura-umber rounded text-aura-cream text-sm px-2 py-1"
+                className="bg-canvas border border-edge rounded text-content text-sm px-2 py-1"
               >
                 {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
               </select>
@@ -388,12 +388,12 @@ const ClassDetail: React.FC = () => {
               onChange={e => setReviewForm(prev => ({ ...prev, comment: e.target.value }))}
               placeholder="Share your experience..."
               rows={3}
-              className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream text-sm focus:outline-none focus:ring-2 focus:ring-aura-sand mb-2"
+              className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content text-sm focus:outline-none focus:ring-2 focus:ring-content-secondary mb-2"
             />
             <button
               onClick={handleSubmitReview}
               disabled={reviewLoading}
-              className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700 transition-colors disabled:opacity-50"
+              className="bg-accent-600 text-content-on-accent px-4 py-2 rounded-lg text-sm hover:bg-accent-700 transition-colors disabled:opacity-50"
             >
               {reviewLoading ? 'Submitting...' : 'Submit Review'}
             </button>

@@ -118,20 +118,46 @@ export const ORDER_STATUS_LABELS: Record<string, string> = {
   REFUNDED: 'Refunded',
 };
 
+/* Status styling resolves through semantic tokens (see src/styles/tokens.css),
+   so badges adapt to every theme instead of being tuned for dark surfaces. */
 export const ORDER_STATUS_COLORS: Record<string, string> = {
-  PENDING: 'bg-amber-900/30 text-amber-300',
-  CONFIRMED: 'bg-green-900/30 text-green-300',
-  PROCESSING: 'bg-blue-900/30 text-blue-300',
-  SHIPPED: 'bg-indigo-900/30 text-indigo-300',
-  DELIVERED: 'bg-green-900/40 text-green-200',
-  CANCELLED: 'bg-red-900/30 text-red-300',
-  REFUNDED: 'bg-red-900/30 text-red-300',
+  PENDING: 'bg-warning-bg text-warning border border-warning-border',
+  CONFIRMED: 'bg-info-bg text-info border border-info-border',
+  PROCESSING: 'bg-info-bg text-info border border-info-border',
+  SHIPPED: 'bg-accent-100 text-accent-900 border border-accent-400',
+  DELIVERED: 'bg-success-bg text-success border border-success-border',
+  CANCELLED: 'bg-danger-bg text-danger border border-danger-border',
+  REFUNDED: 'bg-danger-bg text-danger border border-danger-border',
+};
+
+export const PAYMENT_STATUS_LABELS: Record<string, string> = {
+  PENDING: 'Pending',
+  VERIFIED: 'Verified',
+  REJECTED: 'Rejected',
 };
 
 export const PAYMENT_STATUS_COLORS: Record<string, string> = {
-  PENDING: 'bg-amber-900/30 text-amber-300',
-  VERIFIED: 'bg-green-900/30 text-green-300',
-  REJECTED: 'bg-red-900/30 text-red-300',
+  PENDING: 'bg-warning-bg text-warning border border-warning-border',
+  VERIFIED: 'bg-success-bg text-success border border-success-border',
+  REJECTED: 'bg-danger-bg text-danger border border-danger-border',
+};
+
+/* Status must never be conveyed by colour alone (WCAG 1.4.1). Each status
+   carries a glyph that is rendered alongside the label in StatusBadge. */
+export const ORDER_STATUS_GLYPHS: Record<string, string> = {
+  PENDING: '○',
+  CONFIRMED: '◉',
+  PROCESSING: '◑',
+  SHIPPED: '➤',
+  DELIVERED: '✓',
+  CANCELLED: '✕',
+  REFUNDED: '↩',
+};
+
+export const PAYMENT_STATUS_GLYPHS: Record<string, string> = {
+  PENDING: '○',
+  VERIFIED: '✓',
+  REJECTED: '✕',
 };
 
 export const PAYMENT_METHOD_LABELS: Record<string, string> = {
@@ -140,8 +166,10 @@ export const PAYMENT_METHOD_LABELS: Record<string, string> = {
   CASH_ON_DELIVERY: 'Cash on Delivery',
 };
 
-export function formatETB(amount: number): string {
-  return `ETB ${amount.toLocaleString()}`;
+export function formatETB(amount: number | null | undefined): string {
+  const n = Number(amount);
+  if (!Number.isFinite(n)) return 'ETB —';
+  return `ETB ${n.toLocaleString()}`;
 }
 
 export function getEffectivePrice(product: Pick<Product, 'basePrice' | 'salePrice'>): number {

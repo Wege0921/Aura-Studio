@@ -58,33 +58,33 @@ const PaymentHistory: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'VERIFIED':
-        return 'bg-green-900/40 text-green-200';
+        return 'bg-success-bg text-success';
       case 'PENDING':
-        return 'bg-amber-900/40 text-amber-200';
+        return 'bg-warning-bg text-warning';
       case 'REJECTED':
-        return 'bg-red-900/40 text-red-200';
+        return 'bg-danger-bg text-danger';
       default:
-        return 'bg-aura-umber/40 text-aura-sand';
+        return 'bg-surface-sunken text-content-secondary';
     }
   };
 
   const getPaymentMethodColor = (method: string) => {
     switch (method) {
       case 'BANK_TRANSFER':
-        return 'bg-blue-900/40 text-blue-200';
+        return 'bg-info-bg text-info';
       case 'MOBILE_MONEY':
-        return 'bg-purple-900/40 text-purple-200';
+        return 'bg-accent-700/40 text-accent-100';
       case 'CASH':
-        return 'bg-green-900/40 text-green-200';
+        return 'bg-success-bg text-success';
       default:
-        return 'bg-aura-umber/40 text-aura-sand';
+        return 'bg-surface-sunken text-content-secondary';
     }
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600"></div>
       </div>
     );
   }
@@ -93,12 +93,12 @@ const PaymentHistory: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-2xl font-bold text-aura-cream">My Payments</h2>
+        <h2 className="text-2xl font-bold text-content">My Payments</h2>
         <div className="mt-4 sm:mt-0">
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="block w-full sm:w-auto px-3 py-2 border border-aura-umber rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+            className="block w-full sm:w-auto px-3 py-2 border border-edge rounded-md shadow-sm focus:outline-none focus:ring-accent-500 focus:border-accent-500"
           >
             <option value="all">All Payments</option>
             <option value="PENDING">Pending</option>
@@ -110,7 +110,7 @@ const PaymentHistory: React.FC = () => {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
+        <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded">
           {error}
         </div>
       )}
@@ -118,18 +118,18 @@ const PaymentHistory: React.FC = () => {
       {/* Payments List */}
       {payments.length === 0 ? (
         <div className="text-center py-12">
-          <svg className="mx-auto h-12 w-12 text-aura-sand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="mx-auto h-12 w-12 text-content-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-aura-cream">No payments found</h3>
-          <p className="mt-1 text-sm text-aura-sand">
+          <h3 className="mt-2 text-sm font-medium text-content">No payments found</h3>
+          <p className="mt-1 text-sm text-content-secondary">
             {filter === 'all' ? 'You haven\'t made any payments yet.' : `No ${filter.toLowerCase()} payments found.`}
           </p>
         </div>
       ) : (
         <div className="space-y-4">
           {payments.map((payment) => (
-            <div key={payment.id} className="bg-aura-ink shadow rounded-lg p-4 sm:p-6">
+            <div key={payment.id} className="bg-surface shadow rounded-lg p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-3 sm:mb-0">
@@ -141,9 +141,9 @@ const PaymentHistory: React.FC = () => {
                     </span>
                   </div>
                   
-                  <h3 className="text-lg font-medium text-aura-cream">ETB {payment.amount.toLocaleString()}</h3>
+                  <h3 className="text-lg font-medium text-content">ETB {payment.amount.toLocaleString()}</h3>
                   
-                  <div className="mt-2 space-y-1 text-sm text-aura-sand">
+                  <div className="mt-2 space-y-1 text-sm text-content-secondary">
                     {payment.package && (
                       <div className="flex items-center">
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,7 +179,7 @@ const PaymentHistory: React.FC = () => {
                           href={payment.receiptUrl} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="text-purple-600 hover:text-purple-500"
+                          className="text-accent-600 hover:text-accent-500"
                         >
                           View Receipt
                         </a>

@@ -88,14 +88,14 @@ const BookingModal: React.FC<BookingModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-aura-ink/50 overflow-y-auto h-full w-full z-[60] modal-scroll-safe">
-      <div className="relative top-20 mx-auto p-5 pb-24 md:pb-5 border border-aura-umber w-full max-w-md shadow-lg shadow-black/30 rounded-xl bg-aura-bark">
+    <div className="fixed inset-0 bg-overlay/50 overflow-y-auto h-full w-full z-[60] modal-scroll-safe">
+      <div className="relative top-20 mx-auto p-5 pb-24 md:pb-5 border border-edge w-full max-w-md shadow-elev-2 rounded-xl bg-canvas">
         <div className="mt-3">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-aura-cream">Confirm Booking</h3>
+            <h3 className="text-lg font-medium text-content">Confirm Booking</h3>
             <button
               onClick={onClose}
-              className="text-aura-clay hover:text-aura-cream"
+              className="text-accent-600 hover:text-content"
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -104,10 +104,10 @@ const BookingModal: React.FC<BookingModalProps> = ({
           </div>
           
           <div className="mb-6">
-            <p className="text-sm text-aura-sand mb-4">You're about to book:</p>
-            <div className="bg-aura-ink/40 p-4 rounded-lg">
-              <h4 className="font-semibold text-aura-cream mb-2">{classInfo.name}</h4>
-              <div className="space-y-1 text-sm text-aura-sand">
+            <p className="text-sm text-content-secondary mb-4">You're about to book:</p>
+            <div className="bg-surface/40 p-4 rounded-lg">
+              <h4 className="font-semibold text-content mb-2">{classInfo.name}</h4>
+              <div className="space-y-1 text-sm text-content-secondary">
                 <p>Instructor: {classInfo.instructor}</p>
                 <p>Date: {format(new Date(classInfo.date), 'MMMM dd, yyyy')}</p>
                 <p>Time: {classInfo.time}</p>
@@ -118,7 +118,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
           {/* Package Session Option */}
           {activePackages.length > 0 && (
-            <div className="mb-6 bg-green-900/20 border border-green-700/30 rounded-lg p-4">
+            <div className="mb-6 bg-success-bg border border-success-border rounded-lg p-4">
               <label className="flex items-start">
                 <input
                   type="checkbox"
@@ -127,8 +127,8 @@ const BookingModal: React.FC<BookingModalProps> = ({
                   className="mt-1"
                 />
                 <div className="ml-3">
-                  <span className="text-sm font-medium text-green-300">Use Package Session</span>
-                  <p className="text-xs text-green-400/80">
+                  <span className="text-sm font-medium text-success">Use Package Session</span>
+                  <p className="text-xs text-success/80">
                     You have {activePackages[0].remainingSessions} session(s) remaining in {activePackages[0].name}
                   </p>
                 </div>
@@ -138,7 +138,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
           {!usePackageSession && (
             <div className="mb-6">
-              <h4 className="text-sm font-medium text-aura-cream mb-3">Select Payment Method</h4>
+              <h4 className="text-sm font-medium text-content mb-3">Select Payment Method</h4>
               <div className="space-y-2">
                 {paymentMethods.map(method => (
                   <label key={method.value} className="flex items-start">
@@ -148,11 +148,11 @@ const BookingModal: React.FC<BookingModalProps> = ({
                       value={method.value}
                       checked={selectedPaymentMethod === method.value}
                       onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-                      className="mt-1 h-4 w-4 text-aura-umber focus:ring-aura-umber border-aura-umber"
+                      className="mt-1 h-4 w-4 text-edge focus:ring-edge border-edge"
                     />
                     <div className="ml-3">
-                      <span className="text-sm font-medium text-aura-cream">{method.label}</span>
-                      <p className="text-xs text-aura-clay">{method.description}</p>
+                      <span className="text-sm font-medium text-content">{method.label}</span>
+                      <p className="text-xs text-accent-600">{method.description}</p>
                     </div>
                   </label>
                 ))}
@@ -160,9 +160,9 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
               {/* Payment Details */}
               {selectedPaymentMethod === 'BANK_TRANSFER' && (
-                <div className="mt-3 bg-aura-ink/40 border border-aura-umber rounded-md p-3">
-                  <p className="text-xs font-medium text-aura-cream mb-1">Bank Transfer Details</p>
-                  <div className="space-y-1 text-xs text-aura-sand">
+                <div className="mt-3 bg-surface/40 border border-edge rounded-md p-3">
+                  <p className="text-xs font-medium text-content mb-1">Bank Transfer Details</p>
+                  <div className="space-y-1 text-xs text-content-secondary">
                     <p><strong>Account:</strong> {bankDetails.accountName}</p>
                     <p><strong>Bank:</strong> {bankDetails.bankName}</p>
                     <p><strong>Number:</strong> {bankDetails.accountNumber}</p>
@@ -171,28 +171,28 @@ const BookingModal: React.FC<BookingModalProps> = ({
               )}
 
               {selectedPaymentMethod === 'MOBILE_MONEY' && (
-                <div className="mt-3 bg-aura-ink/40 border border-aura-umber rounded-md p-3">
-                  <p className="text-xs font-medium text-aura-cream mb-1">Mobile Money Details</p>
-                  <div className="space-y-1 text-xs text-aura-sand">
+                <div className="mt-3 bg-surface/40 border border-edge rounded-md p-3">
+                  <p className="text-xs font-medium text-content mb-1">Mobile Money Details</p>
+                  <div className="space-y-1 text-xs text-content-secondary">
                     <p><strong>Telebirr:</strong> +251 900 410 603</p>
                   </div>
                 </div>
               )}
 
               {selectedPaymentMethod === 'CASH' && (
-                <div className="mt-3 bg-yellow-900/20 border border-yellow-700/30 rounded-md p-3">
-                  <p className="text-xs font-medium text-yellow-300 mb-1">Cash Payment</p>
-                  <p className="text-xs text-yellow-400/80">Please visit our studio to make the cash payment.</p>
+                <div className="mt-3 bg-warning-bg border border-warning-border rounded-md p-3">
+                  <p className="text-xs font-medium text-warning mb-1">Cash Payment</p>
+                  <p className="text-xs text-warning/80">Please visit our studio to make the cash payment.</p>
                 </div>
               )}
 
               {/* Receipt Upload for Non-Cash Payments */}
               {selectedPaymentMethod !== 'CASH' && (
                 <div className="mt-4">
-                  <label className="block text-sm font-medium text-aura-cream mb-2">
+                  <label className="block text-sm font-medium text-content mb-2">
                     Payment Receipt *
                   </label>
-                  <div className="border-2 border-dashed border-aura-umber rounded-lg p-4 text-center">
+                  <div className="border-2 border-dashed border-edge rounded-lg p-4 text-center">
                     <input
                       type="file"
                       id="receipt"
@@ -203,19 +203,19 @@ const BookingModal: React.FC<BookingModalProps> = ({
                     <label htmlFor="receipt" className="cursor-pointer">
                       {receiptFile ? (
                         <div className="space-y-2">
-                          <svg className="mx-auto h-12 w-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="mx-auto h-12 w-12 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
-                          <p className="text-sm text-green-400">{receiptFile.name}</p>
-                          <p className="text-xs text-aura-clay">Click to change file</p>
+                          <p className="text-sm text-success">{receiptFile.name}</p>
+                          <p className="text-xs text-accent-600">Click to change file</p>
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          <svg className="mx-auto h-12 w-12 text-aura-sand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="mx-auto h-12 w-12 text-content-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                           </svg>
-                          <p className="text-sm text-aura-sand">Click to upload payment receipt</p>
-                          <p className="text-xs text-aura-clay">JPEG, PNG, GIF, or PDF (max 5MB)</p>
+                          <p className="text-sm text-content-secondary">Click to upload payment receipt</p>
+                          <p className="text-xs text-accent-600">JPEG, PNG, GIF, or PDF (max 5MB)</p>
                         </div>
                       )}
                     </label>
@@ -225,7 +225,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
               {/* Error Message */}
               {uploadError && (
-                <div className="mt-3 bg-red-900/30 border border-red-700/40 text-red-300 px-3 py-2 rounded text-sm">
+                <div className="mt-3 bg-danger-bg border border-danger-border text-danger px-3 py-2 rounded text-sm">
                   {uploadError}
                 </div>
               )}
@@ -235,14 +235,14 @@ const BookingModal: React.FC<BookingModalProps> = ({
           <div className="flex justify-end space-x-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-aura-cream bg-aura-sand/20 rounded-md hover:bg-aura-sand/30 focus:outline-none focus:ring-2 focus:ring-aura-sand"
+              className="px-4 py-2 text-content bg-[var(--state-selected)] hover:bg-[var(--state-hover)] focus:outline-none focus:ring-2 focus:ring-content-secondary"
             >
               Cancel
             </button>
             <button
               onClick={handleConfirm}
               disabled={loading || (!usePackageSession && selectedPaymentMethod !== 'CASH' && !receiptFile)}
-              className="px-4 py-2 bg-aura-bark text-aura-ivory rounded-md hover:bg-aura-umber focus:outline-none focus:ring-2 focus:ring-aura-umber disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-canvas text-content-emphasis rounded-md hover:bg-[var(--state-hover)] focus:outline-none focus:ring-2 focus:ring-edge disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Booking...' : 'Confirm Booking'}
             </button>

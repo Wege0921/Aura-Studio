@@ -114,58 +114,58 @@ const NotificationSettings: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600"></div>
       </div>
     );
   }
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <h2 className="text-2xl font-bold text-aura-cream mb-6">Notification Settings</h2>
+      <h2 className="text-2xl font-bold text-content mb-6">Notification Settings</h2>
       
       {/* Push Notifications Toggle */}
-      <div className="bg-aura-ink rounded-lg shadow p-6 mb-6">
+      <div className="bg-surface rounded-lg shadow p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-lg font-semibold text-aura-cream">Push Notifications</h3>
-            <p className="text-sm text-aura-sand">Receive notifications even when the app is closed</p>
+            <h3 className="text-lg font-semibold text-content">Push Notifications</h3>
+            <p className="text-sm text-content-secondary">Receive notifications even when the app is closed</p>
           </div>
           <button
             onClick={handleTogglePush}
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-              pushEnabled ? 'bg-purple-600' : 'bg-aura-sand/20'
+              pushEnabled ? 'bg-accent-600' : 'bg-[var(--state-selected)]'
             }`}
           >
             <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-aura-ink transition-transform ${
+              className={`inline-block h-4 w-4 transform rounded-full bg-surface transition-transform ${
                 pushEnabled ? 'translate-x-6' : 'translate-x-1'
               }`}
             />
           </button>
         </div>
         {pushEnabled && (
-          <p className="text-sm text-green-400">✓ Push notifications are enabled</p>
+          <p className="text-sm text-success">✓ Push notifications are enabled</p>
         )}
       </div>
 
       {/* Notification Preferences */}
-      <div className="bg-aura-ink rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-aura-cream mb-4">Notification Types</h3>
+      <div className="bg-surface rounded-lg shadow p-6">
+        <h3 className="text-lg font-semibold text-content mb-4">Notification Types</h3>
         
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <label className="text-sm font-medium text-aura-cream">Booking Reminders</label>
-              <p className="text-xs text-aura-sand">Get reminded about upcoming classes</p>
+              <label className="text-sm font-medium text-content">Booking Reminders</label>
+              <p className="text-xs text-content-secondary">Get reminded about upcoming classes</p>
             </div>
             <button
               onClick={() => handlePreferenceChange('bookingReminders')}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                preferences.bookingReminders ? 'bg-purple-600' : 'bg-aura-sand/20'
+                preferences.bookingReminders ? 'bg-accent-600' : 'bg-[var(--state-selected)]'
               }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-aura-ink transition-transform ${
+                className={`inline-block h-4 w-4 transform rounded-full bg-surface transition-transform ${
                   preferences.bookingReminders ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
@@ -174,17 +174,17 @@ const NotificationSettings: React.FC = () => {
 
           <div className="flex items-center justify-between">
             <div>
-              <label className="text-sm font-medium text-aura-cream">Class Reminders</label>
-              <p className="text-xs text-aura-sand">Notifications 1 hour before class starts</p>
+              <label className="text-sm font-medium text-content">Class Reminders</label>
+              <p className="text-xs text-content-secondary">Notifications 1 hour before class starts</p>
             </div>
             <button
               onClick={() => handlePreferenceChange('classReminders')}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                preferences.classReminders ? 'bg-purple-600' : 'bg-aura-sand/20'
+                preferences.classReminders ? 'bg-accent-600' : 'bg-[var(--state-selected)]'
               }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-aura-ink transition-transform ${
+                className={`inline-block h-4 w-4 transform rounded-full bg-surface transition-transform ${
                   preferences.classReminders ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
@@ -193,17 +193,17 @@ const NotificationSettings: React.FC = () => {
 
           <div className="flex items-center justify-between">
             <div>
-              <label className="text-sm font-medium text-aura-cream">Payment Confirmations</label>
-              <p className="text-xs text-aura-sand">Confirmations when payments are processed</p>
+              <label className="text-sm font-medium text-content">Payment Confirmations</label>
+              <p className="text-xs text-content-secondary">Confirmations when payments are processed</p>
             </div>
             <button
               onClick={() => handlePreferenceChange('paymentConfirmations')}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                preferences.paymentConfirmations ? 'bg-purple-600' : 'bg-aura-sand/20'
+                preferences.paymentConfirmations ? 'bg-accent-600' : 'bg-[var(--state-selected)]'
               }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-aura-ink transition-transform ${
+                className={`inline-block h-4 w-4 transform rounded-full bg-surface transition-transform ${
                   preferences.paymentConfirmations ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
@@ -212,17 +212,17 @@ const NotificationSettings: React.FC = () => {
 
           <div className="flex items-center justify-between">
             <div>
-              <label className="text-sm font-medium text-aura-cream">Promotional Offers</label>
-              <p className="text-xs text-aura-sand">Special deals and package discounts</p>
+              <label className="text-sm font-medium text-content">Promotional Offers</label>
+              <p className="text-xs text-content-secondary">Special deals and package discounts</p>
             </div>
             <button
               onClick={() => handlePreferenceChange('promotionalOffers')}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                preferences.promotionalOffers ? 'bg-purple-600' : 'bg-aura-sand/20'
+                preferences.promotionalOffers ? 'bg-accent-600' : 'bg-[var(--state-selected)]'
               }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-aura-ink transition-transform ${
+                className={`inline-block h-4 w-4 transform rounded-full bg-surface transition-transform ${
                   preferences.promotionalOffers ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
@@ -231,17 +231,17 @@ const NotificationSettings: React.FC = () => {
 
           <div className="flex items-center justify-between">
             <div>
-              <label className="text-sm font-medium text-aura-cream">Newsletter</label>
-              <p className="text-xs text-aura-sand">Weekly wellness tips and studio updates</p>
+              <label className="text-sm font-medium text-content">Newsletter</label>
+              <p className="text-xs text-content-secondary">Weekly wellness tips and studio updates</p>
             </div>
             <button
               onClick={() => handlePreferenceChange('newsletter')}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                preferences.newsletter ? 'bg-purple-600' : 'bg-aura-sand/20'
+                preferences.newsletter ? 'bg-accent-600' : 'bg-[var(--state-selected)]'
               }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-aura-ink transition-transform ${
+                className={`inline-block h-4 w-4 transform rounded-full bg-surface transition-transform ${
                   preferences.newsletter ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
@@ -253,7 +253,7 @@ const NotificationSettings: React.FC = () => {
           <button
             onClick={savePreferences}
             disabled={isSaving}
-            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+            className="bg-accent-600 text-content-on-accent px-6 py-2 rounded-lg hover:bg-accent-700 transition-colors disabled:opacity-50"
           >
             {isSaving ? 'Saving...' : 'Save Preferences'}
           </button>

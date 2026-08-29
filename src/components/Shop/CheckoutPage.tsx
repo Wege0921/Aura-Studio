@@ -74,8 +74,8 @@ const CheckoutPage: React.FC = () => {
   if (items.length === 0) {
     return (
       <div className="text-center py-20">
-        <p className="text-aura-sand text-lg mb-4">Your cart is empty.</p>
-        <button onClick={() => navigate('/shop')} className="text-aura-clay hover:text-aura-sand">
+        <p className="text-content-secondary text-lg mb-4">Your cart is empty.</p>
+        <button onClick={() => navigate('/shop')} className="text-accent-400 hover:text-content-secondary">
           ← Go to Shop
         </button>
       </div>
@@ -139,21 +139,33 @@ const CheckoutPage: React.FC = () => {
 
   return (
     <div className="max-w-2xl mx-auto space-y-4">
-      <button onClick={() => navigate('/cart')} className="flex items-center gap-2 text-sm text-aura-sand hover:text-aura-clay">
+      <button onClick={() => navigate('/cart')} className="flex items-center gap-2 text-sm text-content-secondary hover:text-accent-400">
         <ArrowLeftIcon className="w-4 h-4" /> Back to Cart
       </button>
 
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-serif text-aura-ivory">Checkout</h1>
-        {/* Step indicator */}
-        <div className="flex items-center gap-2 text-sm">
-          <span className={`flex items-center gap-1.5 ${step === 1 ? 'text-aura-clay' : 'text-aura-sand'}`}>
-            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${step === 1 ? 'bg-aura-clay text-aura-ink' : 'bg-aura-umber/40 text-aura-sand'}`}>1</span>
+        <h1 className="text-xl font-serif text-content-emphasis">Checkout</h1>
+        {/* Step indicator — state is conveyed by numeral + aria-current, not colour alone */}
+        <div className="flex items-center gap-2 text-sm" aria-label="Checkout progress">
+          <span className={`flex items-center gap-1.5 ${step === 1 ? 'text-content' : 'text-content-secondary'}`}>
+            <span
+              aria-current={step === 1 ? 'step' : undefined}
+              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs border ${
+                step === 2
+                  ? 'bg-accent-600 text-content-on-accent border-accent-600'
+                  : 'bg-accent-100 text-accent-900 border-accent-600'
+              }`}
+            >1</span>
             Details
           </span>
-          <span className="w-8 h-px bg-aura-umber/50" />
-          <span className={`flex items-center gap-1.5 ${step === 2 ? 'text-aura-clay' : 'text-aura-sand'}`}>
-            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${step === 2 ? 'bg-aura-clay text-aura-ink' : 'bg-aura-umber/40 text-aura-sand'}`}>2</span>
+          <span className="w-8 h-px bg-edge-subtle" />
+          <span className={`flex items-center gap-1.5 ${step === 2 ? 'text-content' : 'text-content-secondary'}`}>
+            <span
+              aria-current={step === 2 ? 'step' : undefined}
+              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs border ${
+                step === 2 ? 'bg-accent-600 text-content-on-accent border-accent-600' : 'border-edge bg-surface text-content-secondary'
+              }`}
+            >2</span>
             Review
           </span>
         </div>
@@ -164,64 +176,64 @@ const CheckoutPage: React.FC = () => {
         {step === 1 && (
           <div className="space-y-4">
             {/* Shipping address */}
-            <div className="bg-aura-ink rounded-xl border border-aura-umber p-4 space-y-3">
-              <h2 className="text-base font-serif text-aura-ivory">Shipping Address</h2>
+            <div className="bg-surface rounded-xl border border-edge p-4 space-y-3">
+              <h2 className="text-base font-serif text-content-emphasis">Shipping Address</h2>
               <div className="grid sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-aura-sand mb-0.5 block">Full Name *</label>
+                  <label className="text-xs text-content-secondary mb-0.5 block">Full Name *</label>
                   <input
                     {...register('shippingFullName', { required: 'Required' })}
-                    className="w-full px-3 py-1.5 bg-aura-bark border border-aura-umber rounded-lg text-sm text-aura-cream focus:outline-none focus:border-aura-clay"
+                    className="w-full px-3 py-1.5 bg-canvas border border-edge rounded-lg text-sm text-content focus:outline-none focus:border-edge-focus"
                   />
-                  {errors.shippingFullName && <p className="text-xs text-red-400 mt-0.5">{errors.shippingFullName.message}</p>}
+                  {errors.shippingFullName && <p className="text-xs text-danger mt-0.5">{errors.shippingFullName.message}</p>}
                 </div>
                 <div>
-                  <label className="text-xs text-aura-sand mb-0.5 block">Phone *</label>
+                  <label className="text-xs text-content-secondary mb-0.5 block">Phone *</label>
                   <div className="flex">
-                    <span className="inline-flex items-center px-3 py-1.5 bg-aura-umber/30 border border-aura-umber border-r-0 rounded-l-lg text-aura-sand text-sm whitespace-nowrap">+251</span>
+                    <span className="inline-flex items-center px-3 py-1.5 bg-surface-sunken border border-edge border-r-0 rounded-l-lg text-content-secondary text-sm whitespace-nowrap">+251</span>
                     <input
                       {...register('shippingPhone', { required: 'Required', pattern: { value: /^9\d{8}$/, message: '9XXXXXXXX' } })}
                       placeholder="9XXXXXXXX"
-                      className="flex-1 px-3 py-1.5 bg-aura-bark border border-aura-umber rounded-r-lg text-sm text-aura-cream focus:outline-none focus:border-aura-clay"
+                      className="flex-1 px-3 py-1.5 bg-canvas border border-edge rounded-r-lg text-sm text-content focus:outline-none focus:border-edge-focus"
                     />
                   </div>
-                  {errors.shippingPhone && <p className="text-xs text-red-400 mt-0.5">{errors.shippingPhone.message}</p>}
+                  {errors.shippingPhone && <p className="text-xs text-danger mt-0.5">{errors.shippingPhone.message}</p>}
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="text-xs text-aura-sand mb-0.5 block">Address *</label>
+                  <label className="text-xs text-content-secondary mb-0.5 block">Address *</label>
                   <input
                     {...register('shippingAddress', { required: 'Required' })}
                     placeholder="Street, building, apartment..."
-                    className="w-full px-3 py-1.5 bg-aura-bark border border-aura-umber rounded-lg text-sm text-aura-cream focus:outline-none focus:border-aura-clay"
+                    className="w-full px-3 py-1.5 bg-canvas border border-edge rounded-lg text-sm text-content focus:outline-none focus:border-edge-focus"
                   />
-                  {errors.shippingAddress && <p className="text-xs text-red-400 mt-0.5">{errors.shippingAddress.message}</p>}
+                  {errors.shippingAddress && <p className="text-xs text-danger mt-0.5">{errors.shippingAddress.message}</p>}
                 </div>
               </div>
             </div>
 
             {/* Payment method */}
-            <div className="bg-aura-ink rounded-xl border border-aura-umber p-4 space-y-3">
-              <h2 className="text-base font-serif text-aura-ivory">Payment Method</h2>
+            <fieldset className="bg-surface rounded-xl border border-edge p-4 space-y-3">
+              <legend className="text-base font-serif text-content-emphasis">Payment Method</legend>
               <div className="space-y-2">
                 {(Object.keys(PAYMENT_METHOD_LABELS) as Array<keyof typeof PAYMENT_METHOD_LABELS>).map((method) => (
                   <label
                     key={method}
-                    className="flex items-center gap-3 p-2 border border-aura-umber rounded-lg cursor-pointer hover:border-aura-sand"
+                    className="flex items-center gap-3 p-2 border border-edge rounded-lg cursor-pointer hover:border-edge-strong"
                   >
                     <input
                       type="radio"
                       value={method}
                       {...register('paymentMethod')}
                     />
-                    <span className="text-sm font-medium text-aura-cream">{PAYMENT_METHOD_LABELS[method]}</span>
+                    <span className="text-sm font-medium text-content">{PAYMENT_METHOD_LABELS[method]}</span>
                     {method === 'CASH_ON_DELIVERY' && (
-                      <span className="text-xs text-aura-sand hidden sm:inline">— Pay with cash on arrival</span>
+                      <span className="text-xs text-content-secondary hidden sm:inline">— Pay with cash on arrival</span>
                     )}
                     {method === 'BANK_TRANSFER' && (
-                      <span className="text-xs text-aura-sand hidden sm:inline">— Upload your receipt</span>
+                      <span className="text-xs text-content-secondary hidden sm:inline">— Upload your receipt</span>
                     )}
                     {method === 'MOBILE_MONEY' && (
-                      <span className="text-xs text-aura-sand hidden sm:inline">— Upload transaction screenshot</span>
+                      <span className="text-xs text-content-secondary hidden sm:inline">— Upload transaction screenshot</span>
                     )}
                   </label>
                 ))}
@@ -229,31 +241,31 @@ const CheckoutPage: React.FC = () => {
 
               {/* Receipt upload */}
               <div>
-                <label className="text-xs text-aura-sand mb-0.5 block">
+                <label className="text-xs text-content-secondary mb-0.5 block">
                   Payment Receipt {needsReceipt ? '*' : '(not required for Cash on Delivery)'}
                 </label>
                 <input
                   type="file"
                   accept="image/*,.pdf"
                   onChange={(e) => setReceiptFile(e.target.files?.[0] || null)}
-                  className="w-full text-sm text-aura-cream file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-aura-clay file:text-aura-ink file:font-medium file:cursor-pointer"
+                  className="w-full text-sm text-content file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-accent-600 file:text-content-on-accent file:font-medium file:cursor-pointer"
                 />
                 {needsReceipt && receiptFile && (
-                  <p className="text-xs text-green-400 mt-0.5">
+                  <p className="text-xs text-success mt-0.5">
                     Selected: {receiptFile.name}
                   </p>
                 )}
               </div>
-            </div>
+            </fieldset>
 
             {submitError && (
-              <p className="text-sm text-red-400 bg-red-900/20 rounded-lg p-2">{submitError}</p>
+              <p className="text-sm text-danger bg-danger-bg rounded-lg p-2">{submitError}</p>
             )}
 
             <button
               type="button"
               onClick={goToStep2}
-              className="w-full px-6 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
+              className="w-full px-6 py-2.5 rounded-lg bg-accent-600 text-content-on-accent text-sm font-medium hover:bg-accent-700 transition-colors flex items-center justify-center gap-2"
             >
               Next: Review Order <ArrowRightIcon className="w-4 h-4" />
             </button>
@@ -264,48 +276,48 @@ const CheckoutPage: React.FC = () => {
         {step === 2 && (
           <div className="space-y-4">
             {/* Review shipping + payment */}
-            <div className="bg-aura-ink rounded-xl border border-aura-umber p-4 space-y-3">
+            <div className="bg-surface rounded-xl border border-edge p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-base font-serif text-aura-ivory">Shipping Details</h2>
-                <button type="button" onClick={() => setStep(1)} className="text-sm text-aura-clay hover:text-aura-sand">Edit</button>
+                <h2 className="text-base font-serif text-content-emphasis">Shipping Details</h2>
+                <button type="button" onClick={() => setStep(1)} className="text-sm text-accent-400 hover:text-content-secondary">Edit</button>
               </div>
               <div className="text-sm space-y-1">
-                <p className="text-aura-cream font-medium">{selectedName}</p>
-                <p className="text-aura-sand">+251{selectedPhone.replace(/^\+251\s?/, '').replace(/^0/, '')}</p>
-                <p className="text-aura-sand">{selectedAddress}</p>
-                <p className="pt-2 text-aura-cream">{PAYMENT_METHOD_LABELS[selectedPaymentMethod]}</p>
-                {receiptFile && <p className="text-xs text-green-400">Receipt: {receiptFile.name}</p>}
+                <p className="text-content font-medium">{selectedName}</p>
+                <p className="text-content-secondary">+251{selectedPhone.replace(/^\+251\s?/, '').replace(/^0/, '')}</p>
+                <p className="text-content-secondary">{selectedAddress}</p>
+                <p className="pt-2 text-content">{PAYMENT_METHOD_LABELS[selectedPaymentMethod]}</p>
+                {receiptFile && <p className="text-xs text-success">Receipt: {receiptFile.name}</p>}
               </div>
             </div>
 
             {/* Order summary */}
-            <div className="bg-aura-ink rounded-xl border border-aura-umber p-4 space-y-3">
-              <h2 className="text-base font-serif text-aura-ivory">Order Summary</h2>
+            <div className="bg-surface-sunken rounded-xl border border-edge p-4 space-y-3">
+              <h2 className="text-base font-serif text-content-emphasis">Order Summary</h2>
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {items.map((item) => (
                   <div key={`${item.productId}-${item.variantId}`} className="flex justify-between text-sm">
-                    <span className="text-aura-sand">
+                    <span className="text-content-secondary">
                       {item.name} × {item.quantity}
-                      {item.variantLabel && <span className="block text-xs text-aura-sand">{item.variantLabel}</span>}
+                      {item.variantLabel && <span className="block text-xs text-content-secondary">{item.variantLabel}</span>}
                     </span>
-                    <span className="text-aura-cream">{formatETB(item.price * item.quantity)}</span>
+                    <span className="text-content">{formatETB(item.price * item.quantity)}</span>
                   </div>
                 ))}
               </div>
-              <div className="border-t border-aura-umber pt-2 space-y-1.5">
+              <div className="border-t border-edge pt-2 space-y-1.5">
                 <div className="flex justify-between text-sm">
-                  <span className="text-aura-sand">Subtotal</span>
-                  <span className="text-aura-cream">{formatETB(subtotal)}</span>
+                  <span className="text-content-secondary">Subtotal</span>
+                  <span className="text-content">{formatETB(subtotal)}</span>
                 </div>
                 {discount > 0 && (
-                  <div className="flex justify-between text-sm text-green-400">
+                  <div className="flex justify-between text-sm text-success">
                     <span>Discount ({appliedCoupon?.code})</span>
                     <span>−{formatETB(discount)}</span>
                   </div>
                 )}
-                <div className="border-t border-aura-umber pt-1.5 flex justify-between items-baseline">
-                  <span className="text-aura-cream font-medium">Total</span>
-                  <span className="text-lg font-bold text-aura-cream">{formatETB(orderTotal)}</span>
+                <div className="border-t border-edge pt-1.5 flex justify-between items-baseline">
+                  <span className="text-content font-medium">Total</span>
+                  <span className="text-lg font-bold text-content">{formatETB(orderTotal)}</span>
                 </div>
               </div>
 
@@ -316,30 +328,30 @@ const CheckoutPage: React.FC = () => {
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
                   placeholder="Coupon code"
-                  className="flex-1 px-3 py-1.5 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream text-sm focus:outline-none focus:border-aura-clay"
+                  className="flex-1 px-3 py-1.5 bg-canvas border border-edge rounded-lg text-content text-sm focus:outline-none focus:border-edge-focus"
                 />
                 <button
                   type="button"
                   onClick={applyCoupon}
                   disabled={couponLoading || !couponCode.trim()}
-                  className="px-4 py-2 rounded-lg bg-aura-ink border border-aura-umber text-aura-cream text-sm hover:border-aura-clay disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-surface border border-edge text-content text-sm hover:border-edge-focus disabled:opacity-50"
                 >
                   {couponLoading ? '...' : 'Apply'}
                 </button>
               </div>
-              {couponError && <p className="text-xs text-red-400 mt-1">{couponError}</p>}
-              {appliedCoupon && <p className="text-xs text-green-400 mt-1">Coupon applied: {formatETB(discount)} off</p>}
+              {couponError && <p className="text-xs text-danger mt-1">{couponError}</p>}
+              {appliedCoupon && <p className="text-xs text-success mt-1">Coupon applied: {formatETB(discount)} off</p>}
             </div>
 
             {submitError && (
-              <p className="text-sm text-red-400 bg-red-900/20 rounded-lg p-3">{submitError}</p>
+              <p className="text-sm text-danger bg-danger-bg rounded-lg p-3">{submitError}</p>
             )}
 
             <div className="flex gap-3">
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="flex-1 px-6 py-3 rounded-lg border border-aura-umber text-aura-cream text-sm font-medium hover:border-aura-sand transition-colors flex items-center justify-center gap-2"
+                className="flex-1 px-6 py-3 rounded-lg border border-edge text-content text-sm font-medium hover:border-edge-strong transition-colors flex items-center justify-center gap-2"
               >
                 <ArrowLeftIcon className="w-4 h-4" /> Back
               </button>
@@ -348,8 +360,8 @@ const CheckoutPage: React.FC = () => {
                 disabled={submitting}
                 className={`flex-1 px-6 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
                   submitting
-                    ? 'bg-gray-700 text-gray-400 cursor-wait'
-                    : 'bg-purple-600 text-white hover:bg-purple-700'
+                    ? 'bg-surface-sunken text-content-muted cursor-wait'
+                    : 'bg-accent-600 text-content-on-accent hover:bg-accent-700'
                 }`}
               >
                 {submitting ? 'Placing order...' : 'Place Order'}
@@ -357,7 +369,7 @@ const CheckoutPage: React.FC = () => {
             </div>
 
             {!user && (
-              <p className="text-xs text-aura-sand text-center">
+              <p className="text-xs text-content-secondary text-center">
                 You can check out as a guest. Your order link will be saved for tracking.
               </p>
             )}

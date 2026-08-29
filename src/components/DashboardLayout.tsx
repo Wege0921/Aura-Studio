@@ -266,7 +266,7 @@ const DashboardLayout: React.FC = () => {
 
   return (
     <>
-      <div className="aura-dashboard h-screen max-h-screen bg-aura-bark flex overflow-hidden">
+      <div className="aura-dashboard h-screen max-h-screen bg-canvas flex overflow-hidden">
         {/* Desktop Sidebar (lg+) */}
         <DesktopSidebar
           sections={sections}
@@ -294,38 +294,30 @@ const DashboardLayout: React.FC = () => {
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Mobile Header - only visible on mobile */}
-          <header className="md:hidden dashboard-header bg-aura-bark border-b border-aura-umber sticky top-0 z-40 safe-top">
+          <header className="md:hidden dashboard-header bg-canvas border-b border-edge sticky top-0 z-40 safe-top">
             <div className="flex items-center justify-between h-14 px-4">
               <div className="flex items-center gap-3">
-                {isAdmin && (
-                  <button
-                    onClick={toggleViewMode}
-                    className="text-[10px] font-medium px-2 py-1 rounded bg-aura-sand/10 text-aura-sand border border-aura-umber"
-                  >
-                    {viewMode === 'admin' ? 'Admin' : 'User'}
-                  </button>
-                )}
-                <img src="/Aura-header-black.png" alt="AURA" className="h-7 w-auto" />
+                <img src="/Aura-header-black.png" alt="AURA" className="aura-logo h-7 w-auto" />
               </div>
               <div className="flex items-center gap-2">
                 <ThemeToggle />
                 <div className="relative">
                 <button
                   onClick={(e) => { e.stopPropagation(); setShowMobileMenu(prev => !prev); }}
-                  className="w-8 h-8 rounded-full bg-aura-sand/20 flex items-center justify-center touch-manipulation"
+                  className="w-8 h-8 rounded-full bg-[var(--state-selected)] flex items-center justify-center touch-manipulation"
                   type="button"
                 >
-                  <span className="text-sm font-semibold text-aura-ivory">
+                  <span className="text-sm font-semibold text-content-emphasis">
                     {user.name.charAt(0).toUpperCase()}
                   </span>
                 </button>
                 {showMobileMenu && (
-                  <div className="absolute right-0 mt-2 w-40 bg-aura-ink border border-aura-umber rounded-lg shadow-lg z-50 py-1">
+                  <div className="absolute right-0 mt-2 w-40 bg-surface border border-edge rounded-lg shadow-lg z-50 py-1">
                     <button
                       onClick={() => { handleTabChange('profile'); setShowMobileMenu(false); }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30"
+                      className="flex items-center w-full px-4 py-2 text-sm text-content hover:bg-[var(--state-hover)]"
                     >
-                      <svg className="w-4 h-4 mr-2 text-aura-sand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 mr-2 text-content-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                       Profile
@@ -333,28 +325,28 @@ const DashboardLayout: React.FC = () => {
                     {isAdmin && (
                       <button
                         onClick={() => { toggleViewMode(); setShowMobileMenu(false); }}
-                        className="flex items-center w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30"
+                        className="flex items-center w-full px-4 py-2 text-sm text-content hover:bg-[var(--state-hover)]"
                       >
                         {viewMode === 'user' ? (
                           <>
-                            <svg className="w-4 h-4 mr-2 text-aura-sand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4 mr-2 text-content-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                             </svg>
                             Switch to Admin
                           </>
                         ) : (
                           <>
-                            <svg className="w-4 h-4 mr-2 text-aura-sand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4 mr-2 text-content-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                             </svg>
-                            Switch to User
+                            Home
                           </>
                         )}
                       </button>
                     )}
                     <button
                       onClick={() => { handleLogout(); setShowMobileMenu(false); }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-red-400 hover:bg-aura-umber/30"
+                      className="flex items-center w-full px-4 py-2 text-sm text-danger hover:bg-[var(--state-hover)]"
                     >
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -369,10 +361,10 @@ const DashboardLayout: React.FC = () => {
           </header>
 
           {/* Mobile Sub-header — hamburger menu below header for all users */}
-          <div className="md:hidden dashboard-subheader bg-aura-bark/80 border-b border-aura-umber px-4 py-2 flex items-center gap-3 z-30">
+          <div className="md:hidden dashboard-subheader bg-canvas/80 border-b border-edge px-4 py-2 flex items-center gap-3 z-30">
               <button
                 onClick={() => setShowMobileDrawer(true)}
-                className="p-1.5 text-aura-cream hover:text-aura-ivory hover:bg-aura-sand/10 rounded-lg transition-colors touch-manipulation flex items-center gap-2"
+                className="p-1.5 text-content hover:text-content-emphasis hover:bg-[var(--state-hover)] rounded-lg transition-colors touch-manipulation flex items-center gap-2"
                 aria-label="Open menu"
                 type="button"
               >
@@ -387,7 +379,7 @@ const DashboardLayout: React.FC = () => {
           <div ref={contentRef} className="flex-1 content-safe-bottom overflow-y-auto overscroll-contain">
             <Suspense fallback={
               <div className="flex items-center justify-center py-20">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-umber"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-edge"></div>
               </div>
             }>
               {renderContent()}
@@ -407,15 +399,15 @@ const DashboardLayout: React.FC = () => {
       {showMobileDrawer && (
         <div className="md:hidden fixed top-14 left-0 right-0 bottom-0 z-50 flex touch-manipulation">
           <div
-            className="flex-1 bg-black/50"
+            className="flex-1 bg-overlay"
             onClick={() => setShowMobileDrawer(false)}
           />
-          <aside className="w-64 bg-aura-ink border-l border-aura-umber flex flex-col h-full max-h-full">
-            <div className="flex items-center justify-between h-14 px-4 border-b border-aura-umber shrink-0">
-              <h2 className="text-lg font-bold text-aura-ivory font-serif">Menu</h2>
+          <aside className="w-64 bg-surface border-l border-edge flex flex-col h-full max-h-full">
+            <div className="flex items-center justify-between h-14 px-4 border-b border-edge shrink-0">
+              <h2 className="text-lg font-bold text-content-emphasis font-serif">Menu</h2>
               <button
                 onClick={() => setShowMobileDrawer(false)}
-                className="p-2 text-aura-cream hover:text-aura-ivory hover:bg-aura-sand/10 rounded-lg transition-colors"
+                className="p-2 text-content hover:text-content-emphasis hover:bg-[var(--state-hover)] rounded-lg transition-colors"
                 type="button"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -430,10 +422,10 @@ const DashboardLayout: React.FC = () => {
                 onTabChange={(id) => { handleTabChange(id); setShowMobileDrawer(false); }}
               />
             </nav>
-            <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-aura-umber shrink-0">
+            <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-edge shrink-0">
               <button
                 onClick={() => { handleLogout(); setShowMobileDrawer(false); }}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-aura-ivory hover:bg-aura-sand/10 rounded-lg transition-colors min-h-[44px]"
+                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-content-emphasis hover:bg-[var(--state-hover)] rounded-lg transition-colors min-h-[44px]"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -490,8 +482,8 @@ const MobileDrawerNav: React.FC<{
               onClick={() => onTabChange(s.id)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold font-sans transition-colors duration-200 min-h-[44px] ${
                 isActive
-                  ? 'bg-aura-sand/20 text-aura-ivory'
-                  : 'text-aura-cream hover:bg-aura-umber/40 hover:text-aura-ivory'
+                  ? 'bg-[var(--state-selected)] text-content-emphasis'
+                  : 'text-content hover:bg-[var(--state-hover)] hover:text-content-emphasis'
               }`}
             >
               {s.icon}
@@ -509,8 +501,8 @@ const MobileDrawerNav: React.FC<{
               onClick={() => toggleGroup(s.id)}
               className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base font-bold font-sans transition-colors duration-200 min-h-[48px] ${
                 hasActiveChild
-                  ? 'text-aura-ivory'
-                  : 'text-aura-cream hover:bg-aura-umber/40 hover:text-aura-ivory'
+                  ? 'text-content-emphasis'
+                  : 'text-content hover:bg-[var(--state-hover)] hover:text-content-emphasis'
               }`}
             >
               {s.icon}
@@ -523,7 +515,7 @@ const MobileDrawerNav: React.FC<{
               </svg>
             </button>
             {isExpanded && (
-              <div className="ml-4 pl-3 border-l border-aura-umber/50 space-y-1">
+              <div className="ml-4 pl-3 border-l border-edge-subtle space-y-1">
                 {s.children.map((child) => {
                   const isActive = activeTab === child.id;
                   return (
@@ -532,8 +524,8 @@ const MobileDrawerNav: React.FC<{
                       onClick={() => onTabChange(child.id)}
                       className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-bold font-sans transition-colors duration-200 min-h-[40px] ${
                         isActive
-                          ? 'bg-aura-sand/20 text-aura-ivory'
-                          : 'text-aura-sand hover:bg-aura-umber/40 hover:text-aura-ivory'
+                          ? 'bg-[var(--state-selected)] text-content-emphasis'
+                          : 'text-content-secondary hover:bg-[var(--state-hover)] hover:text-content-emphasis'
                       }`}
                     >
                       {child.icon}

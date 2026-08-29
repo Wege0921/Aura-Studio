@@ -157,7 +157,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-aura-umber"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-edge"></div>
       </div>
     );
   }
@@ -166,23 +166,23 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
     <div className="space-y-6">
       {/* Messages */}
       {successMessage && (
-        <div className="bg-green-900/60 border border-green-600/40 text-green-200 px-4 py-3 rounded">
+        <div className="bg-success-bg border border-success-border text-success px-4 py-3 rounded">
           {successMessage}
         </div>
       )}
 
       {(error || purchaseError) && (
-        <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
+        <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded">
           {error || purchaseError}
         </div>
       )}
 
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-aura-cream mb-2">
+        <h2 className="text-2xl font-bold text-content mb-2">
           {showUserPackages ? 'My Packages' : 'Available Packages'}
         </h2>
-        <p className="text-aura-sand">
+        <p className="text-content-secondary">
           {showUserPackages
             ? 'Manage your purchased packages and track remaining sessions'
             : 'Choose the perfect package for your pilates journey'
@@ -192,19 +192,19 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
 
       {/* User Packages Summary (when not showing only user packages) */}
       {!showUserPackages && userPackages.length > 0 && (
-        <div className="bg-aura-ink border border-aura-umber rounded-xl p-6 shadow-lg shadow-black/20">
-          <h3 className="text-lg font-semibold text-aura-cream mb-4">Your Active Packages</h3>
+        <div className="bg-surface border border-edge rounded-xl p-6 shadow-elev-1">
+          <h3 className="text-lg font-semibold text-content mb-4">Your Active Packages</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {userPackages
               .filter(up => up.remainingSessions > 0 && (!up.expiresAt || new Date(up.expiresAt) >= new Date()))
               .map(userPackage => (
-                <div key={userPackage.id} className="bg-aura-bark rounded-lg p-4 shadow-sm border border-aura-umber">
-                  <h4 className="font-medium text-aura-cream">{userPackage.package.name}</h4>
-                  <p className="text-sm text-aura-sand mt-1">
+                <div key={userPackage.id} className="bg-canvas rounded-lg p-4 shadow-sm border border-edge">
+                  <h4 className="font-medium text-content">{userPackage.package.name}</h4>
+                  <p className="text-sm text-content-secondary mt-1">
                     {userPackage.remainingSessions} sessions remaining
                   </p>
                   {userPackage.expiresAt && (
-                    <p className="text-xs text-aura-clay mt-1">
+                    <p className="text-xs text-accent-600 mt-1">
                       Expires {new Date(userPackage.expiresAt).toLocaleDateString()}
                     </p>
                   )}
@@ -216,15 +216,15 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
 
       {/* Filters */}
       {!showUserPackages && (
-        <div className="bg-aura-ink p-3 rounded-lg border border-aura-umber">
+        <div className="bg-surface p-3 rounded-lg border border-edge">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             <div>
-              <label htmlFor="pkg-classType" className="block text-xs font-medium text-aura-sand mb-0.5">Type</label>
+              <label htmlFor="pkg-classType" className="block text-xs font-medium text-content-secondary mb-0.5">Type</label>
               <select
                 id="pkg-classType"
                 value={classTypeFilter}
                 onChange={(e) => { setClassTypeFilter(e.target.value); setCurrentPage(1); }}
-                className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+                className="w-full px-2.5 py-1.5 text-sm border border-edge rounded-md focus:outline-none focus:ring-content-secondary focus:border-edge bg-canvas text-content placeholder:text-content-secondary/70"
               >
                 <option value="">All</option>
                 <option value="PILATES">Pilates</option>
@@ -235,12 +235,12 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
             </div>
 
             <div>
-              <label htmlFor="pkg-sessions" className="block text-xs font-medium text-aura-sand mb-0.5">Sessions</label>
+              <label htmlFor="pkg-sessions" className="block text-xs font-medium text-content-secondary mb-0.5">Sessions</label>
               <select
                 id="pkg-sessions"
                 value={sessionsFilter}
                 onChange={(e) => { setSessionsFilter(e.target.value); setCurrentPage(1); }}
-                className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+                className="w-full px-2.5 py-1.5 text-sm border border-edge rounded-md focus:outline-none focus:ring-content-secondary focus:border-edge bg-canvas text-content placeholder:text-content-secondary/70"
               >
                 <option value="">All</option>
                 <option value="1">1 (Drop-in)</option>
@@ -252,12 +252,12 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
             </div>
 
             <div>
-              <label htmlFor="pkg-price" className="block text-xs font-medium text-aura-sand mb-0.5">Price</label>
+              <label htmlFor="pkg-price" className="block text-xs font-medium text-content-secondary mb-0.5">Price</label>
               <select
                 id="pkg-price"
                 value={priceFilter}
                 onChange={(e) => { setPriceFilter(e.target.value); setCurrentPage(1); }}
-                className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+                className="w-full px-2.5 py-1.5 text-sm border border-edge rounded-md focus:outline-none focus:ring-content-secondary focus:border-edge bg-canvas text-content placeholder:text-content-secondary/70"
               >
                 <option value="">All</option>
                 <option value="under5000">Under ETB 5,000</option>
@@ -267,12 +267,12 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
             </div>
 
             <div>
-              <label htmlFor="pkg-validity" className="block text-xs font-medium text-aura-sand mb-0.5">Validity</label>
+              <label htmlFor="pkg-validity" className="block text-xs font-medium text-content-secondary mb-0.5">Validity</label>
               <select
                 id="pkg-validity"
                 value={validityFilter}
                 onChange={(e) => { setValidityFilter(e.target.value); setCurrentPage(1); }}
-                className="w-full px-2.5 py-1.5 text-sm border border-aura-umber rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber bg-aura-bark text-aura-cream placeholder:text-aura-sand/70"
+                className="w-full px-2.5 py-1.5 text-sm border border-edge rounded-md focus:outline-none focus:ring-content-secondary focus:border-edge bg-canvas text-content placeholder:text-content-secondary/70"
               >
                 <option value="">All</option>
                 <option value="7">7 Days</option>
@@ -284,7 +284,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
           </div>
           <button
             onClick={() => { setClassTypeFilter(''); setSessionsFilter(''); setPriceFilter(''); setValidityFilter(''); setCurrentPage(1); }}
-            className="mt-2 text-xs text-aura-sand hover:text-aura-cream"
+            className="mt-2 text-xs text-content-secondary hover:text-content"
           >
             Clear filters
           </button>
@@ -305,16 +305,16 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
         <div className="text-center py-12">
           {packagesError ? (
             <>
-              <p className="text-red-300 mb-3">Failed to load packages. Please check your connection.</p>
+              <p className="text-danger mb-3">Failed to load packages. Please check your connection.</p>
               <button
                 onClick={() => queryClient.invalidateQueries({ queryKey: ['packages-available'] })}
-                className="px-4 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700"
+                className="px-4 py-2 bg-accent-600 text-content-on-accent text-sm rounded-lg hover:bg-accent-700"
               >
                 Retry
               </button>
             </>
           ) : (
-            <p className="text-aura-cream">
+            <p className="text-content">
               {showUserPackages ? 'No packages found.' : 'No packages available at the moment.'}
             </p>
           )}
@@ -333,7 +333,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
               return Object.entries(grouped).map(([classType, pkgs]) => (
                 <div key={classType}>
                   {classTypeFilter === '' && (
-                    <h3 className="text-lg font-semibold text-aura-cream mb-4 font-serif">
+                    <h3 className="text-lg font-semibold text-content mb-4 font-serif">
                       {CATEGORY_LABELS[classType] || classType}
                     </h3>
                   )}
@@ -355,26 +355,26 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
 
           {/* Pagination */}
           {filteredPackages.length > ITEMS_PER_PAGE && (
-            <div className="bg-aura-ink px-4 py-3 mt-6 mb-20 flex items-center justify-between border border-aura-umber rounded-lg">
+            <div className="bg-surface px-4 py-3 mt-6 mb-20 flex items-center justify-between border border-edge rounded-lg">
               <div className="flex-1 flex justify-between sm:hidden">
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                  className="relative inline-flex items-center px-4 py-2 border border-edge text-sm font-medium rounded-md text-content-secondary bg-surface hover:bg-[var(--state-hover)] disabled:opacity-50"
                 >
                   Previous
                 </button>
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredPackages.length / ITEMS_PER_PAGE), prev + 1))}
                   disabled={currentPage === Math.ceil(filteredPackages.length / ITEMS_PER_PAGE)}
-                  className="relative inline-flex items-center px-4 py-2 border border-aura-umber text-sm font-medium rounded-md text-aura-sand bg-aura-ink hover:bg-aura-umber/30 disabled:opacity-50"
+                  className="relative inline-flex items-center px-4 py-2 border border-edge text-sm font-medium rounded-md text-content-secondary bg-surface hover:bg-[var(--state-hover)] disabled:opacity-50"
                 >
                   Next
                 </button>
               </div>
               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm text-aura-sand">
+                  <p className="text-sm text-content-secondary">
                     Showing <span className="font-medium">{((currentPage - 1) * ITEMS_PER_PAGE) + 1}</span> to <span className="font-medium">{Math.min(currentPage * ITEMS_PER_PAGE, filteredPackages.length)}</span> of <span className="font-medium">{filteredPackages.length}</span> results
                   </p>
                 </div>
@@ -383,7 +383,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
                     <button
                       onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                       disabled={currentPage === 1}
-                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-edge bg-surface text-sm font-medium text-content-secondary hover:bg-[var(--state-hover)] disabled:opacity-50"
                     >
                       Previous
                     </button>
@@ -393,8 +393,8 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
                         onClick={() => setCurrentPage(page)}
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                           page === currentPage
-                            ? 'z-10 bg-purple-600 border-purple-600 text-white'
-                            : 'bg-aura-ink border-aura-umber text-aura-sand hover:bg-aura-umber/30'
+                            ? 'z-10 bg-accent-600 border-accent-600 text-content-on-accent'
+                            : 'bg-surface border-edge text-content-secondary hover:bg-[var(--state-hover)]'
                         }`}
                       >
                         {page}
@@ -403,7 +403,7 @@ const PackageList: React.FC<PackageListProps> = ({ showUserPackages = false }) =
                     <button
                       onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredPackages.length / ITEMS_PER_PAGE), prev + 1))}
                       disabled={currentPage === Math.ceil(filteredPackages.length / ITEMS_PER_PAGE)}
-                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-aura-umber bg-aura-ink text-sm font-medium text-aura-sand hover:bg-aura-umber/30 disabled:opacity-50"
+                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-edge bg-surface text-sm font-medium text-content-secondary hover:bg-[var(--state-hover)] disabled:opacity-50"
                     >
                       Next
                     </button>

@@ -15,7 +15,7 @@ interface MobileBottomNavProps {
 const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ tabs, activeTab, onTabChange }) => {
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 bg-aura-bark border-t border-aura-umber md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-canvas border-t border-edge md:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       aria-label="Mobile navigation"
     >
@@ -31,15 +31,15 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ tabs, activeTab, onTa
                 min-h-[44px] px-2
                 transition-colors duration-200 font-sans
                 ${isActive
-                  ? 'text-aura-ivory'
-                  : 'text-aura-sand hover:text-aura-ivory'
+                  ? 'text-content-emphasis'
+                  : 'text-content-secondary hover:text-content-emphasis'
                 }
               `}
               aria-current={isActive ? 'page' : undefined}
             >
               <div className={`
                 p-1 rounded-lg transition-all duration-200
-                ${isActive ? 'bg-aura-sand/20' : ''}
+                ${isActive ? 'bg-[var(--state-selected)]' : ''}
               `}>
                 {tab.icon}
               </div>

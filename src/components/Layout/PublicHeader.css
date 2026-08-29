@@ -33,7 +33,7 @@
 }
 
 [data-theme="light"] .public-header .ph-nav:not(.ph-landing) .ph-logo img {
-  filter: brightness(0) opacity(0.9);
+  filter: var(--logo-filter, brightness(0) opacity(0.9));
 }
 
 [data-theme="light"] .public-header .ph-nav:not(.ph-landing) .ph-burger span {
@@ -52,12 +52,80 @@
   --ph-line: rgba(242,235,224,0.28);
 }
 
+[data-theme="atelier"] .public-header {
+  --ph-ink: var(--text-primary);
+  --ph-bark: var(--bg-canvas);
+  --ph-umber: var(--border-default);
+  --ph-clay: var(--accent-600);
+  --ph-sand: var(--text-secondary);
+  --ph-cream: var(--text-primary);
+  --ph-paper: var(--bg-surface-sunken);
+  --ph-ivory: var(--text-primary);
+  --ph-line: var(--border-subtle);
+}
+
+[data-theme="atelier"] .public-header .ph-nav:not(.ph-landing) .ph-logo img {
+  filter: var(--logo-filter, brightness(0) opacity(0.9));
+}
+
+[data-theme="atelier"] .public-header .ph-nav:not(.ph-landing) .ph-burger span {
+  background: var(--text-primary);
+}
+
+[data-theme="atelier"] .public-header .ph-nav.ph-landing {
+  --ph-ink: #241a13;
+  --ph-bark: #3b2a1d;
+  --ph-umber: #5c4530;
+  --ph-clay: #a87f5a;
+  --ph-sand: #cdab85;
+  --ph-cream: #f2ebe0;
+  --ph-paper: #eee5d6;
+  --ph-ivory: #f8f4ec;
+  --ph-line: rgba(242,235,224,0.28);
+}
+
+[data-theme="atelier"] .public-header .ph-overlay {
+  background: var(--bg-overlay);
+}
+
+[data-theme="atelier"] .public-header .ph-user-avatar {
+  background: var(--accent-600);
+  color: #ffffff;
+}
+
+[data-theme="atelier"] .public-header .ph-user-menu {
+  box-shadow: var(--elev-2);
+}
+
+[data-theme="atelier"] .public-header .ph-user-menu-item:hover {
+  background: var(--accent-50);
+  color: var(--text-primary);
+}
+
+[data-theme="atelier"] .public-header .ph-user-menu-logout {
+  color: var(--status-error);
+}
+
+[data-theme="atelier"] .public-header .ph-user-menu-logout:hover {
+  background: rgba(163, 54, 54, 0.08);
+  color: var(--status-error);
+}
+
+[data-theme="atelier"] .public-header .ph-drawer button {
+  border-bottom-color: var(--border-subtle);
+}
+
+[data-theme="atelier"] .public-header .ph-drawer button:hover {
+  color: var(--text-primary);
+}
+
 /* ---------- NAV ---------- */
 .public-header .ph-nav {
-  position: sticky;
+  position: fixed;
   top: 0;
   left: 0; right: 0;
-  z-index: 10;
+  width: 100%;
+  z-index: 40;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -330,6 +398,75 @@
   font-family: 'Jost', sans-serif;
   font-size: 14px;
   color: var(--ph-sand);
+}
+.public-header .ph-drawer .theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+/* Neutralize the drawer's nav-button styles inside the theme toggle so the
+   icon stays centered with the label (the drawer rules out-specificity the
+   Tailwind utilities on ThemeToggle). */
+.public-header .ph-drawer .theme-toggle-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: none;
+  border-bottom: none;
+  border-radius: 9999px;
+  font-family: inherit;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: normal;
+  text-align: center;
+  background: transparent;
+  color: var(--ph-sand);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.public-header .ph-drawer .theme-toggle-trigger:hover {
+  background: var(--state-hover);
+}
+.public-header .ph-drawer .theme-menu button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-bottom: none;
+  border-radius: 0;
+  font-family: inherit;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: normal;
+  text-align: left;
+  background: transparent;
+  color: var(--content);
+  cursor: pointer;
+}
+.public-header .ph-drawer .theme-menu button:hover {
+  background: var(--state-hover);
+}
+.public-header .ph-drawer .theme-menu button[aria-checked='true'] {
+  background: var(--state-selected);
+}
+.public-header .ph-drawer .theme-menu .theme-menu-label {
+  color: var(--content);
+}
+.public-header .ph-drawer .theme-menu button[aria-checked='true'] .theme-menu-label {
+  color: var(--content-emphasis);
+}
+.public-header .ph-drawer .theme-menu .theme-menu-icon {
+  color: var(--content-secondary);
+}
+.public-header .ph-drawer .theme-menu button[aria-checked='true'] .theme-menu-icon,
+.public-header .ph-drawer .theme-menu .theme-menu-check {
+  color: var(--accent-600);
 }
 .public-header .ph-drawer-insta {
   margin-top: auto;

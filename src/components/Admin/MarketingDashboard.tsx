@@ -100,7 +100,7 @@ const MarketingDashboard: React.FC = () => {
       <div className="bg-aura-ink rounded-xl border border-aura-umber p-6">
         <h2 className="text-lg font-semibold text-aura-cream mb-4">New Email Campaign</h2>
         {message && (
-          <div className={`mb-4 px-4 py-3 rounded ${message.includes('success') ? 'bg-green-900/40 text-green-200' : 'bg-red-900/40 text-red-200'}`}>
+          <div className={`mb-4 px-4 py-3 rounded border ${message.includes('success') ? 'bg-success-bg text-success border-success-border' : 'bg-danger-bg text-danger border-danger-border'}`}>
             {message}
           </div>
         )}
@@ -128,7 +128,7 @@ const MarketingDashboard: React.FC = () => {
           <button
             onClick={handleSend}
             disabled={loading || !subject.trim() || !body.trim()}
-            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+            className="bg-accent-600 text-content-on-accent px-6 py-2 rounded-lg hover:bg-accent-700 transition-colors disabled:opacity-50"
           >
             {loading ? 'Sending...' : 'Send to All Users'}
           </button>

@@ -187,12 +187,12 @@ const PublicHeader: React.FC = () => {
         </nav>
         <div className="ph-desktop-actions">
           <ThemeToggle className="hidden md:inline-flex" />
-          <button onClick={openCart} className="ph-cart-btn inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-aura-sand/20 transition-colors" aria-label="Cart" style={{ position: 'relative' }}>
+          <button onClick={openCart} className="ph-cart-btn inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-[var(--state-hover)] transition-colors" aria-label="Cart" style={{ position: 'relative' }}>
             <ShoppingBagIcon className="w-5 h-5" />
             {totalItems > 0 && (
               <span style={{
                 position: 'absolute', top: '-6px', right: '-6px',
-                background: '#d946ef', color: '#fff', fontSize: '10px',
+                background: 'var(--accent-600)', color: 'var(--text-on-accent)', fontSize: '10px',
                 fontWeight: 700, borderRadius: '9999px', minWidth: '18px',
                 height: '18px', display: 'flex', alignItems: 'center',
                 justifyContent: 'center', padding: '0 4px',

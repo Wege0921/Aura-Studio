@@ -45,13 +45,13 @@ const QuickActionCard = ({
 }) => (
   <button
     onClick={onClick}
-    className={`w-full text-left p-5 rounded-xl border border-aura-umber bg-aura-ink hover:bg-aura-bark transition-all duration-200 group`}
+    className={`w-full text-left p-5 rounded-xl border border-edge bg-surface hover:bg-canvas transition-all duration-200 group`}
   >
     <div className={`w-10 h-10 rounded-lg ${color} flex items-center justify-center mb-3 group-hover:scale-105 transition-transform`}>
       {icon}
     </div>
-    <h3 className="text-aura-cream font-semibold text-sm mb-1">{title}</h3>
-    <p className="text-aura-sand text-xs">{description}</p>
+    <h3 className="text-content font-semibold text-sm mb-1">{title}</h3>
+    <p className="text-content-secondary text-xs">{description}</p>
   </button>
 );
 
@@ -108,14 +108,14 @@ const UserDashboard: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
+      <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded">
         {error}
       </div>
     );
@@ -124,27 +124,27 @@ const UserDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="relative bg-gradient-to-br from-purple-900/40 to-aura-ink rounded-2xl shadow-lg shadow-black/20 border border-aura-umber p-6 overflow-hidden">
+      <div className="relative bg-gradient-to-br from-accent-700/40 to-surface rounded-2xl shadow-elev-1 border border-edge p-6 overflow-hidden">
         <div className="relative z-10">
-          <h1 className="text-2xl md:text-3xl font-bold text-aura-cream mb-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-content mb-2">
             Welcome back, {user?.name}!
           </h1>
-          <p className="text-aura-sand max-w-lg">
+          <p className="text-content-secondary max-w-lg">
             Ready for your next pilates session? Browse packages, track your progress, and manage your wellness journey.
           </p>
         </div>
         {/* Decorative circle */}
-        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-purple-500/10 blur-2xl" />
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-accent-400/10 blur-2xl" />
       </div>
 
       {/* Quick Actions Grid */}
       <div>
-        <h2 className="text-lg font-semibold text-aura-cream mb-4">Quick Actions</h2>
+        <h2 className="text-lg font-semibold text-content mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           <QuickActionCard
             title="Browse Classes"
             description="View all available classes"
-            color="bg-pink-600/20 text-pink-400"
+            color="bg-accent-100 text-accent-700"
             onClick={goToClasses}
             icon={
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,7 +155,7 @@ const UserDashboard: React.FC = () => {
           <QuickActionCard
             title="Book a Class"
             description="Find and book your next session"
-            color="bg-purple-600/20 text-purple-400"
+            color="bg-accent-600/20 text-accent-400"
             onClick={goToClasses}
             icon={
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,7 +166,7 @@ const UserDashboard: React.FC = () => {
           <QuickActionCard
             title="My Bookings"
             description="View your class bookings"
-            color="bg-indigo-600/20 text-indigo-400"
+            color="bg-info/20 text-info"
             onClick={goToBookings}
             icon={
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,7 +177,7 @@ const UserDashboard: React.FC = () => {
           <QuickActionCard
             title="Browse Packages"
             description="View all available packages"
-            color="bg-teal-600/20 text-teal-400"
+            color="bg-success-bg text-success"
             onClick={goToPackages}
             icon={
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -188,7 +188,7 @@ const UserDashboard: React.FC = () => {
           <QuickActionCard
             title="Buy a Package"
             description="Purchase new sessions"
-            color="bg-green-600/20 text-green-400"
+            color="bg-success/20 text-success"
             onClick={goToPackages}
             icon={
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,7 +199,7 @@ const UserDashboard: React.FC = () => {
           <QuickActionCard
             title="Payment History"
             description="View your past payments"
-            color="bg-amber-600/20 text-amber-400"
+            color="bg-warning/20 text-warning"
             onClick={goToPayments}
             icon={
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,23 +212,23 @@ const UserDashboard: React.FC = () => {
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-aura-ink rounded-xl border border-aura-umber p-4">
-          <p className="text-aura-sand text-xs uppercase tracking-wider mb-1">Active Packages</p>
-          <p className="text-2xl font-bold text-aura-cream">{activePkgs.length}</p>
+        <div className="bg-surface rounded-xl border border-edge p-4">
+          <p className="text-content-secondary text-xs uppercase tracking-wider mb-1">Active Packages</p>
+          <p className="text-2xl font-bold text-content">{activePkgs.length}</p>
         </div>
-        <div className="bg-aura-ink rounded-xl border border-aura-umber p-4">
-          <p className="text-aura-sand text-xs uppercase tracking-wider mb-1">Total Sessions</p>
-          <p className="text-2xl font-bold text-aura-cream">
+        <div className="bg-surface rounded-xl border border-edge p-4">
+          <p className="text-content-secondary text-xs uppercase tracking-wider mb-1">Total Sessions</p>
+          <p className="text-2xl font-bold text-content">
             {activePkgs.reduce((sum, up) => sum + (up.remainingSessions || 0), 0)}
           </p>
         </div>
-        <div className="bg-aura-ink rounded-xl border border-aura-umber p-4">
-          <p className="text-aura-sand text-xs uppercase tracking-wider mb-1">Upcoming</p>
-          <p className="text-2xl font-bold text-aura-cream">{upcomingBookings.length}</p>
+        <div className="bg-surface rounded-xl border border-edge p-4">
+          <p className="text-content-secondary text-xs uppercase tracking-wider mb-1">Upcoming</p>
+          <p className="text-2xl font-bold text-content">{upcomingBookings.length}</p>
         </div>
-        <div className="bg-aura-ink rounded-xl border border-aura-umber p-4">
-          <p className="text-aura-sand text-xs uppercase tracking-wider mb-1">Member Since</p>
-          <p className="text-sm font-semibold text-aura-cream mt-1">
+        <div className="bg-surface rounded-xl border border-edge p-4">
+          <p className="text-content-secondary text-xs uppercase tracking-wider mb-1">Member Since</p>
+          <p className="text-sm font-semibold text-content mt-1">
             {user?.createdAt ? format(new Date(user.createdAt), 'MMM yyyy') : 'N/A'}
           </p>
         </div>
@@ -237,30 +237,30 @@ const UserDashboard: React.FC = () => {
       {/* Two Column: Packages + Bookings */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Your Packages */}
-        <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-umber p-6">
+        <div className="bg-surface rounded-xl shadow-elev-1 border border-edge p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-aura-cream">Your Packages</h2>
-            <button onClick={goToPackages} className="text-xs text-purple-400 hover:text-purple-300">
+            <h2 className="text-lg font-semibold text-content">Your Packages</h2>
+            <button onClick={goToPackages} className="text-xs text-accent-400 hover:text-accent-400">
               View All
             </button>
           </div>
           <div className="space-y-3">
             {userPackages.length === 0 ? (
               <div className="text-center py-6">
-                <p className="text-aura-sand text-sm mb-3">No active packages yet</p>
+                <p className="text-content-secondary text-sm mb-3">No active packages yet</p>
                 <button
                   onClick={goToPackages}
-                  className="text-sm text-purple-400 hover:text-purple-300 font-medium"
+                  className="text-sm text-accent-400 hover:text-accent-400 font-medium"
                 >
                   Browse packages →
                 </button>
               </div>
             ) : (
               userPackages.slice(0, 3).map((up) => (
-                <div key={up.id} className="flex items-center justify-between p-3 rounded-lg bg-aura-bark/40 border border-aura-umber">
+                <div key={up.id} className="flex items-center justify-between p-3 rounded-lg bg-canvas/40 border border-edge">
                   <div>
-                    <p className="text-sm font-medium text-aura-cream">{up.package.name}</p>
-                    <p className="text-xs text-aura-sand">
+                    <p className="text-sm font-medium text-content">{up.package.name}</p>
+                    <p className="text-xs text-content-secondary">
                       {up.remainingSessions !== undefined
                         ? `${up.remainingSessions} sessions remaining`
                         : 'Unlimited sessions'
@@ -268,7 +268,7 @@ const UserDashboard: React.FC = () => {
                     </p>
                   </div>
                   {up.expiresAt && (
-                    <span className="text-xs text-aura-clay">
+                    <span className="text-xs text-accent-600">
                       {Math.ceil((new Date(up.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))}d left
                     </span>
                   )}
@@ -279,30 +279,30 @@ const UserDashboard: React.FC = () => {
         </div>
 
         {/* Upcoming Classes */}
-        <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-umber p-6">
+        <div className="bg-surface rounded-xl shadow-elev-1 border border-edge p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-aura-cream">Upcoming Classes</h2>
+            <h2 className="text-lg font-semibold text-content">Upcoming Classes</h2>
           </div>
           <div className="space-y-3">
             {upcomingBookings.length === 0 ? (
               <div className="text-center py-6">
-                <p className="text-aura-sand text-sm">No upcoming classes</p>
+                <p className="text-content-secondary text-sm">No upcoming classes</p>
               </div>
             ) : (
               upcomingBookings.map((booking) => (
-                <div key={booking.id} className="flex items-center gap-3 p-3 rounded-lg bg-aura-bark/40 border border-aura-umber">
-                  <div className="w-10 h-10 rounded-lg bg-purple-600/20 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div key={booking.id} className="flex items-center gap-3 p-3 rounded-lg bg-canvas/40 border border-edge">
+                  <div className="w-10 h-10 rounded-lg bg-accent-600/20 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-aura-cream truncate">{booking.class.name}</p>
-                    <p className="text-xs text-aura-sand">
+                    <p className="text-sm font-medium text-content truncate">{booking.class.name}</p>
+                    <p className="text-xs text-content-secondary">
                       {format(new Date(booking.class.date), 'EEE, MMM dd')} at {booking.class.time}
                     </p>
                   </div>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-green-900/30 text-green-400 flex-shrink-0">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-success-bg text-success flex-shrink-0">
                     {booking.status}
                   </span>
                 </div>

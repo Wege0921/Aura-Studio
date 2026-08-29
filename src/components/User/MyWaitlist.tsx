@@ -63,14 +63,14 @@ const MyWaitlist: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
+      <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded">
         {error}
       </div>
     );
@@ -78,31 +78,31 @@ const MyWaitlist: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-aura-cream">My Waitlist</h1>
+      <h1 className="text-2xl font-bold text-content">My Waitlist</h1>
       {entries.length === 0 ? (
-        <div className="bg-aura-ink rounded-xl border border-aura-umber p-8 text-center">
-          <p className="text-aura-sand">You are not on any waitlists.</p>
+        <div className="bg-surface rounded-xl border border-edge p-8 text-center">
+          <p className="text-content-secondary">You are not on any waitlists.</p>
         </div>
       ) : (
         <div className="grid gap-4">
           {entries.map(entry => (
             <div
               key={entry.id}
-              className="bg-aura-ink rounded-xl border border-aura-umber p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+              className="bg-surface rounded-xl border border-edge p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
             >
               <div>
-                <h3 className="text-lg font-semibold text-aura-cream">{entry.class.name}</h3>
-                <p className="text-aura-sand text-sm">
+                <h3 className="text-lg font-semibold text-content">{entry.class.name}</h3>
+                <p className="text-content-secondary text-sm">
                   {format(new Date(entry.class.date), 'MMM dd, yyyy')} at {entry.class.time}
                 </p>
-                <p className="text-aura-sand text-sm">with {entry.class.instructor}</p>
-                <span className="inline-block mt-2 text-xs px-2 py-1 rounded bg-aura-umber/40 text-aura-sand">
+                <p className="text-content-secondary text-sm">with {entry.class.instructor}</p>
+                <span className="inline-block mt-2 text-xs px-2 py-1 rounded bg-surface-sunken text-content-secondary">
                   Position: #{entry.position} — {entry.status}
                 </span>
               </div>
               <button
                 onClick={() => handleLeave(entry.id)}
-                className="bg-red-600/80 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm"
+                className="bg-danger/80 text-content-on-accent px-4 py-2 rounded-lg hover:opacity-90 transition-colors text-sm"
               >
                 Leave Waitlist
               </button>

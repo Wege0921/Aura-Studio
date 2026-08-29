@@ -58,7 +58,7 @@ const Register: React.FC = () => {
 
   const strength = getPasswordStrength(formData.password);
   const strengthLabels = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
-  const strengthColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500', 'bg-emerald-500'];
+  const strengthColors = ['bg-danger', 'bg-warning', 'bg-warning', 'bg-success', 'bg-success'];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,25 +87,25 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-aura-bark py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-canvas py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-aura-cream">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-content">
             Join AURA
           </h2>
-          <p className="mt-2 text-center text-sm text-aura-sand">
+          <p className="mt-2 text-center text-sm text-content-secondary">
             Create your account for our women-only studio
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-900/30 border border-red-700/40 text-red-300 px-4 py-3 rounded backdrop-blur-sm">
+            <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded backdrop-blur-sm">
               {error}
             </div>
           )}
           <div className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-aura-sand">
+              <label htmlFor="name" className="block text-sm font-medium text-content-secondary">
                 Full Name
               </label>
               <input
@@ -113,14 +113,14 @@ const Register: React.FC = () => {
                 name="name"
                 type="text"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-aura-umber placeholder:text-aura-sand/50 text-aura-cream rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber sm:text-sm bg-aura-ink/40"
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-edge placeholder:text-content-secondary/50 text-content rounded-md focus:outline-none focus:ring-content-secondary focus:border-edge sm:text-sm bg-surface/40"
                 placeholder="Enter your full name"
                 value={formData.name}
                 onChange={handleChange}
               />
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-aura-sand">
+              <label htmlFor="email" className="block text-sm font-medium text-content-secondary">
                 Email Address
               </label>
               <input
@@ -129,28 +129,28 @@ const Register: React.FC = () => {
                 type="email"
                 autoComplete="email"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-aura-umber placeholder:text-aura-sand/50 text-aura-cream rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber sm:text-sm bg-aura-ink/40"
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-edge placeholder:text-content-secondary/50 text-content rounded-md focus:outline-none focus:ring-content-secondary focus:border-edge sm:text-sm bg-surface/40"
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
               />
             </div>
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-aura-sand">
+              <label htmlFor="phone" className="block text-sm font-medium text-content-secondary">
                 Phone Number (Optional)
               </label>
               <input
                 id="phone"
                 name="phone"
                 type="tel"
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-aura-umber placeholder:text-aura-sand/50 text-aura-cream rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber sm:text-sm bg-aura-ink/40"
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-edge placeholder:text-content-secondary/50 text-content rounded-md focus:outline-none focus:ring-content-secondary focus:border-edge sm:text-sm bg-surface/40"
                 placeholder="Enter your phone number"
                 value={formData.phone}
                 onChange={handleChange}
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-aura-sand">
+              <label htmlFor="password" className="block text-sm font-medium text-content-secondary">
                 Password
               </label>
               <div className="relative mt-1">
@@ -159,7 +159,7 @@ const Register: React.FC = () => {
                   name="password"
                   type={showPassword ? 'text' : 'password'}
                   required
-                  className="appearance-none relative block w-full px-3 py-2 pr-10 border border-aura-umber placeholder:text-aura-sand/50 text-aura-cream rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber sm:text-sm bg-aura-ink/40"
+                  className="appearance-none relative block w-full px-3 py-2 pr-10 border border-edge placeholder:text-content-secondary/50 text-content rounded-md focus:outline-none focus:ring-content-secondary focus:border-edge sm:text-sm bg-surface/40"
                   placeholder="Create a password"
                   value={formData.password}
                   onChange={handleChange}
@@ -167,7 +167,7 @@ const Register: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-aura-sand hover:text-aura-cream"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-content-secondary hover:text-content"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
@@ -179,18 +179,18 @@ const Register: React.FC = () => {
                     {[0, 1, 2, 3, 4].map((i) => (
                       <div
                         key={i}
-                        className={`flex-1 rounded-full transition-colors ${i < strength ? strengthColors[strength - 1] : 'bg-aura-sand/20'}`}
+                        className={`flex-1 rounded-full transition-colors ${i < strength ? strengthColors[strength - 1] : 'bg-[var(--state-selected)]'}`}
                       />
                     ))}
                   </div>
-                  <p className="text-xs text-aura-sand mt-1">
+                  <p className="text-xs text-content-secondary mt-1">
                     {strengthLabels[strength - 1] || 'Weak'} — Use 8+ chars with upper, lower, number & symbol
                   </p>
                 </div>
               )}
             </div>
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-aura-sand">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-content-secondary">
                 Confirm Password
               </label>
               <div className="relative mt-1">
@@ -199,7 +199,7 @@ const Register: React.FC = () => {
                   name="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
                   required
-                  className="appearance-none relative block w-full px-3 py-2 pr-10 border border-aura-umber placeholder:text-aura-sand/50 text-aura-cream rounded-md focus:outline-none focus:ring-aura-sand focus:border-aura-umber sm:text-sm bg-aura-ink/40"
+                  className="appearance-none relative block w-full px-3 py-2 pr-10 border border-edge placeholder:text-content-secondary/50 text-content rounded-md focus:outline-none focus:ring-content-secondary focus:border-edge sm:text-sm bg-surface/40"
                   placeholder="Confirm your password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
@@ -207,7 +207,7 @@ const Register: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-aura-sand hover:text-aura-cream"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-content-secondary hover:text-content"
                   tabIndex={-1}
                 >
                   {showConfirmPassword ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
@@ -220,7 +220,7 @@ const Register: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-aura-ivory bg-aura-bark hover:bg-aura-umber focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-aura-umber disabled:opacity-50"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-content-emphasis bg-canvas hover:bg-surface-sunken focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-edge disabled:opacity-50"
             >
               {loading ? 'Creating account...' : 'Create account'}
             </button>
@@ -228,10 +228,10 @@ const Register: React.FC = () => {
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-aura-umber" />
+              <div className="w-full border-t border-edge" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-2 bg-aura-bark text-aura-sand">or</span>
+              <span className="px-2 bg-canvas text-content-secondary">or</span>
             </div>
           </div>
 
@@ -239,7 +239,7 @@ const Register: React.FC = () => {
             type="button"
             onClick={handleGoogleSignUp}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-aura-umber rounded-md bg-aura-ink/40 text-aura-cream hover:bg-aura-ink/60 transition-colors text-sm font-medium disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-edge rounded-md bg-surface/40 text-content hover:bg-surface/60 transition-colors text-sm font-medium disabled:opacity-50"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -253,7 +253,7 @@ const Register: React.FC = () => {
           <div className="text-center">
             <Link
               to="/login"
-              className="font-medium text-aura-sand hover:text-aura-cream"
+              className="font-medium text-content-secondary hover:text-content"
             >
               Already have an account? Sign in
             </Link>

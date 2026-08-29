@@ -82,28 +82,28 @@ const BookingHistory: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'CONFIRMED':
-        return 'bg-green-900/40 text-green-200';
+        return 'bg-success-bg text-success';
       case 'CANCELLED':
-        return 'bg-red-900/40 text-red-200';
+        return 'bg-danger-bg text-danger';
       case 'COMPLETED':
-        return 'bg-aura-umber/40 text-aura-sand';
+        return 'bg-surface-sunken text-content-secondary';
       default:
-        return 'bg-amber-900/40 text-amber-200';
+        return 'bg-warning-bg text-warning';
     }
   };
 
   const getClassTypeColor = (classType: string) => {
     switch (classType) {
       case 'PILATES':
-        return 'bg-aura-clay/20 text-aura-cream';
+        return 'bg-accent-100 text-content';
       case 'PRENATAL':
-        return 'bg-aura-sand/15 text-aura-cream';
+        return 'bg-[var(--state-hover)] text-content';
       case 'POSTPARTUM':
-        return 'bg-aura-umber/20 text-aura-cream';
+        return 'bg-surface-sunken text-content';
       case 'MEDITATION':
-        return 'bg-purple-500/15 text-aura-cream';
+        return 'bg-accent-400/15 text-content';
       default:
-        return 'bg-aura-sand/10 text-aura-sand';
+        return 'bg-[var(--state-hover)] text-content-secondary';
     }
   };
 
@@ -124,7 +124,7 @@ const BookingHistory: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600"></div>
       </div>
     );
   }
@@ -133,12 +133,12 @@ const BookingHistory: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-2xl font-bold text-aura-cream">My Bookings</h2>
+        <h2 className="text-2xl font-bold text-content">My Bookings</h2>
         <div className="mt-4 sm:mt-0">
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="block w-full sm:w-auto px-3 py-2 border border-aura-umber rounded-md bg-aura-bark text-aura-cream focus:outline-none focus:ring-aura-sand focus:border-aura-umber"
+            className="block w-full sm:w-auto px-3 py-2 border border-edge rounded-md bg-canvas text-content focus:outline-none focus:ring-content-secondary focus:border-edge"
           >
             <option value="all">All Bookings</option>
             <option value="CONFIRMED">Confirmed</option>
@@ -150,7 +150,7 @@ const BookingHistory: React.FC = () => {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
+        <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded">
           {error}
         </div>
       )}
@@ -158,18 +158,18 @@ const BookingHistory: React.FC = () => {
       {/* Bookings List */}
       {bookings.length === 0 ? (
         <div className="text-center py-12">
-          <svg className="mx-auto h-12 w-12 text-aura-sand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="mx-auto h-12 w-12 text-content-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-aura-cream">No bookings found</h3>
-          <p className="mt-1 text-sm text-aura-sand">
+          <h3 className="mt-2 text-sm font-medium text-content">No bookings found</h3>
+          <p className="mt-1 text-sm text-content-secondary">
             {filter === 'all' ? 'You haven\'t made any bookings yet.' : `No ${filter.toLowerCase()} bookings found.`}
           </p>
         </div>
       ) : (
         <div className="space-y-4">
           {bookings.map((booking) => (
-            <div key={booking.id} className="bg-aura-ink shadow-lg shadow-black/20 rounded-xl border border-aura-umber p-4 sm:p-6">
+            <div key={booking.id} className="bg-surface shadow-elev-1 rounded-xl border border-edge p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-3 sm:mb-0">
@@ -181,9 +181,9 @@ const BookingHistory: React.FC = () => {
                     </span>
                   </div>
                   
-                  <h3 className="text-lg font-medium text-aura-cream">{booking.class.name}</h3>
+                  <h3 className="text-lg font-medium text-content">{booking.class.name}</h3>
                   
-                  <div className="mt-2 space-y-1 text-sm text-aura-sand">
+                  <div className="mt-2 space-y-1 text-sm text-content-secondary">
                     <div className="flex items-center">
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -218,7 +218,7 @@ const BookingHistory: React.FC = () => {
                   {isCancellable(booking) && (
                     <button
                       onClick={() => handleCancelBooking(booking.id)}
-                      className="w-full sm:w-auto bg-red-900/60 text-red-200 px-4 py-2 rounded-md text-sm font-medium hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
+                      className="w-full sm:w-auto bg-danger-bg text-danger px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-danger"
                     >
                       Cancel Booking
                     </button>

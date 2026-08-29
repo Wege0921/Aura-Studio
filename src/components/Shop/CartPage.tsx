@@ -11,12 +11,12 @@ const CartPage: React.FC = () => {
   if (items.length === 0) {
     return (
       <div className="text-center py-20">
-        <ShoppingBagIcon className="w-16 h-16 text-aura-umber mx-auto mb-4" />
-        <h1 className="text-xl font-serif text-aura-ivory mb-2">Your cart is empty</h1>
-        <p className="text-aura-sand mb-6">Browse the shop and add some items.</p>
+        <ShoppingBagIcon className="w-16 h-16 text-content-secondary mx-auto mb-4" />
+        <h1 className="text-xl font-serif text-content-emphasis mb-2">Your cart is empty</h1>
+        <p className="text-content-secondary mb-6">Browse the shop and add some items.</p>
         <button
           onClick={() => navigate('/shop')}
-          className="px-6 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700"
+          className="px-6 py-2.5 rounded-lg bg-accent-600 text-content-on-accent text-sm font-medium hover:bg-accent-700"
         >
           Go to Shop
         </button>
@@ -27,10 +27,10 @@ const CartPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-serif text-aura-ivory">Shopping Cart ({totalItems})</h1>
+        <h1 className="text-2xl font-serif text-content-emphasis">Shopping Cart ({totalItems})</h1>
         <button
           onClick={clearCart}
-          className="text-sm text-aura-sand hover:text-red-400"
+          className="text-sm text-content-secondary hover:text-danger"
         >
           Clear cart
         </button>
@@ -40,14 +40,14 @@ const CartPage: React.FC = () => {
         {items.map((item) => (
           <div
             key={`${item.productId}-${item.variantId}`}
-            className="flex gap-4 bg-aura-ink rounded-xl border border-aura-umber p-4"
+            className="flex gap-4 bg-surface rounded-xl border border-edge p-4"
           >
-            <div className="w-20 h-20 rounded-lg overflow-hidden bg-aura-bark flex-shrink-0">
+            <div className="w-20 h-20 rounded-lg overflow-hidden bg-surface-sunken flex-shrink-0">
               {item.image ? (
                 <img src={item.image} alt={item.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <ShoppingBagIcon className="w-8 h-8 text-aura-umber" />
+                  <ShoppingBagIcon className="w-8 h-8 text-content-secondary" />
                 </div>
               )}
             </div>
@@ -55,15 +55,16 @@ const CartPage: React.FC = () => {
             <div className="flex-1">
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="text-sm font-semibold text-aura-cream">{item.name}</h3>
+                  <h3 className="text-sm font-semibold text-content">{item.name}</h3>
                   {item.variantLabel && (
-                    <p className="text-xs text-aura-sand mt-0.5">{item.variantLabel}</p>
+                    <p className="text-xs text-content-secondary mt-0.5">{item.variantLabel}</p>
                   )}
-                  <p className="text-sm text-aura-cream mt-1">{formatETB(item.price)}</p>
+                  <p className="text-sm text-content mt-1">{formatETB(item.price)}</p>
                 </div>
                 <button
                   onClick={() => removeItem(item.productId, item.variantId)}
-                  className="icon-btn text-red-400 hover:text-red-300 transition-colors"
+                  aria-label={`Remove ${item.name} from cart`}
+                  className="icon-btn text-content-muted hover:text-danger transition-colors"
                 >
                   <TrashIcon className="w-5 h-5" />
                 </button>
@@ -73,19 +74,19 @@ const CartPage: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => updateQuantity(item.productId, item.variantId, item.quantity - 1)}
-                    className="w-8 h-8 rounded border border-aura-umber text-aura-cream hover:border-aura-sand"
+                    className="w-8 h-8 rounded border border-edge text-content hover:border-edge-strong"
                   >
                     −
                   </button>
-                  <span className="text-aura-cream w-8 text-center">{item.quantity}</span>
+                  <span className="text-content w-8 text-center">{item.quantity}</span>
                   <button
                     onClick={() => updateQuantity(item.productId, item.variantId, item.quantity + 1)}
-                    className="w-8 h-8 rounded border border-aura-umber text-aura-cream hover:border-aura-sand"
+                    className="w-8 h-8 rounded border border-edge text-content hover:border-edge-strong"
                   >
                     +
                   </button>
                 </div>
-                <span className="text-lg font-bold text-aura-cream">
+                <span className="text-lg font-bold text-content">
                   {formatETB(item.price * item.quantity)}
                 </span>
               </div>
@@ -95,28 +96,28 @@ const CartPage: React.FC = () => {
       </div>
 
       {/* Summary */}
-      <div className="bg-aura-ink rounded-xl border border-aura-umber p-6 space-y-3">
-        <div className="flex justify-between text-aura-sand">
+      <div className="bg-surface rounded-xl border border-edge p-6 space-y-3">
+        <div className="flex justify-between text-content-secondary">
           <span>Subtotal</span>
-          <span className="text-aura-cream font-medium">{formatETB(subtotal)}</span>
+          <span className="text-content font-medium">{formatETB(subtotal)}</span>
         </div>
-        <div className="flex justify-between text-aura-sand">
+        <div className="flex justify-between text-content-secondary">
           <span>Shipping</span>
-          <span className="text-aura-cream">Calculated at checkout</span>
+          <span className="text-content">Calculated at checkout</span>
         </div>
-        <div className="border-t border-aura-umber pt-3 flex justify-between items-baseline">
-          <span className="text-aura-cream font-medium">Total</span>
-          <span className="text-2xl font-bold text-aura-cream">{formatETB(subtotal)}</span>
+        <div className="border-t border-edge pt-3 flex justify-between items-baseline">
+          <span className="text-content font-medium">Total</span>
+          <span className="text-2xl font-bold text-content">{formatETB(subtotal)}</span>
         </div>
         <button
           onClick={() => navigate('/checkout')}
-          className="w-full px-6 py-3 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition-colors"
+          className="w-full px-6 py-3 rounded-lg bg-accent-600 text-content-on-accent text-sm font-medium hover:bg-accent-700 transition-colors"
         >
           Proceed to Checkout
         </button>
         <button
           onClick={() => navigate('/shop')}
-          className="w-full text-center text-sm text-aura-clay hover:text-aura-sand"
+          className="w-full text-center text-sm text-accent-400 hover:text-content-secondary"
         >
           ← Continue shopping
         </button>

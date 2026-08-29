@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/api';
 import { ProductCategory, Product } from './shopTypes';
 import ProductCard from './ProductCard';
@@ -9,11 +10,32 @@ const ProductDetailModal = lazy(() => import('./ProductDetailModal'));
 
 const ShopLanding: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const [categories, setCategories] = useState<ProductCategory[]>([]);
-  const [featured, setFeatured] = useState<Product[]>([]);
-  const [availableSizes, setAvailableSizes] = useState<string[]>([]);
-  const [availableColors, setAvailableColors] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  // Catalog data is cached via React Query (staleTime per endpoint) so
+  // navigating back to /shop shows instantly instead of re-fetching.
+  const categoriesQuery = useQuery<ProductCategory[]>({
+    queryKey: ['shop', 'categories'],
+    queryFn: () => api.get<ProductCategory[]>('/api/shop/categories'),
+    staleTime: 5 * 60 * 1000,
+  });
+  const featuredQuery = useQuery<{ products: Product[] }>({
+    queryKey: ['shop', 'featured'],
+    queryFn: () => api.get<{ products: Product[] }>('/api/shop/products?featured=true&limit=8'),
+    staleTime: 60 * 1000,
+  });
+  const filtersQuery = useQuery<{ sizes: string[]; colors: string[] }>({
+    queryKey: ['shop', 'filters'],
+    queryFn: () => api.get<{ sizes: string[]; colors: string[] }>('/api/shop/filters').catch(() => ({ sizes: [], colors: [] })),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const categories: ProductCategory[] = categoriesQuery.data ?? [];
+  const featured: Product[] = featuredQuery.data?.products ?? [];
+  const availableSizes: string[] = filtersQuery.data?.sizes ?? [];
+  const availableColors: string[] = filtersQuery.data?.colors ?? [];
+
+  const loading = categoriesQuery.isPending || featuredQuery.isPending;
+  const loadError = categoriesQuery.error?.message ?? featuredQuery.error?.message ?? '';
 
   // In-page category selection (persists throughout the session)
   // Pre-select category from ?category= query param (e.g. from homepage links)
@@ -47,28 +69,7 @@ const ShopLanding: React.FC = () => {
   }, [showFilters]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [cats, prods, filters] = await Promise.all([
-          api.get<ProductCategory[]>('/api/shop/categories'),
-          api.get<{ products: Product[] }>('/api/shop/products?featured=true&limit=8'),
-          api.get<{ sizes: string[]; colors: string[] }>('/api/shop/filters').catch(() => ({ sizes: [], colors: [] })),
-        ]);
-        setCategories(cats);
-        setFeatured(prods.products || []);
-        setAvailableSizes(filters.sizes || []);
-        setAvailableColors(filters.colors || []);
-      } catch (err) {
-        console.error('Error loading shop data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  // Fetch products when category, search, sort, or filters change
-  useEffect(() => {
+    // Fetch products when category, search, sort, or filters change
     if (!selectedCategory && !search && !selectedSize && !selectedColor && !maxPrice) {
       setCategoryProducts([]);
       return;
@@ -99,13 +100,13 @@ const ShopLanding: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-umber"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-edge"></div>
       </div>
     );
   }
 
   const showingCategory = !!selectedCategory || !!search || !!selectedSize || !!selectedColor || !!maxPrice;
-  const currentCat = categories.find((c) => c.slug === selectedCategory);
+  const currentCat = categories.find((c: ProductCategory) => c.slug === selectedCategory);
 
   const clearFilters = () => {
     setSelectedSize('');
@@ -122,19 +123,31 @@ const ShopLanding: React.FC = () => {
 
   return (
     <div className="space-y-4 md:space-y-6 mt-2 md:mt-0">
+      {loadError && (
+        <div role="alert" className="mb-4 flex items-start gap-3 rounded-xl border border-danger-border bg-danger-bg px-4 py-3">
+          <span className="text-danger text-sm flex-1">{loadError}</span>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="text-sm font-medium text-danger underline underline-offset-2 hover:no-underline"
+          >
+            Retry
+          </button>
+        </div>
+      )}
       {/* Categories — circles on all viewports */}
       <section>
-        <h2 className="text-lg md:text-xl font-semibold text-aura-cream mb-3 md:mb-4 font-serif">Shop by Category</h2>
+        <h2 className="text-lg md:text-xl font-semibold text-content mb-3 md:mb-4 font-serif">Shop by Category</h2>
         <div className="flex gap-3 md:gap-4 overflow-x-auto pb-2 -mx-1 px-1 md:overflow-visible" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {/* All */}
           <button
             onClick={() => { setSelectedCategory(''); setSearch(''); clearFilters(); }}
             className="flex flex-col items-center gap-1.5 shrink-0 group"
           >
-            <div className={`w-14 h-14 md:w-16 md:h-16 rounded-full border-2 overflow-hidden flex items-center justify-center transition-colors duration-200 ${!selectedCategory ? 'border-aura-clay bg-aura-clay/20' : 'border-aura-umber bg-aura-ink'} group-hover:border-aura-clay`}>
-              <ShoppingBagIcon className={`w-5 h-5 md:w-6 md:h-6 ${!selectedCategory ? 'text-aura-clay' : 'text-aura-umber'}`} />
+            <div className={`w-14 h-14 md:w-16 md:h-16 rounded-full border-2 overflow-hidden flex items-center justify-center transition-colors duration-200 ${!selectedCategory ? 'border-edge-focus bg-accent-100' : 'border-edge bg-surface'} group-hover:border-edge-focus`}>
+              <ShoppingBagIcon className={`w-5 h-5 md:w-6 md:h-6 ${!selectedCategory ? 'text-accent-400' : 'text-content-secondary'}`} />
             </div>
-            <span className={`text-xs md:text-sm font-medium whitespace-nowrap ${!selectedCategory ? 'text-aura-clay' : 'text-aura-cream'}`}>All</span>
+            <span className={`text-xs md:text-sm font-medium whitespace-nowrap ${!selectedCategory ? 'text-accent-400' : 'text-content'}`}>All</span>
           </button>
           {categories.map((cat) => {
             const isActive = selectedCategory === cat.slug;
@@ -144,16 +157,16 @@ const ShopLanding: React.FC = () => {
                 onClick={() => { setSelectedCategory(cat.slug); setSearch(''); clearFilters(); }}
                 className="flex flex-col items-center gap-1.5 shrink-0 group"
               >
-                <div className={`w-14 h-14 md:w-16 md:h-16 rounded-full border-2 overflow-hidden transition-colors duration-200 ${isActive ? 'border-aura-clay' : 'border-aura-umber bg-aura-ink'} group-hover:border-aura-clay`}>
+                <div className={`w-14 h-14 md:w-16 md:h-16 rounded-full border-2 overflow-hidden transition-colors duration-200 ${isActive ? 'border-edge-focus' : 'border-edge bg-surface'} group-hover:border-edge-focus`}>
                   {cat.imageUrl ? (
-                    <img src={cat.imageUrl} alt={cat.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <img src={cat.imageUrl} alt={cat.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <ShoppingBagIcon className="w-5 h-5 md:w-6 md:h-6 text-aura-umber" />
+                      <ShoppingBagIcon className="w-5 h-5 md:w-6 md:h-6 text-content-secondary" />
                     </div>
                   )}
                 </div>
-                <span className={`text-xs md:text-sm font-medium whitespace-nowrap ${isActive ? 'text-aura-clay' : 'text-aura-cream'}`}>{cat.name}</span>
+                <span className={`text-xs md:text-sm font-medium whitespace-nowrap ${isActive ? 'text-accent-400' : 'text-content'}`}>{cat.name}</span>
               </button>
             );
           })}
@@ -163,19 +176,19 @@ const ShopLanding: React.FC = () => {
       {/* Mobile: Search + Sort + Filter toggle (one line) */}
       <div className="flex items-center gap-2 md:hidden">
         <div className="relative flex-1 min-w-0">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-aura-sand" />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-content-secondary" />
           <input
             type="text"
             placeholder="Search products..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-3 py-2.5 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream placeholder-aura-sand/40 focus:outline-none focus:border-aura-clay text-sm"
+            className="w-full pl-10 pr-3 py-2.5 bg-surface border border-edge rounded-lg text-content placeholder-content-muted focus:outline-none focus:border-edge-focus text-sm"
           />
         </div>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="px-2 py-2.5 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay text-sm shrink-0"
+          className="px-2 py-2.5 bg-surface border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus text-sm shrink-0"
         >
           <option value="newest">Newest</option>
           <option value="price-low">Price ↑</option>
@@ -185,7 +198,7 @@ const ShopLanding: React.FC = () => {
         <button
           ref={filterButtonRef}
           onClick={() => setShowFilters(!showFilters)}
-          className={`p-2.5 bg-aura-ink border rounded-lg text-aura-cream flex items-center justify-center transition-colors shrink-0 ${showFilters ? 'border-aura-clay text-aura-clay' : 'border-aura-umber'}`}
+          className={`p-2.5 bg-surface border rounded-lg text-content flex items-center justify-center transition-colors shrink-0 ${showFilters ? 'border-edge-focus text-accent-400' : 'border-edge'}`}
           aria-label="Toggle filters"
         >
           <FunnelIcon className="w-5 h-5" />
@@ -194,14 +207,14 @@ const ShopLanding: React.FC = () => {
 
       {/* Mobile: Filters panel (toggle) */}
       {showFilters && (
-        <div ref={filterPanelRef} className="md:hidden bg-aura-ink border border-aura-umber rounded-lg p-4 space-y-4">
+        <div ref={filterPanelRef} className="md:hidden bg-surface border border-edge rounded-lg p-4 space-y-4">
           {availableSizes.length > 0 && (
             <div>
-              <label className="text-sm text-aura-sand mb-2 block">Size</label>
+              <label className="text-sm text-content-secondary mb-2 block">Size</label>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setSelectedSize('')}
-                  className={`px-3 py-1 rounded text-sm border ${!selectedSize ? 'bg-aura-clay text-aura-ink border-aura-clay' : 'border-aura-umber text-aura-cream'}`}
+                  className={`px-3 py-1 rounded text-sm border ${!selectedSize ? 'bg-accent-600 text-content-on-accent border-edge-focus' : 'border-edge text-content'}`}
                 >
                   All
                 </button>
@@ -209,7 +222,7 @@ const ShopLanding: React.FC = () => {
                   <button
                     key={s}
                     onClick={() => setSelectedSize(s)}
-                    className={`px-3 py-1 rounded text-sm border ${selectedSize === s ? 'bg-aura-clay text-aura-ink border-aura-clay' : 'border-aura-umber text-aura-cream'}`}
+                    className={`px-3 py-1 rounded text-sm border ${selectedSize === s ? 'bg-accent-600 text-content-on-accent border-edge-focus' : 'border-edge text-content'}`}
                   >
                     {s}
                   </button>
@@ -219,11 +232,11 @@ const ShopLanding: React.FC = () => {
           )}
           {availableColors.length > 0 && (
             <div>
-              <label className="text-sm text-aura-sand mb-2 block">Color</label>
+              <label className="text-sm text-content-secondary mb-2 block">Color</label>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setSelectedColor('')}
-                  className={`px-3 py-1 rounded text-sm border ${!selectedColor ? 'bg-aura-clay text-aura-ink border-aura-clay' : 'border-aura-umber text-aura-cream'}`}
+                  className={`px-3 py-1 rounded text-sm border ${!selectedColor ? 'bg-accent-600 text-content-on-accent border-edge-focus' : 'border-edge text-content'}`}
                 >
                   All
                 </button>
@@ -231,7 +244,7 @@ const ShopLanding: React.FC = () => {
                   <button
                     key={c}
                     onClick={() => setSelectedColor(c)}
-                    className={`px-3 py-1 rounded text-sm border ${selectedColor === c ? 'bg-aura-clay text-aura-ink border-aura-clay' : 'border-aura-umber text-aura-cream'}`}
+                    className={`px-3 py-1 rounded text-sm border ${selectedColor === c ? 'bg-accent-600 text-content-on-accent border-edge-focus' : 'border-edge text-content'}`}
                   >
                     {c}
                   </button>
@@ -240,19 +253,19 @@ const ShopLanding: React.FC = () => {
             </div>
           )}
           <div>
-            <label className="text-sm text-aura-sand mb-2 block">Max Price (ETB)</label>
+            <label className="text-sm text-content-secondary mb-2 block">Max Price (ETB)</label>
             <input
               type="number"
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
               placeholder="No limit"
-              className="w-full sm:w-48 px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
+              className="w-full sm:w-48 px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus"
             />
           </div>
           {(selectedSize || selectedColor || maxPrice) && (
             <button
               onClick={clearFilters}
-              className="text-sm text-aura-clay hover:text-aura-sand"
+              className="text-sm text-accent-400 hover:text-content-secondary"
             >
               Clear filters
             </button>
@@ -266,23 +279,23 @@ const ShopLanding: React.FC = () => {
         <aside className="w-64 shrink-0 space-y-4">
           {/* Search */}
           <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-aura-sand" />
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-content-secondary" />
             <input
               type="text"
               placeholder="Search products..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream placeholder-aura-sand/40 focus:outline-none focus:border-aura-clay"
+              className="w-full pl-10 pr-4 py-2.5 bg-surface border border-edge rounded-lg text-content placeholder-content-muted focus:outline-none focus:border-edge-focus"
             />
           </div>
 
           {/* Sort */}
           <div>
-            <label className="text-sm text-aura-sand mb-2 block">Sort by</label>
+            <label className="text-sm text-content-secondary mb-2 block">Sort by</label>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full px-4 py-2.5 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
+              className="w-full px-4 py-2.5 bg-surface border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus"
             >
               <option value="newest">Newest</option>
               <option value="price-low">Price: Low to High</option>
@@ -292,19 +305,19 @@ const ShopLanding: React.FC = () => {
           </div>
 
           {/* Advanced Filters */}
-          <div className="bg-aura-ink border border-aura-umber rounded-lg p-4 space-y-4">
-            <div className="flex items-center gap-2 text-aura-cream font-medium text-sm">
+          <div className="bg-surface border border-edge rounded-lg p-4 space-y-4">
+            <div className="flex items-center gap-2 text-content font-medium text-sm">
               <FunnelIcon className="w-4 h-4" />
               Filters
             </div>
 
             {availableSizes.length > 0 && (
               <div>
-                <label className="text-sm text-aura-sand mb-2 block">Size</label>
+                <label className="text-sm text-content-secondary mb-2 block">Size</label>
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => setSelectedSize('')}
-                    className={`px-3 py-1 rounded text-sm border ${!selectedSize ? 'bg-aura-clay text-aura-ink border-aura-clay' : 'border-aura-umber text-aura-cream'}`}
+                    className={`px-3 py-1 rounded text-sm border ${!selectedSize ? 'bg-accent-600 text-content-on-accent border-edge-focus' : 'border-edge text-content'}`}
                   >
                     All
                   </button>
@@ -312,7 +325,7 @@ const ShopLanding: React.FC = () => {
                     <button
                       key={s}
                       onClick={() => setSelectedSize(s)}
-                      className={`px-3 py-1 rounded text-sm border ${selectedSize === s ? 'bg-aura-clay text-aura-ink border-aura-clay' : 'border-aura-umber text-aura-cream'}`}
+                      className={`px-3 py-1 rounded text-sm border ${selectedSize === s ? 'bg-accent-600 text-content-on-accent border-edge-focus' : 'border-edge text-content'}`}
                     >
                       {s}
                     </button>
@@ -323,11 +336,11 @@ const ShopLanding: React.FC = () => {
 
             {availableColors.length > 0 && (
               <div>
-                <label className="text-sm text-aura-sand mb-2 block">Color</label>
+                <label className="text-sm text-content-secondary mb-2 block">Color</label>
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => setSelectedColor('')}
-                    className={`px-3 py-1 rounded text-sm border ${!selectedColor ? 'bg-aura-clay text-aura-ink border-aura-clay' : 'border-aura-umber text-aura-cream'}`}
+                    className={`px-3 py-1 rounded text-sm border ${!selectedColor ? 'bg-accent-600 text-content-on-accent border-edge-focus' : 'border-edge text-content'}`}
                   >
                     All
                   </button>
@@ -335,7 +348,7 @@ const ShopLanding: React.FC = () => {
                     <button
                       key={c}
                       onClick={() => setSelectedColor(c)}
-                      className={`px-3 py-1 rounded text-sm border ${selectedColor === c ? 'bg-aura-clay text-aura-ink border-aura-clay' : 'border-aura-umber text-aura-cream'}`}
+                      className={`px-3 py-1 rounded text-sm border ${selectedColor === c ? 'bg-accent-600 text-content-on-accent border-edge-focus' : 'border-edge text-content'}`}
                     >
                       {c}
                     </button>
@@ -345,20 +358,20 @@ const ShopLanding: React.FC = () => {
             )}
 
             <div>
-              <label className="text-sm text-aura-sand mb-2 block">Max Price (ETB)</label>
+              <label className="text-sm text-content-secondary mb-2 block">Max Price (ETB)</label>
               <input
                 type="number"
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(e.target.value)}
                 placeholder="No limit"
-                className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
+                className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus"
               />
             </div>
 
             {(selectedSize || selectedColor || maxPrice) && (
               <button
                 onClick={clearFilters}
-                className="text-sm text-aura-clay hover:text-aura-sand"
+                className="text-sm text-accent-400 hover:text-content-secondary"
               >
                 Clear filters
               </button>
@@ -371,25 +384,53 @@ const ShopLanding: React.FC = () => {
           {showingCategory ? (
             <section>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg md:text-xl font-semibold text-aura-cream font-serif">
+                <h2 className="text-lg md:text-xl font-semibold text-content font-serif">
                   {currentCat?.name || (selectedCategory === 'all' ? 'All Products' : 'Search Results')}
-                  {search && <span className="text-aura-sand text-sm font-normal ml-2">— "{search}"</span>}
+                  {search && <span className="text-content-secondary text-sm font-normal ml-2">— "{search}"</span>}
                 </h2>
                 <button
                   onClick={resetAll}
-                  className="text-sm text-aura-clay hover:text-aura-sand transition-colors"
+                  className="text-sm text-accent-400 hover:text-content-secondary transition-colors"
                 >
                   ← Back to featured
                 </button>
               </div>
               {categoryLoading ? (
                 <div className="flex items-center justify-center py-20">
-                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-umber"></div>
+                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-edge"></div>
                 </div>
               ) : categoryProducts.length === 0 ? (
-                <div className="text-center py-20">
-                  <p className="text-aura-sand text-lg">No products found. Try adjusting your filters.</p>
-                </div>
+                search ? (
+                  <div className="text-center py-16 space-y-3">
+                    <MagnifyingGlassIcon className="w-12 h-12 text-edge-strong mx-auto" />
+                    <h2 className="text-lg font-serif text-content-emphasis">No results for "{search}"</h2>
+                    <p className="text-content-secondary text-sm max-w-md mx-auto">
+                      Try a different search term or clear the active filters.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={resetAll}
+                      className="mt-2 px-5 py-2 rounded-lg bg-accent-600 text-content-on-accent text-sm font-medium hover:bg-accent-700 transition-colors"
+                    >
+                      Clear search & filters
+                    </button>
+                  </div>
+                ) : (
+                  <div className="text-center py-16 space-y-3">
+                    <ShoppingBagIcon className="w-12 h-12 text-edge-strong mx-auto" />
+                    <h2 className="text-lg font-serif text-content-emphasis">No products yet</h2>
+                    <p className="text-content-secondary text-sm max-w-md mx-auto">
+                      Products in this category are on their way. Check back soon.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={resetAll}
+                      className="mt-2 px-5 py-2 rounded-lg bg-accent-600 text-content-on-accent text-sm font-medium hover:bg-accent-700 transition-colors"
+                    >
+                      Back to featured
+                    </button>
+                  </div>
+                )
               ) : (
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                   {categoryProducts.map((p) => (
@@ -402,10 +443,10 @@ const ShopLanding: React.FC = () => {
             featured.length > 0 && (
               <section>
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg md:text-xl font-semibold text-aura-cream font-serif">Featured Products</h2>
+                  <h2 className="text-lg md:text-xl font-semibold text-content font-serif">Featured Products</h2>
                   <button
                     onClick={() => setSelectedCategory('all')}
-                    className="text-sm text-aura-clay hover:text-aura-sand transition-colors"
+                    className="text-sm text-accent-400 hover:text-content-secondary transition-colors"
                   >
                     View all →
                   </button>
@@ -426,25 +467,53 @@ const ShopLanding: React.FC = () => {
         {showingCategory ? (
           <section>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold text-aura-cream font-serif">
+              <h2 className="text-lg font-semibold text-content font-serif">
                 {currentCat?.name || (selectedCategory === 'all' ? 'All Products' : 'Search Results')}
-                {search && <span className="text-aura-sand text-sm font-normal ml-2">— "{search}"</span>}
+                {search && <span className="text-content-secondary text-sm font-normal ml-2">— "{search}"</span>}
               </h2>
               <button
                 onClick={resetAll}
-                className="text-sm text-aura-clay hover:text-aura-sand transition-colors"
+                className="text-sm text-accent-400 hover:text-content-secondary transition-colors"
               >
                 ← Back
               </button>
             </div>
             {categoryLoading ? (
               <div className="flex items-center justify-center py-20">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-umber"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-edge"></div>
               </div>
             ) : categoryProducts.length === 0 ? (
-              <div className="text-center py-20">
-                <p className="text-aura-sand text-lg">No products found. Try adjusting your filters.</p>
-              </div>
+              search ? (
+                <div className="text-center py-16 space-y-3">
+                  <MagnifyingGlassIcon className="w-12 h-12 text-edge-strong mx-auto" />
+                  <h2 className="text-lg font-serif text-content-emphasis">No results for "{search}"</h2>
+                  <p className="text-content-secondary text-sm max-w-md mx-auto">
+                    Try a different search term or clear the active filters.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={resetAll}
+                    className="mt-2 px-5 py-2 rounded-lg bg-accent-600 text-content-on-accent text-sm font-medium hover:bg-accent-700 transition-colors"
+                  >
+                    Clear search & filters
+                  </button>
+                </div>
+              ) : (
+                <div className="text-center py-16 space-y-3">
+                  <ShoppingBagIcon className="w-12 h-12 text-edge-strong mx-auto" />
+                  <h2 className="text-lg font-serif text-content-emphasis">No products yet</h2>
+                  <p className="text-content-secondary text-sm max-w-md mx-auto">
+                    Products in this category are on their way. Check back soon.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={resetAll}
+                    className="mt-2 px-5 py-2 rounded-lg bg-accent-600 text-content-on-accent text-sm font-medium hover:bg-accent-700 transition-colors"
+                  >
+                    Back to featured
+                  </button>
+                </div>
+              )
             ) : (
               <div className="grid grid-cols-2 gap-3">
                 {categoryProducts.map((p) => (
@@ -457,10 +526,10 @@ const ShopLanding: React.FC = () => {
           featured.length > 0 && (
             <section>
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg font-semibold text-aura-cream font-serif">Featured Products</h2>
+                <h2 className="text-lg font-semibold text-content font-serif">Featured Products</h2>
                 <button
                   onClick={() => setSelectedCategory('all')}
-                  className="text-sm text-aura-clay hover:text-aura-sand transition-colors"
+                  className="text-sm text-accent-400 hover:text-content-secondary transition-colors"
                 >
                   View all →
                 </button>
@@ -477,14 +546,14 @@ const ShopLanding: React.FC = () => {
 
       {categories.length === 0 && featured.length === 0 && (
         <div className="text-center py-20">
-          <ShoppingBagIcon className="w-16 h-16 text-aura-umber mx-auto mb-4" />
-          <p className="text-aura-sand text-lg">Products coming soon. Check back shortly!</p>
+          <ShoppingBagIcon className="w-16 h-16 text-content-secondary mx-auto mb-4" />
+          <p className="text-content-secondary text-lg">Products coming soon. Check back shortly!</p>
         </div>
       )}
 
       {/* Product detail modal (in-place, no page navigation) */}
       {modalSlug && (
-        <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-umber" /></div>}>
+        <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-edge" /></div>}>
           <ProductDetailModal slug={modalSlug} onClose={() => setModalSlug(null)} />
         </Suspense>
       )}

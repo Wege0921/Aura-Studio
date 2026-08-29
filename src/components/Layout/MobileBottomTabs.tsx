@@ -54,7 +54,9 @@ const MobileBottomTabs: React.FC = () => {
             onClick={() => navigate(tab.path)}
             aria-label={tab.label}
           >
-            <Icon className="mbt-icon" />
+            <span className="mbt-icon-wrap">
+              <Icon className="mbt-icon" />
+            </span>
             <span className="mbt-label">{tab.label}</span>
           </button>
         );
@@ -64,7 +66,9 @@ const MobileBottomTabs: React.FC = () => {
         onClick={handleDashboard}
         aria-label={user ? 'Dashboard' : 'Login'}
       >
-        <UserCircleIcon className="mbt-icon" />
+        <span className="mbt-icon-wrap">
+          <UserCircleIcon className="mbt-icon" />
+        </span>
         <span className="mbt-label">{user ? 'Profile' : 'Login'}</span>
       </button>
     </nav>

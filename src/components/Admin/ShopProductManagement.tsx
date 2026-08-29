@@ -16,6 +16,7 @@ const ShopProductManagement: React.FC = () => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [deleteTarget, setDeleteTarget] = useState<{ type: 'product' | 'variant' | 'image'; id: string; name?: string; productId?: string } | null>(null);
 
   const [formData, setFormData] = useState({
@@ -36,7 +37,14 @@ const ShopProductManagement: React.FC = () => {
   useEffect(() => {
     fetchProducts();
     fetchCategories();
-  }, []);
+  }, [currentPage]);
+
+  // Debounced search: reset to page 1 and refetch
+  useEffect(() => {
+    const t = setTimeout(() => { if (currentPage !== 1) setCurrentPage(1); else fetchProducts(); }, 400);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
 
   useEffect(() => {
     const handler = () => setOpenDropdown(null);
@@ -47,9 +55,13 @@ const ShopProductManagement: React.FC = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const data = await api.get<{ products: Product[] }>('/api/admin/shop/products');
+      const params = new URLSearchParams();
+      if (search) params.set('search', search);
+      params.set('page', String(currentPage));
+      params.set('limit', String(ITEMS_PER_PAGE));
+      const data = await api.get<{ products: Product[]; pagination: { total: number; pages: number } }>(`/api/admin/shop/products?${params.toString()}`);
       setProducts(data.products || []);
+      setTotalPages(data.pagination?.pages || 1);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -133,26 +145,22 @@ const ShopProductManagement: React.FC = () => {
     setOpenDropdown(null);
   };
 
-  const filtered = products.filter(p =>
-    p.name.toLowerCase().includes(search.toLowerCase()) ||
-    p.sku?.toLowerCase().includes(search.toLowerCase())
-  );
-  const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+  const paginated = products;
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-serif text-aura-ivory">Shop Products</h1>
+        <h1 className="text-2xl font-serif text-content-emphasis">Shop Products</h1>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-600 text-content-on-accent text-sm font-medium hover:bg-accent-700"
         >
           <PlusIcon className="w-4 h-4" /> Add Product
         </button>
       </div>
 
-      {error && <div className="bg-red-900/20 text-red-300 rounded-lg p-3 text-sm">{error}</div>}
-      {successMsg && <div className="bg-green-900/20 text-green-300 rounded-lg p-3 text-sm">{successMsg}</div>}
+      {error && <div className="bg-danger-bg text-danger rounded-lg p-3 text-sm">{error}</div>}
+      {successMsg && <div className="bg-success-bg text-success rounded-lg p-3 text-sm">{successMsg}</div>}
 
       {/* Search */}
       <input
@@ -160,53 +168,53 @@ const ShopProductManagement: React.FC = () => {
         placeholder="Search products..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full px-4 py-2 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
+        className="w-full px-4 py-2 bg-surface border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus"
       />
 
       {/* Product form modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/60 z-[70] flex items-center justify-center p-4" onClick={() => resetForm()}>
-          <div className="bg-aura-ink border border-aura-umber rounded-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:pb-6" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-serif text-aura-ivory mb-4">{editingProduct ? 'Edit Product' : 'Add Product'}</h2>
+        <div className="fixed inset-0 bg-overlay z-[70] flex items-center justify-center p-4" onClick={() => resetForm()}>
+          <div className="bg-surface border border-edge rounded-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:pb-6" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-serif text-content-emphasis mb-4">{editingProduct ? 'Edit Product' : 'Add Product'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="text-sm text-aura-sand mb-1 block">Name *</label>
+                <label className="text-sm text-content-secondary mb-1 block">Name *</label>
                 <input required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
+                  className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus" />
               </div>
               <div>
-                <label className="text-sm text-aura-sand mb-1 block">Description</label>
+                <label className="text-sm text-content-secondary mb-1 block">Description</label>
                 <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3}
-                  className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
+                  className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-aura-sand mb-1 block">Category *</label>
+                  <label className="text-sm text-content-secondary mb-1 block">Category *</label>
                   <select required value={formData.categoryId} onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
-                    className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay">
+                    className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus">
                     <option value="">Select...</option>
                     {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-sm text-aura-sand mb-1 block">SKU</label>
+                  <label className="text-sm text-content-secondary mb-1 block">SKU</label>
                   <input value={formData.sku} onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                    className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
+                    className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus" />
                 </div>
                 <div>
-                  <label className="text-sm text-aura-sand mb-1 block">Base Price (ETB) *</label>
+                  <label className="text-sm text-content-secondary mb-1 block">Base Price (ETB) *</label>
                   <input type="number" required min="0" value={formData.basePrice} onChange={(e) => setFormData({ ...formData, basePrice: Number(e.target.value) })}
-                    className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
+                    className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus" />
                 </div>
                 <div>
-                  <label className="text-sm text-aura-sand mb-1 block">Sale Price (ETB)</label>
+                  <label className="text-sm text-content-secondary mb-1 block">Sale Price (ETB)</label>
                   <input type="number" min="0" value={formData.salePrice} onChange={(e) => setFormData({ ...formData, salePrice: e.target.value })}
-                    className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
+                    className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus" />
                 </div>
                 <div>
-                  <label className="text-sm text-aura-sand mb-1 block">Status</label>
+                  <label className="text-sm text-content-secondary mb-1 block">Status</label>
                   <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay">
+                    className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus">
                     <option value="ACTIVE">Active</option>
                     <option value="DRAFT">Draft</option>
                     <option value="ARCHIVED">Archived</option>
@@ -214,28 +222,28 @@ const ShopProductManagement: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="text-sm text-aura-sand mb-1 block">Weight (grams)</label>
+                  <label className="text-sm text-content-secondary mb-1 block">Weight (grams)</label>
                   <input type="number" min="0" value={formData.weightGrams} onChange={(e) => setFormData({ ...formData, weightGrams: e.target.value })}
-                    className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
+                    className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus" />
                 </div>
                 <div>
-                  <label className="text-sm text-aura-sand mb-1 block">
+                  <label className="text-sm text-content-secondary mb-1 block">
                     Product Stock
-                    <span className="text-xs text-aura-sand ml-1">(blank = unlimited / use variant stock)</span>
+                    <span className="text-xs text-content-secondary ml-1">(blank = unlimited / use variant stock)</span>
                   </label>
                   <input type="number" min="0" placeholder="blank = untracked" value={formData.stock} onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                    className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay" />
+                    className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus" />
                 </div>
               </div>
-              <label className="flex items-center gap-2 text-sm text-aura-cream">
+              <label className="flex items-center gap-2 text-sm text-content">
                 <input type="checkbox" checked={formData.isFeatured} onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })} />
                 Featured product (show on shop landing)
               </label>
               <div className="flex gap-3 pt-2">
-                <button type="submit" className="flex-1 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700">
+                <button type="submit" className="flex-1 px-4 py-2 rounded-lg bg-accent-600 text-content-on-accent text-sm font-medium hover:bg-accent-700">
                   {editingProduct ? 'Update' : 'Create'}
                 </button>
-                <button type="button" onClick={resetForm} className="px-4 py-2 rounded-lg border border-aura-umber text-aura-cream text-sm">
+                <button type="button" onClick={resetForm} className="px-4 py-2 rounded-lg border border-edge text-content text-sm">
                   Cancel
                 </button>
               </div>
@@ -257,7 +265,7 @@ const ShopProductManagement: React.FC = () => {
       {/* Products list */}
       {loading ? (
         <div className="flex justify-center py-10">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-aura-umber"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-edge"></div>
         </div>
       ) : (
         <div className="space-y-2">
@@ -265,39 +273,39 @@ const ShopProductManagement: React.FC = () => {
             const price = getEffectivePrice(product);
             const totalStock = product.variants?.reduce((sum, v) => sum + v.stock, 0) ?? 0;
             return (
-              <div key={product.id} className="bg-aura-ink rounded-lg border border-aura-umber p-4 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg overflow-hidden bg-aura-bark flex-shrink-0">
+              <div key={product.id} className="bg-surface rounded-lg border border-edge p-4 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-lg overflow-hidden bg-canvas flex-shrink-0">
                   {product.images && product.images[0] ? (
                     <img src={product.images[0].url} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center"><PhotoIcon className="w-6 h-6 text-aura-umber" /></div>
+                    <div className="w-full h-full flex items-center justify-center"><PhotoIcon className="w-6 h-6 text-content-secondary" /></div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-aura-cream truncate">{product.name}</p>
-                  <p className="text-xs text-aura-sand">{product.category?.name} · {formatETB(price)} · Stock: {totalStock}</p>
+                  <p className="text-sm font-medium text-content truncate">{product.name}</p>
+                  <p className="text-xs text-content-secondary">{product.category?.name} · {formatETB(price)} · Stock: {totalStock}</p>
                   <div className="flex gap-2 mt-1">
-                    <span className={`text-xs px-2 py-0.5 rounded ${product.status === 'ACTIVE' ? 'bg-green-900/30 text-green-300' : 'bg-gray-700/50 text-gray-400'}`}>{product.status}</span>
-                    {product.isFeatured && <span className="text-xs px-2 py-0.5 rounded bg-aura-clay/20 text-aura-cream">Featured</span>}
+                    <span className={`text-xs px-2 py-0.5 rounded ${product.status === 'ACTIVE' ? 'bg-success-bg text-success' : 'bg-surface-sunken text-content-muted'}`}>{product.status}</span>
+                    {product.isFeatured && <span className="text-xs px-2 py-0.5 rounded bg-accent-100 text-content">Featured</span>}
                   </div>
                 </div>
                 <div className="relative">
                   <button onClick={(e) => { e.stopPropagation(); setOpenDropdown(openDropdown === product.id ? null : product.id); }}
-                    className="p-1.5 text-aura-sand hover:text-aura-cream rounded">
+                    className="p-1.5 text-content-secondary hover:text-content rounded">
                     <EllipsisVerticalIcon className="w-5 h-5" />
                   </button>
                   {openDropdown === product.id && (
-                    <div className="absolute right-0 mt-1 w-44 bg-aura-bark border border-aura-umber rounded-lg shadow-lg z-50 py-1">
-                      <button onClick={() => handleEdit(product)} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30">
+                    <div className="absolute right-0 mt-1 w-44 bg-canvas border border-edge rounded-lg shadow-lg z-50 py-1">
+                      <button onClick={() => handleEdit(product)} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-content hover:bg-[var(--state-hover)]">
                         <PencilIcon className="w-4 h-4" /> Edit
                       </button>
-                      <button onClick={() => { setShowVariants(product); setOpenDropdown(null); }} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30">
+                      <button onClick={() => { setShowVariants(product); setOpenDropdown(null); }} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-content hover:bg-[var(--state-hover)]">
                         <PlusIcon className="w-4 h-4" /> Variants
                       </button>
-                      <button onClick={() => { setShowImages(product); setOpenDropdown(null); }} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30">
+                      <button onClick={() => { setShowImages(product); setOpenDropdown(null); }} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-content hover:bg-[var(--state-hover)]">
                         <PhotoIcon className="w-4 h-4" /> Images
                       </button>
-                      <button onClick={() => { setDeleteTarget({ type: 'product', id: product.id, name: product.name }); setOpenDropdown(null); }} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-400 hover:bg-aura-umber/30">
+                      <button onClick={() => { setDeleteTarget({ type: 'product', id: product.id, name: product.name }); setOpenDropdown(null); }} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-danger hover:bg-[var(--state-hover)]">
                         <TrashIcon className="w-4 h-4" /> Delete
                       </button>
                     </div>
@@ -306,11 +314,11 @@ const ShopProductManagement: React.FC = () => {
               </div>
             );
           })}
-          {filtered.length > ITEMS_PER_PAGE && (
+          {totalPages > 1 && (
             <div className="flex justify-center gap-2 pt-4">
-              {Array.from({ length: Math.ceil(filtered.length / ITEMS_PER_PAGE) }, (_, i) => (
+              {Array.from({ length: totalPages }, (_, i) => (
                 <button key={i} onClick={() => setCurrentPage(i + 1)}
-                  className={`px-3 py-1 rounded text-sm ${currentPage === i + 1 ? 'bg-aura-clay text-aura-ink' : 'border border-aura-umber text-aura-cream'}`}>
+                  className={`px-3 py-1 rounded text-sm ${currentPage === i + 1 ? 'bg-accent-600 text-content-on-accent' : 'border border-edge text-content'}`}>
                   {i + 1}
                 </button>
               ))}
@@ -321,20 +329,20 @@ const ShopProductManagement: React.FC = () => {
 
       {/* Delete Confirmation Modal */}
       {deleteTarget && deleteTarget.type === 'product' && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[70]" onClick={() => setDeleteTarget(null)}>
-          <div className="bg-aura-ink rounded-lg p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center p-4 z-[70]" onClick={() => setDeleteTarget(null)}>
+          <div className="bg-surface rounded-lg p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center mb-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-900/60 flex items-center justify-center mr-3">
-                <ExclamationTriangleIcon className="w-6 h-6 text-red-400" />
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-danger-bg flex items-center justify-center mr-3">
+                <ExclamationTriangleIcon className="w-6 h-6 text-danger" />
               </div>
-              <h3 className="text-lg font-bold text-aura-cream">Delete Product</h3>
+              <h3 className="text-lg font-bold text-content">Delete Product</h3>
             </div>
-            <p className="text-aura-sand mb-6">
-              Are you sure you want to delete <strong className="text-aura-cream">{deleteTarget.name}</strong>? This action cannot be undone.
+            <p className="text-content-secondary mb-6">
+              Are you sure you want to delete <strong className="text-content">{deleteTarget.name}</strong>? This action cannot be undone.
             </p>
             <div className="flex justify-end space-x-3">
-              <button onClick={() => setDeleteTarget(null)} className="px-4 py-2 border border-aura-umber rounded-md text-aura-sand hover:bg-aura-umber/30 transition-colors">Cancel</button>
-              <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">Delete</button>
+              <button onClick={() => setDeleteTarget(null)} className="px-4 py-2 border border-edge rounded-md text-content-secondary hover:bg-[var(--state-hover)] transition-colors">Cancel</button>
+              <button onClick={handleDelete} className="px-4 py-2 bg-danger text-content-on-accent rounded-md hover:opacity-90 transition-colors">Delete</button>
             </div>
           </div>
         </div>
@@ -381,31 +389,31 @@ const VariantsModal: React.FC<{ product: Product; onClose: () => void }> = ({ pr
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-[70] flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-aura-ink border border-aura-umber rounded-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:pb-6" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-overlay z-[70] flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-surface border border-edge rounded-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:pb-6" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-serif text-aura-ivory">Variants — {product.name}</h2>
-          <button onClick={onClose} className="text-aura-sand hover:text-aura-cream">✕</button>
+          <h2 className="text-lg font-serif text-content-emphasis">Variants — {product.name}</h2>
+          <button onClick={onClose} className="text-content-secondary hover:text-content">✕</button>
         </div>
 
         <div className="space-y-2 mb-4">
           {variants.length === 0 ? (
-            <p className="text-sm text-aura-sand text-center py-4">No variants. Product uses default stock.</p>
+            <p className="text-sm text-content-secondary text-center py-4">No variants. Product uses default stock.</p>
           ) : (
             variants.map((v) => (
-              <div key={v.id} className="flex items-center gap-2 bg-aura-bark rounded-lg p-3">
+              <div key={v.id} className="flex items-center gap-2 bg-canvas rounded-lg p-3">
                 <div className="flex-1">
-                  <p className="text-sm text-aura-cream">{[v.size, v.color, v.style].filter(Boolean).join(' / ') || 'Default'}</p>
-                  <p className="text-xs text-aura-sand">+{formatETB(v.priceDelta)} · SKU: {v.sku || '—'}</p>
+                  <p className="text-sm text-content">{[v.size, v.color, v.style].filter(Boolean).join(' / ') || 'Default'}</p>
+                  <p className="text-xs text-content-secondary">+{formatETB(v.priceDelta)} · SKU: {v.sku || '—'}</p>
                 </div>
                 <input
                   type="number"
                   defaultValue={v.stock}
                   onBlur={(e) => handleStockUpdate(v.id, Number(e.target.value))}
-                  className="w-20 px-2 py-1 bg-aura-ink border border-aura-umber rounded text-aura-cream text-sm"
+                  className="w-20 px-2 py-1 bg-surface border border-edge rounded text-content text-sm"
                   title="Stock"
                 />
-                <button onClick={() => setDeleteVariantId(v.id)} className="icon-btn text-red-400 hover:text-red-300">
+                <button onClick={() => setDeleteVariantId(v.id)} className="icon-btn text-danger hover:opacity-80">
                   <TrashIcon className="w-4 h-4" />
                 </button>
               </div>
@@ -414,24 +422,24 @@ const VariantsModal: React.FC<{ product: Product; onClose: () => void }> = ({ pr
         </div>
 
         {showAdd ? (
-          <form onSubmit={handleAdd} className="space-y-3 border-t border-aura-umber pt-4">
+          <form onSubmit={handleAdd} className="space-y-3 border-t border-edge pt-4">
             <div className="grid grid-cols-3 gap-2">
-              <input placeholder="Size" value={newVariant.size} onChange={(e) => setNewVariant({ ...newVariant, size: e.target.value })} className="px-2 py-1.5 bg-aura-bark border border-aura-umber rounded text-aura-cream text-sm" />
-              <input placeholder="Color" value={newVariant.color} onChange={(e) => setNewVariant({ ...newVariant, color: e.target.value })} className="px-2 py-1.5 bg-aura-bark border border-aura-umber rounded text-aura-cream text-sm" />
-              <input placeholder="Style" value={newVariant.style} onChange={(e) => setNewVariant({ ...newVariant, style: e.target.value })} className="px-2 py-1.5 bg-aura-bark border border-aura-umber rounded text-aura-cream text-sm" />
+              <input placeholder="Size" value={newVariant.size} onChange={(e) => setNewVariant({ ...newVariant, size: e.target.value })} className="px-2 py-1.5 bg-canvas border border-edge rounded text-content text-sm" />
+              <input placeholder="Color" value={newVariant.color} onChange={(e) => setNewVariant({ ...newVariant, color: e.target.value })} className="px-2 py-1.5 bg-canvas border border-edge rounded text-content text-sm" />
+              <input placeholder="Style" value={newVariant.style} onChange={(e) => setNewVariant({ ...newVariant, style: e.target.value })} className="px-2 py-1.5 bg-canvas border border-edge rounded text-content text-sm" />
             </div>
             <div className="grid grid-cols-3 gap-2">
-              <input placeholder="SKU" value={newVariant.sku} onChange={(e) => setNewVariant({ ...newVariant, sku: e.target.value })} className="px-2 py-1.5 bg-aura-bark border border-aura-umber rounded text-aura-cream text-sm" />
-              <input type="number" placeholder="Price Δ" value={newVariant.priceDelta} onChange={(e) => setNewVariant({ ...newVariant, priceDelta: Number(e.target.value) })} className="px-2 py-1.5 bg-aura-bark border border-aura-umber rounded text-aura-cream text-sm" />
-              <input type="number" placeholder="Stock" value={newVariant.stock} onChange={(e) => setNewVariant({ ...newVariant, stock: Number(e.target.value) })} className="px-2 py-1.5 bg-aura-bark border border-aura-umber rounded text-aura-cream text-sm" />
+              <input placeholder="SKU" value={newVariant.sku} onChange={(e) => setNewVariant({ ...newVariant, sku: e.target.value })} className="px-2 py-1.5 bg-canvas border border-edge rounded text-content text-sm" />
+              <input type="number" placeholder="Price Δ" value={newVariant.priceDelta} onChange={(e) => setNewVariant({ ...newVariant, priceDelta: Number(e.target.value) })} className="px-2 py-1.5 bg-canvas border border-edge rounded text-content text-sm" />
+              <input type="number" placeholder="Stock" value={newVariant.stock} onChange={(e) => setNewVariant({ ...newVariant, stock: Number(e.target.value) })} className="px-2 py-1.5 bg-canvas border border-edge rounded text-content text-sm" />
             </div>
             <div className="flex gap-2">
-              <button type="submit" className="flex-1 px-3 py-1.5 rounded bg-purple-600 text-white text-sm">Add</button>
-              <button type="button" onClick={() => setShowAdd(false)} className="px-3 py-1.5 rounded border border-aura-umber text-aura-cream text-sm">Cancel</button>
+              <button type="submit" className="flex-1 px-3 py-1.5 rounded bg-accent-600 text-content-on-accent text-sm">Add</button>
+              <button type="button" onClick={() => setShowAdd(false)} className="px-3 py-1.5 rounded border border-edge text-content text-sm">Cancel</button>
             </div>
           </form>
         ) : (
-          <button onClick={() => setShowAdd(true)} className="w-full px-4 py-2 rounded-lg border border-aura-umber text-aura-cream text-sm hover:border-aura-sand flex items-center justify-center gap-2">
+          <button onClick={() => setShowAdd(true)} className="w-full px-4 py-2 rounded-lg border border-edge text-content text-sm hover:border-edge-strong flex items-center justify-center gap-2">
             <PlusIcon className="w-4 h-4" /> Add Variant
           </button>
         )}
@@ -439,18 +447,18 @@ const VariantsModal: React.FC<{ product: Product; onClose: () => void }> = ({ pr
 
       {/* Delete Variant Modal */}
       {deleteVariantId && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[80]" onClick={() => setDeleteVariantId(null)}>
-          <div className="bg-aura-ink rounded-lg p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center p-4 z-[80]" onClick={() => setDeleteVariantId(null)}>
+          <div className="bg-surface rounded-lg p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center mb-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-900/60 flex items-center justify-center mr-3">
-                <ExclamationTriangleIcon className="w-6 h-6 text-red-400" />
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-danger-bg flex items-center justify-center mr-3">
+                <ExclamationTriangleIcon className="w-6 h-6 text-danger" />
               </div>
-              <h3 className="text-lg font-bold text-aura-cream">Delete Variant</h3>
+              <h3 className="text-lg font-bold text-content">Delete Variant</h3>
             </div>
-            <p className="text-aura-sand mb-6">Are you sure you want to delete this variant? This action cannot be undone.</p>
+            <p className="text-content-secondary mb-6">Are you sure you want to delete this variant? This action cannot be undone.</p>
             <div className="flex justify-end space-x-3">
-              <button onClick={() => setDeleteVariantId(null)} className="px-4 py-2 border border-aura-umber rounded-md text-aura-sand hover:bg-aura-umber/30 transition-colors">Cancel</button>
-              <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">Delete</button>
+              <button onClick={() => setDeleteVariantId(null)} className="px-4 py-2 border border-edge rounded-md text-content-secondary hover:bg-[var(--state-hover)] transition-colors">Cancel</button>
+              <button onClick={handleDelete} className="px-4 py-2 bg-danger text-content-on-accent rounded-md hover:opacity-90 transition-colors">Delete</button>
             </div>
           </div>
         </div>
@@ -498,11 +506,11 @@ const ImagesModal: React.FC<{ product: Product; onClose: () => void }> = ({ prod
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-[70] flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-aura-ink border border-aura-umber rounded-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:pb-6" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-overlay z-[70] flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-surface border border-edge rounded-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:pb-6" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-serif text-aura-ivory">Images — {product.name}</h2>
-          <button onClick={onClose} className="text-aura-sand hover:text-aura-cream">✕</button>
+          <h2 className="text-lg font-serif text-content-emphasis">Images — {product.name}</h2>
+          <button onClick={onClose} className="text-content-secondary hover:text-content">✕</button>
         </div>
 
         <div className="grid grid-cols-3 gap-3 mb-4">
@@ -512,43 +520,43 @@ const ImagesModal: React.FC<{ product: Product; onClose: () => void }> = ({ prod
               <button
                 onClick={() => setDeleteImageId(img.id)}
                 style={{ position: 'absolute', top: '4px', right: '4px' }}
-                className="icon-btn text-red-400 hover:text-red-300 transition-colors z-10"
+                className="icon-btn text-danger hover:opacity-80 transition-colors z-10"
               >
                 <TrashIcon className="w-4 h-4" />
               </button>
             </div>
           ))}
-          {images.length === 0 && <p className="col-span-3 text-sm text-aura-sand text-center py-4">No images yet.</p>}
+          {images.length === 0 && <p className="col-span-3 text-sm text-content-secondary text-center py-4">No images yet.</p>}
         </div>
 
-        <div className="border-t border-aura-umber pt-4">
-          <label className="text-sm text-aura-sand mb-2 block">Upload new images (JPG, PNG, WebP — max 5MB each)</label>
+        <div className="border-t border-edge pt-4">
+          <label className="text-sm text-content-secondary mb-2 block">Upload new images (JPG, PNG, WebP — max 5MB each)</label>
           <input
             type="file"
             accept="image/jpeg,image/png,image/webp,image/gif"
             multiple
             onChange={handleUpload}
             disabled={uploading}
-            className="w-full text-sm text-aura-cream file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-aura-clay file:text-aura-ink file:font-medium file:cursor-pointer"
+            className="w-full text-sm text-content file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-accent-600 file:text-content-on-accent file:font-medium file:cursor-pointer"
           />
-          {uploading && <p className="text-xs text-aura-sand mt-2">Uploading...</p>}
+          {uploading && <p className="text-xs text-content-secondary mt-2">Uploading...</p>}
         </div>
       </div>
 
       {/* Delete Image Modal */}
       {deleteImageId && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[80]" onClick={() => setDeleteImageId(null)}>
-          <div className="bg-aura-ink rounded-lg p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center p-4 z-[80]" onClick={() => setDeleteImageId(null)}>
+          <div className="bg-surface rounded-lg p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center mb-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-900/60 flex items-center justify-center mr-3">
-                <ExclamationTriangleIcon className="w-6 h-6 text-red-400" />
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-danger-bg flex items-center justify-center mr-3">
+                <ExclamationTriangleIcon className="w-6 h-6 text-danger" />
               </div>
-              <h3 className="text-lg font-bold text-aura-cream">Delete Image</h3>
+              <h3 className="text-lg font-bold text-content">Delete Image</h3>
             </div>
-            <p className="text-aura-sand mb-6">Are you sure you want to delete this image? This action cannot be undone.</p>
+            <p className="text-content-secondary mb-6">Are you sure you want to delete this image? This action cannot be undone.</p>
             <div className="flex justify-end space-x-3">
-              <button onClick={() => setDeleteImageId(null)} className="px-4 py-2 border border-aura-umber rounded-md text-aura-sand hover:bg-aura-umber/30 transition-colors">Cancel</button>
-              <button onClick={handleDeleteImage} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">Delete</button>
+              <button onClick={() => setDeleteImageId(null)} className="px-4 py-2 border border-edge rounded-md text-content-secondary hover:bg-[var(--state-hover)] transition-colors">Cancel</button>
+              <button onClick={handleDeleteImage} className="px-4 py-2 bg-danger text-content-on-accent rounded-md hover:opacity-90 transition-colors">Delete</button>
             </div>
           </div>
         </div>

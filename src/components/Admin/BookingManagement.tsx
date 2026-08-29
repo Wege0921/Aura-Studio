@@ -188,13 +188,13 @@ const BookingManagement: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'CONFIRMED':
-        return 'bg-green-900/40 text-green-200';
+        return 'bg-success-bg text-success border border-success-border';
       case 'CANCELLED':
-        return 'bg-red-900/40 text-red-200';
+        return 'bg-danger-bg text-danger border border-danger-border';
       case 'COMPLETED':
         return 'bg-aura-umber/40 text-aura-sand';
       case 'PENDING':
-        return 'bg-amber-900/40 text-amber-200';
+        return 'bg-warning-bg text-warning border border-warning-border';
       default:
         return 'bg-aura-umber/40 text-aura-sand';
     }
@@ -203,9 +203,9 @@ const BookingManagement: React.FC = () => {
   const getClassTypeColor = (classType: string) => {
     switch (classType) {
       case 'PILATES':
-        return 'bg-pink-900/40 text-pink-200';
+        return 'bg-accent-100 text-accent-900 border border-accent-400';
       case 'PRENATAL':
-        return 'bg-amber-900/40 text-amber-200';
+        return 'bg-warning-bg text-warning border border-warning-border';
       case 'POSTPARTUM':
         return 'bg-rose-900/40 text-rose-200';
       default:
@@ -216,7 +216,7 @@ const BookingManagement: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600"></div>
       </div>
     );
   }
@@ -231,15 +231,15 @@ const BookingManagement: React.FC = () => {
 
       {/* Messages */}
       {successMessage && (
-        <div className="bg-green-900/60 border border-green-600/40 text-green-200 px-4 py-3 rounded">
+        <div className="bg-success-bg border border-success-border text-success px-4 py-3 rounded">
           {successMessage}
         </div>
       )}
 
       {error && (
-        <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
+        <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded">
           {error}
-          <button onClick={() => setError('')} className="ml-4 text-green-300 hover:text-green-200">×</button>
+          <button onClick={() => setError('')} className="ml-4 text-success hover:text-success">×</button>
         </div>
       )}
 
@@ -251,7 +251,7 @@ const BookingManagement: React.FC = () => {
             <select
               value={filter.status}
               onChange={(e) => handleFilterChange('status', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
             >
               <option value="">All</option>
               {statusOptions.map(status => (
@@ -265,7 +265,7 @@ const BookingManagement: React.FC = () => {
             <select
               value={filter.classId}
               onChange={(e) => handleFilterChange('classId', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
             >
               <option value="">All</option>
               {classes.map(cls => (
@@ -280,7 +280,7 @@ const BookingManagement: React.FC = () => {
               type="date"
               value={filter.date}
               onChange={(e) => handleFilterChange('date', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
             />
           </div>
 
@@ -291,7 +291,7 @@ const BookingManagement: React.FC = () => {
               value={filter.search}
               onChange={(e) => handleFilterChange('search', e.target.value)}
               placeholder="Name or email"
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
             />
           </div>
         </div>
@@ -378,7 +378,7 @@ const BookingManagement: React.FC = () => {
                             onClick={() => { viewBookingDetails(booking); setOpenDropdown(null); }}
                             className="flex items-center w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30"
                           >
-                            <EyeIcon className="w-4 h-4 mr-2 text-indigo-400" /> View
+                            <EyeIcon className="w-4 h-4 mr-2 text-accent-400" /> View
                           </button>
                           <div className="px-4 py-2">
                             <select
@@ -393,7 +393,7 @@ const BookingManagement: React.FC = () => {
                           </div>
                           <button
                             onClick={() => { openDeleteModal(booking.id); setOpenDropdown(null); }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-red-400 hover:bg-aura-umber/30"
+                            className="flex items-center w-full px-4 py-2 text-sm text-danger hover:bg-[var(--state-hover)]"
                           >
                             <TrashIcon className="w-4 h-4 mr-2" /> Delete
                           </button>
@@ -453,7 +453,7 @@ const BookingManagement: React.FC = () => {
                       onClick={() => setCurrentPage(page)}
                       className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                         page === currentPage
-                          ? 'z-10 bg-purple-600 border-purple-600 text-white'
+                          ? 'z-10 bg-accent-600 border-accent-600 text-content-on-accent'
                           : 'bg-aura-ink border-aura-umber text-aura-sand hover:bg-aura-umber/30'
                       }`}
                     >
@@ -476,11 +476,11 @@ const BookingManagement: React.FC = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-sm">
             <div className="flex items-center mb-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-900/60 flex items-center justify-center mr-3">
-                <ExclamationTriangleIcon className="w-6 h-6 text-red-400" />
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-danger-bg border border-danger-border flex items-center justify-center mr-3">
+                <ExclamationTriangleIcon className="w-6 h-6 text-danger" />
               </div>
               <h3 className="text-lg font-bold text-aura-cream">Delete Booking</h3>
             </div>
@@ -494,7 +494,7 @@ const BookingManagement: React.FC = () => {
               </button>
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                className="px-4 py-2 bg-danger text-content-on-accent rounded-md hover:opacity-90 transition-colors"
               >
                 Delete
               </button>
@@ -505,7 +505,7 @@ const BookingManagement: React.FC = () => {
 
       {/* Booking Details Modal */}
       {showDetails && selectedBooking && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-2xl">
             <h2 className="text-xl font-bold mb-4">Booking Details</h2>
             
@@ -549,7 +549,7 @@ const BookingManagement: React.FC = () => {
             <div className="flex justify-end mt-6">
               <button
                 onClick={() => setShowDetails(false)}
-                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                className="px-4 py-2 bg-accent-600 text-content-on-accent rounded-md hover:bg-accent-700"
               >
                 Close
               </button>

@@ -283,6 +283,12 @@ html {
   padding-top: env(safe-area-inset-top, 0px);
 }
 
+/* Brand logo on painted chrome — theme-aware blacklish silhouette. Value
+   comes from the --logo-filter token (dark keeps the baked-in art). */
+.aura-logo {
+  filter: var(--logo-filter, none);
+}
+
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

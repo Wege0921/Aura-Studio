@@ -287,8 +287,18 @@ router.get('/products', catalogLimiter, cachePublicRead(60), async (req: Request
 });
 
 // Get distinct sizes and colors from active variants (for filter UI)
-router.get('/filters', catalogLimiter, cachePublicRead(300), async (req: Request, res: Response) => {
+// The DISTINCT full-scan over variants is only cheap at small catalog sizes;
+// cache the result in memory for 5 minutes so repeat visitors don't re-run it.
+const FILTERS_CACHE_TTL_MS = 5 * 60 * 1000;
+let filtersCache: { value: { sizes: string[]; colors: string[] }; expiresAt: number } | null = null;
+
+router.get('/filters', catalogLimiter, cachePublicRead(300), async (_req: Request, res: Response) => {
   try {
+    const now = Date.now();
+    if (filtersCache && filtersCache.expiresAt > now) {
+      return res.json(filtersCache.value);
+    }
+
     const variants = await prisma.productVariant.findMany({
       where: {
         isActive: true,
@@ -299,7 +309,10 @@ router.get('/filters', catalogLimiter, cachePublicRead(300), async (req: Request
     });
     const sizes = [...new Set(variants.map(v => v.size).filter(Boolean))];
     const colors = [...new Set(variants.map(v => v.color).filter(Boolean))];
-    res.json({ sizes, colors });
+    const value = { sizes, colors };
+
+    filtersCache = { value, expiresAt: now + FILTERS_CACHE_TTL_MS };
+    res.json(value);
   } catch (err) {
     res.status(500).json({ error: 'Failed to load filters' });
   }

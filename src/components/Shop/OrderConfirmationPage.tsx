@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
-import { ShopOrder, formatETB, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, PAYMENT_METHOD_LABELS, PAYMENT_STATUS_COLORS } from './shopTypes';
+import { ShopOrder, formatETB, ORDER_STATUS_LABELS, PAYMENT_METHOD_LABELS } from './shopTypes';
+import StatusBadge from './StatusBadge';
 import { CheckCircleIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
 
 const OrderConfirmationPage: React.FC = () => {
@@ -32,7 +33,7 @@ const OrderConfirmationPage: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-umber"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-edge"></div>
       </div>
     );
   }
@@ -40,8 +41,8 @@ const OrderConfirmationPage: React.FC = () => {
   if (!order) {
     return (
       <div className="text-center py-20">
-        <p className="text-aura-sand text-lg">{fetchError || 'Order not found.'}</p>
-        <button onClick={() => navigate('/shop')} className="mt-4 text-aura-clay hover:text-aura-sand">
+        <p className="text-content-secondary text-lg">{fetchError || 'Order not found.'}</p>
+        <button onClick={() => navigate('/shop')} className="mt-4 text-accent-400 hover:text-content-secondary">
           ← Back to Shop
         </button>
       </div>
@@ -52,74 +53,70 @@ const OrderConfirmationPage: React.FC = () => {
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Success header */}
       <div className="text-center py-6">
-        <CheckCircleIcon className="w-16 h-16 text-green-400 mx-auto mb-4" />
-        <h1 className="text-2xl font-serif text-aura-ivory mb-2">Order Confirmed!</h1>
-        <p className="text-aura-sand">Thank you for your order. We'll process it shortly.</p>
+        <CheckCircleIcon className="w-16 h-16 text-success mx-auto mb-4" />
+        <h1 className="text-2xl font-serif text-content-emphasis mb-2">Order Confirmed!</h1>
+        <p className="text-content-secondary">Thank you for your order. We'll process it shortly.</p>
       </div>
 
       {/* Order details */}
-      <div className="bg-aura-ink rounded-xl border border-aura-umber p-6 space-y-4">
+      <div className="bg-surface rounded-xl border border-edge p-6 space-y-4">
         <div className="flex justify-between items-center">
           <div>
-            <p className="text-xs text-aura-sand">Order Number</p>
-            <p className="text-lg font-bold text-aura-cream">{order.orderNumber}</p>
+            <p className="text-xs text-content-secondary">Order Number</p>
+            <p className="text-lg font-bold text-content">{order.orderNumber}</p>
           </div>
-          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${ORDER_STATUS_COLORS[order.status] || ''}`}>
-            {ORDER_STATUS_LABELS[order.status] || order.status}
-          </span>
+          <StatusBadge status={order.status} kind="order" />
         </div>
 
-        <div className="border-t border-aura-umber pt-4">
-          <h2 className="text-sm font-semibold text-aura-cream mb-3">Items</h2>
+        <div className="border-t border-edge pt-4">
+          <h2 className="text-sm font-semibold text-content mb-3">Items</h2>
           <div className="space-y-2">
             {order.items?.map((item) => (
               <div key={item.id} className="flex justify-between text-sm">
                 <div>
-                  <span className="text-aura-cream">{item.name}</span>
-                  {item.variantLabel && <span className="text-aura-sand"> — {item.variantLabel}</span>}
-                  <span className="text-aura-sand"> × {item.quantity}</span>
+                  <span className="text-content">{item.name}</span>
+                  {item.variantLabel && <span className="text-content-secondary"> — {item.variantLabel}</span>}
+                  <span className="text-content-secondary"> × {item.quantity}</span>
                 </div>
-                <span className="text-aura-cream">{formatETB(item.lineTotal)}</span>
+                <span className="text-content">{formatETB(item.lineTotal)}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="border-t border-aura-umber pt-4 space-y-2">
+        <div className="border-t border-edge pt-4 space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-aura-sand">Subtotal</span>
-            <span className="text-aura-cream">{formatETB(order.subtotal)}</span>
+            <span className="text-content-secondary">Subtotal</span>
+            <span className="text-content">{formatETB(order.subtotal)}</span>
           </div>
           {order.discount && order.discount > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-aura-sand">Discount</span>
-              <span className="text-green-400">-{formatETB(order.discount)}</span>
+              <span className="text-content-secondary">Discount</span>
+              <span className="text-success">-{formatETB(order.discount)}</span>
             </div>
           )}
           <div className="flex justify-between text-sm">
-            <span className="text-aura-sand">Shipping</span>
-            <span className="text-aura-cream">{order.shippingCost === 0 ? 'Free' : formatETB(order.shippingCost)}</span>
+            <span className="text-content-secondary">Shipping</span>
+            <span className="text-content">{order.shippingCost === 0 ? 'Free' : formatETB(order.shippingCost)}</span>
           </div>
-          <div className="border-t border-aura-umber pt-2 flex justify-between items-baseline">
-            <span className="text-aura-cream font-medium">Total</span>
-            <span className="text-xl font-bold text-aura-cream">{formatETB(order.total)}</span>
+          <div className="border-t border-edge pt-2 flex justify-between items-baseline">
+            <span className="text-content font-medium">Total</span>
+            <span className="text-xl font-bold text-content">{formatETB(order.total)}</span>
           </div>
         </div>
 
         {/* Payment info */}
-        <div className="border-t border-aura-umber pt-4 space-y-2">
+        <div className="border-t border-edge pt-4 space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-aura-sand">Payment Method</span>
-            <span className="text-aura-cream">{order.paymentMethod ? PAYMENT_METHOD_LABELS[order.paymentMethod] || order.paymentMethod : '—'}</span>
+            <span className="text-content-secondary">Payment Method</span>
+            <span className="text-content">{order.paymentMethod ? PAYMENT_METHOD_LABELS[order.paymentMethod] || order.paymentMethod : '—'}</span>
           </div>
           <div className="flex justify-between text-sm items-center">
-            <span className="text-aura-sand">Payment Status</span>
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${PAYMENT_STATUS_COLORS[order.paymentStatus] || ''}`}>
-              {order.paymentStatus}
-            </span>
+            <span className="text-content-secondary">Payment Status</span>
+            <StatusBadge status={order.paymentStatus} kind="payment" srPrefix="Payment" />
           </div>
           {order.paymentStatus === 'PENDING' && order.paymentMethod !== 'CASH_ON_DELIVERY' && (
-            <p className="text-xs text-aura-sand bg-amber-900/20 rounded p-2">
+            <p className="text-xs text-content-secondary bg-warning-bg rounded p-2">
               Your payment is being verified. You'll receive a notification once confirmed.
             </p>
           )}
@@ -127,10 +124,10 @@ const OrderConfirmationPage: React.FC = () => {
 
         {/* Shipping address */}
         {order.shippingAddress && (
-          <div className="border-t border-aura-umber pt-4">
-            <h2 className="text-sm font-semibold text-aura-cream mb-2">Shipping Address</h2>
-            <div className="text-sm text-aura-sand space-y-0.5">
-              <p className="text-aura-cream">{order.shippingAddress.fullName}</p>
+          <div className="border-t border-edge pt-4">
+            <h2 className="text-sm font-semibold text-content mb-2">Shipping Address</h2>
+            <div className="text-sm text-content-secondary space-y-0.5">
+              <p className="text-content">{order.shippingAddress.fullName}</p>
               <p>{order.shippingAddress.phone}</p>
               <p>{order.shippingAddress.address}</p>
               {order.shippingAddress.postalCode && <p>{order.shippingAddress.postalCode}</p>}
@@ -140,13 +137,13 @@ const OrderConfirmationPage: React.FC = () => {
 
         {/* Status history */}
         {order.statusHistory && order.statusHistory.length > 0 && (
-          <div className="border-t border-aura-umber pt-4">
-            <h2 className="text-sm font-semibold text-aura-cream mb-2">Order Updates</h2>
+          <div className="border-t border-edge pt-4">
+            <h2 className="text-sm font-semibold text-content mb-2">Order Updates</h2>
             <div className="space-y-2">
               {order.statusHistory.map((h) => (
                 <div key={h.id} className="text-sm flex justify-between">
-                  <span className="text-aura-cream">{ORDER_STATUS_LABELS[h.status] || h.status}</span>
-                  <span className="text-aura-sand text-xs">{new Date(h.createdAt).toLocaleDateString()}</span>
+                  <span className="text-content">{ORDER_STATUS_LABELS[h.status] || h.status}</span>
+                  <span className="text-content-secondary text-xs">{new Date(h.createdAt).toLocaleDateString()}</span>
                 </div>
               ))}
             </div>
@@ -158,7 +155,7 @@ const OrderConfirmationPage: React.FC = () => {
       <div className="flex gap-3">
         <button
           onClick={() => navigate('/shop')}
-          className="flex-1 px-6 py-3 rounded-lg border border-aura-umber text-aura-cream text-sm font-medium hover:border-aura-sand flex items-center justify-center gap-2"
+          className="flex-1 px-6 py-3 rounded-lg border border-edge text-content text-sm font-medium hover:border-edge-strong flex items-center justify-center gap-2"
         >
           <ShoppingBagIcon className="w-5 h-5" /> Continue Shopping
         </button>

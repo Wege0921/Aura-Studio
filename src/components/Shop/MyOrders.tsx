@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
-import { ShopOrder, formatETB, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, PAYMENT_METHOD_LABELS } from './shopTypes';
+import { ShopOrder, formatETB, PAYMENT_METHOD_LABELS } from './shopTypes';
+import StatusBadge from './StatusBadge';
 import { ShoppingBagIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -10,6 +11,7 @@ const MyOrders: React.FC = () => {
   const { user } = useAuth();
   const [orders, setOrders] = useState<ShopOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [lookupNumber, setLookupNumber] = useState('');
   const [lookupPhone, setLookupPhone] = useState('');
   const [lookupError, setLookupError] = useState('');
@@ -26,6 +28,7 @@ const MyOrders: React.FC = () => {
         setOrders(data);
       } catch (err) {
         console.error('Error fetching orders:', err);
+        setLoadError(err instanceof Error ? err.message : 'Failed to load orders.');
       } finally {
         setLoading(false);
       }
@@ -53,7 +56,7 @@ const MyOrders: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-umber"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-edge"></div>
       </div>
     );
   }
@@ -62,11 +65,11 @@ const MyOrders: React.FC = () => {
     return (
       <div className="space-y-8">
         <div className="text-center py-12">
-          <ShoppingBagIcon className="w-16 h-16 text-aura-umber mx-auto mb-4" />
-          <h2 className="text-xl font-serif text-aura-ivory mb-2">
+          <ShoppingBagIcon className="w-16 h-16 text-content-secondary mx-auto mb-4" />
+          <h2 className="text-xl font-serif text-content-emphasis mb-2">
             {user ? 'No orders yet' : 'Track your order'}
           </h2>
-          <p className="text-aura-sand mb-6">
+          <p className="text-content-secondary mb-6">
             {user
               ? 'When you place an order, it will appear here.'
               : 'Enter your order number and phone to view your order.'}
@@ -74,7 +77,7 @@ const MyOrders: React.FC = () => {
           {user && (
             <button
               onClick={() => navigate('/shop')}
-              className="px-6 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700"
+              className="px-6 py-2.5 rounded-lg bg-accent-600 text-content-on-accent text-sm font-medium hover:bg-accent-700"
             >
               Go to Shop
             </button>
@@ -83,38 +86,38 @@ const MyOrders: React.FC = () => {
 
         {/* Guest order lookup */}
         {!user && (
-          <div className="max-w-md mx-auto bg-aura-ink rounded-xl border border-aura-umber p-6">
-            <h3 className="text-lg font-serif text-aura-ivory mb-4 flex items-center gap-2">
+          <div className="max-w-md mx-auto bg-surface rounded-xl border border-edge p-6">
+            <h3 className="text-lg font-serif text-content-emphasis mb-4 flex items-center gap-2">
               <MagnifyingGlassIcon className="w-5 h-5" /> Find your order
             </h3>
             <form onSubmit={handleLookup} className="space-y-3">
               <div>
-                <label className="text-sm text-aura-sand mb-1 block">Order Number</label>
+                <label className="text-sm text-content-secondary mb-1 block">Order Number</label>
                 <input
                   type="text"
                   required
                   value={lookupNumber}
                   onChange={(e) => setLookupNumber(e.target.value)}
                   placeholder="e.g. AURA-2026-00001"
-                  className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
+                  className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus"
                 />
               </div>
               <div>
-                <label className="text-sm text-aura-sand mb-1 block">Phone Number</label>
+                <label className="text-sm text-content-secondary mb-1 block">Phone Number</label>
                 <input
                   type="tel"
                   required
                   value={lookupPhone}
                   onChange={(e) => setLookupPhone(e.target.value)}
                   placeholder="The phone you used at checkout"
-                  className="w-full px-3 py-2 bg-aura-bark border border-aura-umber rounded-lg text-aura-cream focus:outline-none focus:border-aura-clay"
+                  className="w-full px-3 py-2 bg-canvas border border-edge rounded-lg text-content focus:outline-none focus:border-edge-focus"
                 />
               </div>
-              {lookupError && <p className="text-sm text-red-400">{lookupError}</p>}
+              {lookupError && <p className="text-sm text-danger">{lookupError}</p>}
               <button
                 type="submit"
                 disabled={lookupLoading}
-                className="w-full px-4 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 disabled:opacity-50"
+                className="w-full px-4 py-2.5 rounded-lg bg-accent-600 text-content-on-accent text-sm font-medium hover:bg-accent-700 disabled:opacity-50"
               >
                 {lookupLoading ? 'Searching...' : 'Find Order'}
               </button>
@@ -127,44 +130,54 @@ const MyOrders: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-serif text-aura-ivory">My Orders</h1>
+      {loadError && (
+        <div role="alert" className="flex items-start gap-3 rounded-xl border border-danger-border bg-danger-bg px-4 py-3">
+          <span className="text-danger text-sm flex-1">{loadError}</span>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="text-sm font-medium text-danger underline underline-offset-2 hover:no-underline"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+      <h1 className="text-2xl font-serif text-content-emphasis">My Orders</h1>
 
       <div className="space-y-3">
         {orders.map((order) => (
           <button
             key={order.id}
             onClick={() => navigate(`/shop/orders/${order.id}`)}
-            className="w-full text-left bg-aura-ink rounded-xl border border-aura-umber p-4 hover:border-aura-clay transition-colors"
+            className="w-full text-left bg-surface rounded-xl border border-edge p-4 hover:border-edge-focus transition-colors"
           >
             <div className="flex justify-between items-start mb-3">
               <div>
-                <p className="text-sm font-bold text-aura-cream">{order.orderNumber}</p>
-                <p className="text-xs text-aura-sand">{new Date(order.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+                <p className="text-sm font-bold text-content">{order.orderNumber}</p>
+                <p className="text-xs text-content-secondary">{new Date(order.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</p>
               </div>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${ORDER_STATUS_COLORS[order.status] || ''}`}>
-                {ORDER_STATUS_LABELS[order.status] || order.status}
-              </span>
+              <StatusBadge status={order.status} kind="order" />
             </div>
 
             <div className="space-y-1">
               {order.items?.slice(0, 3).map((item) => (
                 <div key={item.id} className="flex justify-between text-sm">
-                  <span className="text-aura-sand">
+                  <span className="text-content-secondary">
                     {item.name} × {item.quantity}
-                    {item.variantLabel && <span className="text-aura-sand"> ({item.variantLabel})</span>}
+                    {item.variantLabel && <span className="text-content-secondary"> ({item.variantLabel})</span>}
                   </span>
                 </div>
               ))}
               {order.items && order.items.length > 3 && (
-                <p className="text-xs text-aura-sand">+ {order.items.length - 3} more items</p>
+                <p className="text-xs text-content-secondary">+ {order.items.length - 3} more items</p>
               )}
             </div>
 
-            <div className="border-t border-aura-umber mt-3 pt-3 flex justify-between items-center">
-              <span className="text-sm text-aura-sand">
+            <div className="border-t border-edge mt-3 pt-3 flex justify-between items-center">
+              <span className="text-sm text-content-secondary">
                 {order.paymentMethod ? PAYMENT_METHOD_LABELS[order.paymentMethod] : ''} · {order.paymentStatus}
               </span>
-              <span className="text-lg font-bold text-aura-cream">{formatETB(order.total)}</span>
+              <span className="text-lg font-bold text-content">{formatETB(order.total)}</span>
             </div>
           </button>
         ))}

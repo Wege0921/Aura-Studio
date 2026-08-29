@@ -1,19 +1,11 @@
+/* Design tokens (all themes) — must be imported before Tailwind layers. */
+@import './styles/tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-:root {
-  --aura-ink: #241a13;
-  --aura-bark: #3b2a1d;
-  --aura-umber: #5c4530;
-  --aura-clay: #a87f5a;
-  --aura-sand: #cdab85;
-  --aura-cream: #f2ebe0;
-  --aura-paper: #eee5d6;
-  --aura-ivory: #f8f4ec;
-}
 
 @media (prefers-reduced-motion: reduce) {
   body {
@@ -21,18 +13,17 @@
   }
 }
 
-[data-theme="light"] {
-  --aura-ink: #d4c4a4;        /* card background: darker warm beige */
-  --aura-bark: #e6dccb;       /* page background: deeper beige */
-  --aura-umber: #cdab85;      /* warm accent / borders */
-  --aura-clay: #5c4530;       /* dark brown accents */
-  --aura-sand: #5c4530;       /* secondary text */
-  --aura-cream: #241a13;      /* primary text */
-  --aura-paper: #e6dccb;      /* surface background: between page and cards */
-  --aura-ivory: #241a13;      /* dark text on light surfaces */
-}
+/* ---------------------------------------------------------------------------
+   Light-mode compatibility overrides.
 
-/* Light mode contrast fixes for status badges and contact icons */
+   TECHNICAL DEBT: these exist because ~840 colour utilities across the app are
+   hard-coded Tailwind families (red-*, green-*, purple-*, white, ...) instead
+   of design tokens, so they do not respond to a theme change.
+
+   Do NOT add an equivalent block for new themes. The correct fix is to migrate
+   the underlying components to the semantic tokens in styles/tokens.css.
+   See docs/THEME_PRD_ATELIER.md section 5.3.
+   ------------------------------------------------------------------------ */
 [data-theme="light"] [class*="bg-green-900/30"] { background-color: rgba(22, 101, 52, 0.18) !important; }
 [data-theme="light"] .text-green-300 { color: #166534 !important; }
 [data-theme="light"] [class*="bg-red-900/30"] { background-color: rgba(153, 27, 27, 0.18) !important; }
@@ -142,7 +133,10 @@ input, select, textarea {
 
 [data-theme="light"] input,
 [data-theme="light"] select,
-[data-theme="light"] textarea {
+[data-theme="light"] textarea,
+[data-theme="atelier"] input,
+[data-theme="atelier"] select,
+[data-theme="atelier"] textarea {
   color-scheme: light;
 }
 

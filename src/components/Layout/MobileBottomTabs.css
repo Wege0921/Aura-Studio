@@ -5,6 +5,12 @@
   left: 0;
   right: 0;
   z-index: 400;
+  /* -- Dark (default) tier --------------------------------------------- */
+  --mbt-bg: #241a13;
+  --mbt-border: rgba(242, 235, 224, 0.12);
+  --mbt-inactive: rgba(242, 235, 224, 0.55);
+  --mbt-active: #f2ebe0;
+  --mbt-selected-bg: rgba(205, 171, 133, 0.20);
   background: var(--mbt-bg, #241a13);
   border-top: 1px solid var(--mbt-border, rgba(242, 235, 224, 0.12));
   padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -15,6 +21,7 @@
   --mbt-border: rgba(36, 26, 19, 0.12);
   --mbt-inactive: rgba(36, 26, 19, 0.55);
   --mbt-active: #241a13;
+  --mbt-selected-bg: rgba(92, 69, 48, 0.14);
 }
 
 .mbt-tab {
@@ -37,6 +44,19 @@
   color: var(--mbt-active, #f2ebe0);
 }
 
+.mbt-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+.mbt-tab.mbt-active .mbt-icon-wrap {
+  background: var(--mbt-selected-bg, rgba(205, 171, 133, 0.20));
+}
+
 [data-theme="light"] .mbt-tab {
   color: var(--mbt-inactive, rgba(36, 26, 19, 0.55));
 }
@@ -51,6 +71,15 @@
   --mbt-border: rgba(36, 26, 19, 0.12);
   --mbt-inactive: rgba(36, 26, 19, 0.55);
   --mbt-active: #241a13;
+  --mbt-selected-bg: rgba(92, 69, 48, 0.14);
+}
+
+[data-theme="atelier"] .mobile-bottom-tabs {
+  --mbt-bg: var(--bg-canvas);
+  --mbt-border: var(--border-subtle);
+  --mbt-inactive: var(--text-muted);
+  --mbt-active: var(--accent-600);
+  --mbt-selected-bg: var(--accent-50);
 }
 
 .mbt-icon {

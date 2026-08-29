@@ -1,8 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { ShoppingBagIcon } from '@heroicons/react/24/outline';
 import { Product, formatETB, getEffectivePrice, getFirstImage } from './shopTypes';
 import { useShopCart } from '../../contexts/ShopCartContext';
+import { api } from '../../lib/api';
 
 interface ProductCardProps {
   product: Product;
@@ -11,6 +13,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { addItem } = useShopCart();
 
   const price = getEffectivePrice(product);
@@ -25,6 +28,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
   const handleClick = () => {
     if (onOpen) onOpen(product.slug);
     else navigate(`/shop/product/${product.slug}`);
+  };
+
+  // Prefetch the detail modal chunk + product data on hover/focus so the
+  // first open of a product is instant instead of loading on click.
+  const prefetchDetail = () => {
+    if (!onOpen) return;
+    import('./ProductDetailModal').catch(() => {});
+    queryClient.prefetchQuery({
+      queryKey: ['shop', 'product', product.slug],
+      queryFn: () => api.get<{ product: Product }>(`/api/shop/products/${product.slug}`),
+      staleTime: 60_000,
+    });
   };
 
   const handleQuickAdd = (e: React.MouseEvent) => {
@@ -50,11 +65,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
 
   return (
     <div
-      className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 border border-aura-umber overflow-hidden hover:shadow-xl transition-shadow duration-200 cursor-pointer group"
+      className="bg-surface rounded-xl shadow-elev-1 border border-edge overflow-hidden hover:shadow-elev-2 transition-shadow duration-200 cursor-pointer group focus:outline-none focus:ring-2 focus:ring-edge-focus"
       onClick={handleClick}
+      onPointerEnter={prefetchDetail}
+      onFocus={prefetchDetail}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+      role="button"
+      tabIndex={0}
+      aria-label={`View ${product.name}`}
     >
       {/* Image */}
-      <div className="aspect-square bg-aura-bark overflow-hidden relative">
+      <div className="aspect-square bg-surface-sunken overflow-hidden relative">
         {image ? (
           <>
           <img
@@ -66,21 +87,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
           <div className="w-full h-full flex items-center justify-center absolute inset-0" style={{display:'none'}}>
-            <ShoppingBagIcon className="w-12 h-12 text-aura-umber" />
+            <ShoppingBagIcon className="w-12 h-12 text-content-secondary" />
           </div>
           </>
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <ShoppingBagIcon className="w-12 h-12 text-aura-umber" />
+            <ShoppingBagIcon className="w-12 h-12 text-content-secondary" />
           </div>
         )}
         {onSale && (
-          <span className="absolute top-2 left-2 bg-aura-clay text-aura-ink text-xs font-bold px-2 py-1 rounded">
-            SALE
+          <span className="absolute top-2 left-2 bg-success-bg text-success border border-success-border text-xs font-semibold px-2 py-1 rounded">
+            On Sale
           </span>
         )}
         {outOfStock && (
-          <span className="absolute top-2 right-2 bg-red-900/60 text-red-200 text-xs font-medium px-2 py-1 rounded">
+          <span className="absolute top-2 right-2 bg-danger-bg text-danger border border-danger-border text-xs font-medium px-2 py-1 rounded">
             Out of Stock
           </span>
         )}
@@ -88,15 +109,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
 
       {/* Details */}
       <div className="p-4">
-        <h3 className="text-sm font-semibold text-aura-cream mb-1 line-clamp-2">{product.name}</h3>
+        <h3 className="text-sm font-semibold text-content mb-1 line-clamp-2">{product.name}</h3>
         {product.category && (
-          <p className="text-xs text-aura-sand mb-2">{product.category.name}</p>
+          <p className="text-xs text-content-secondary mb-2">{product.category.name}</p>
         )}
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-aura-cream">{formatETB(price)}</span>
+            <span className="text-lg font-bold text-content">{formatETB(price)}</span>
             {onSale && (
-              <span className="text-sm text-aura-sand line-through">{formatETB(product.basePrice)}</span>
+              <span className="text-sm text-content-secondary line-through">{formatETB(product.basePrice)}</span>
             )}
           </div>
         </div>
@@ -106,8 +127,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
           disabled={outOfStock}
           className={`w-full mt-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
             outOfStock
-              ? 'bg-gray-700/50 text-gray-400 cursor-not-allowed'
-              : 'bg-purple-600 text-white hover:bg-purple-700'
+              ? 'bg-surface-sunken text-content-muted cursor-not-allowed'
+              : 'bg-accent-600 text-content-on-accent hover:bg-accent-700'
           }`}
         >
           {outOfStock ? 'Out of Stock' : product.variants && product.variants.length > 0 ? 'View Options' : 'Add to Cart'}

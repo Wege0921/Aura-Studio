@@ -46,16 +46,16 @@ const Analytics: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600" />
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
+      <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded">
         {error || 'No data'}
-        <button onClick={fetchAnalytics} className="ml-4 text-red-200 hover:text-white underline">
+        <button onClick={fetchAnalytics} className="ml-4 text-danger hover:text-danger underline">
           Retry
         </button>
       </div>
@@ -67,11 +67,11 @@ const Analytics: React.FC = () => {
   const totalBookings = data.bookingsByStatus.reduce((s, b) => s + b.count, 0);
 
   const statusColors: Record<string, string> = {
-    CONFIRMED: 'bg-green-500',
-    COMPLETED: 'bg-blue-500',
-    CANCELLED: 'bg-red-500',
-    PENDING: 'bg-yellow-500',
-    WAITLIST: 'bg-purple-500',
+    CONFIRMED: 'bg-success',
+    COMPLETED: 'bg-info',
+    CANCELLED: 'bg-danger',
+    PENDING: 'bg-warning',
+    WAITLIST: 'bg-accent-400',
   };
 
   return (
@@ -85,9 +85,9 @@ const Analytics: React.FC = () => {
       {/* 30-day Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Bookings (30d)', value: data.recentActivity.bookings30d, color: 'text-blue-400' },
-          { label: 'Completed', value: data.recentActivity.completed30d, color: 'text-green-400' },
-          { label: 'Payments (30d)', value: data.recentActivity.payments30d, color: 'text-purple-400' },
+          { label: 'Bookings (30d)', value: data.recentActivity.bookings30d, color: 'text-accent-400' },
+          { label: 'Completed', value: data.recentActivity.completed30d, color: 'text-success' },
+          { label: 'Payments (30d)', value: data.recentActivity.payments30d, color: 'text-accent-400' },
           { label: 'Revenue (30d)', value: `ETB ${(data.recentActivity.revenue30d ?? 0).toLocaleString()}`, color: 'text-aura-sand' },
         ].map((card) => (
           <div key={card.label} className="bg-aura-ink p-4 rounded-lg border border-aura-umber">
@@ -110,7 +110,7 @@ const Analytics: React.FC = () => {
                 <div key={label} className="flex-1 flex flex-col items-center gap-2">
                   <div className="w-full flex items-end h-36">
                     <div
-                      className="w-full bg-purple-600 rounded-t transition-all duration-700"
+                      className="w-full bg-accent-600 rounded-t transition-all duration-700"
                       style={{ height: `${Math.max(pct, 4)}%` }}
                       title={`ETB ${val.toLocaleString()}`}
                     />
@@ -133,7 +133,7 @@ const Analytics: React.FC = () => {
                 <div key={label} className="flex-1 flex flex-col items-center gap-2">
                   <div className="w-full flex items-end h-36">
                     <div
-                      className="w-full bg-green-600 rounded-t transition-all duration-700"
+                      className="w-full bg-success rounded-t transition-all duration-700"
                       style={{ height: `${Math.max(pct, 4)}%` }}
                       title={`${val} users`}
                     />
@@ -152,7 +152,7 @@ const Analytics: React.FC = () => {
         <div className="flex flex-wrap gap-4">
           {data.bookingsByStatus.map((b) => (
             <div key={b.status} className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full ${statusColors[b.status] || 'bg-gray-500'}`} />
+              <div className={`w-3 h-3 rounded-full ${statusColors[b.status] || 'bg-edge'}`} />
               <span className="text-sm text-aura-sand">{b.status}</span>
               <span className="text-sm font-bold text-aura-cream">{b.count}</span>
               <span className="text-xs text-aura-sand">
@@ -165,7 +165,7 @@ const Analytics: React.FC = () => {
           {data.bookingsByStatus.map((b) => (
             <div
               key={b.status}
-              className={`${statusColors[b.status] || 'bg-gray-500'} transition-all duration-700`}
+              className={`${statusColors[b.status] || 'bg-edge'} transition-all duration-700`}
               style={{ width: `${totalBookings > 0 ? (b.count / totalBookings) * 100 : 0}%` }}
               title={`${b.status}: ${b.count}`}
             />
@@ -187,7 +187,7 @@ const Analytics: React.FC = () => {
                 <div className="flex items-center gap-3 flex-shrink-0">
                   <div className="w-24 h-2 bg-aura-umber/30 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-blue-500 rounded-full"
+                      className="h-full bg-info rounded-full"
                       style={{ width: `${data.topClasses[0]?.bookings ? (cls.bookings / data.topClasses[0].bookings) * 100 : 0}%` }}
                     />
                   </div>
@@ -210,7 +210,7 @@ const Analytics: React.FC = () => {
                 <div className="flex items-center gap-3 flex-shrink-0">
                   <div className="w-24 h-2 bg-aura-umber/30 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-purple-500 rounded-full"
+                      className="h-full bg-accent-400 rounded-full"
                       style={{ width: `${data.packagePopularity[0]?.purchases ? (pkg.purchases / data.packagePopularity[0].purchases) * 100 : 0}%` }}
                     />
                   </div>

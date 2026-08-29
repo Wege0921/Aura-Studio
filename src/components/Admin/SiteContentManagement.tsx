@@ -188,7 +188,7 @@ const SiteContentManagement: React.FC = () => {
           )}
 
           {section.message && (
-            <p className={`text-sm ${section.message === 'Saved successfully' ? 'text-green-400' : 'text-red-400'}`}>
+            <p className={`text-sm ${section.message === 'Saved successfully' ? 'text-success' : 'text-danger'}`}>
               {section.message}
             </p>
           )}
@@ -215,7 +215,7 @@ const SiteContentManagement: React.FC = () => {
   );
 };
 
-/* ─── Image Upload Field ─── */
+/* --- Image Upload Field --- */
 const ImageField: React.FC<{
   label: string;
   value: string;
@@ -242,7 +242,7 @@ const ImageField: React.FC<{
   </div>
 );
 
-/* ─── Text Input ─── */
+/* --- Text Input --- */
 const TextField: React.FC<{
   label: string;
   value: string;
@@ -272,7 +272,7 @@ const TextField: React.FC<{
   </div>
 );
 
-/* ─── Forms ─── */
+/* --- Forms --- */
 
 const HeroForm: React.FC<{
   data: any;
@@ -359,7 +359,7 @@ const FooterForm: React.FC<{
               placeholder="Section ID (e.g. approach)"
               className="flex-1 px-3 py-1.5 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream placeholder:text-aura-sand/70 text-sm focus:outline-none focus:ring-2 focus:ring-aura-sand"
             />
-            <button onClick={() => removeQuickLink(idx)} className="text-red-400 hover:text-red-300 px-2 py-1 text-sm">Remove</button>
+            <button onClick={() => removeQuickLink(idx)} className="text-danger hover:text-danger px-2 py-1 text-sm">Remove</button>
           </div>
         ))}
         <button onClick={addQuickLink} className="text-aura-sand hover:text-aura-ivory text-sm">+ Add Link</button>
@@ -391,7 +391,7 @@ const FooterForm: React.FC<{
               placeholder="Link text"
               className="flex-1 px-3 py-1.5 bg-aura-ink border border-aura-umber rounded-lg text-aura-cream placeholder:text-aura-sand/70 text-sm focus:outline-none focus:ring-2 focus:ring-aura-sand"
             />
-            <button onClick={() => removeSocial(idx)} className="text-red-400 hover:text-red-300 px-2 py-1 text-sm">Remove</button>
+            <button onClick={() => removeSocial(idx)} className="text-danger hover:text-danger px-2 py-1 text-sm">Remove</button>
           </div>
         ))}
         <button onClick={addSocial} className="text-aura-sand hover:text-aura-ivory text-sm">+ Add Social Link</button>
@@ -440,7 +440,7 @@ const OfferingsForm: React.FC<{
         <div key={card.id || idx} className="border border-aura-umber rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-medium text-aura-ivory">Card {idx + 1}</h4>
-            <button onClick={() => removeCard(idx)} className="text-red-400 hover:text-red-300 text-sm">Remove</button>
+            <button onClick={() => removeCard(idx)} className="text-danger hover:text-danger text-sm">Remove</button>
           </div>
           <TextField label="Title" value={card.title || ''} onChange={(v) => updateCard(idx, 'title', v)} placeholder="e.g. Pilates" />
           <TextField label="Description" value={card.description || ''} onChange={(v) => updateCard(idx, 'description', v)} multiline placeholder="Short description..." />

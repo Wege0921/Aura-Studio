@@ -188,10 +188,10 @@ const LandingPage: React.FC = () => {
             {shopCategories.map((cat) => (
               <button
                 key={cat.id}
-                className="lp-shop-card lp-reveal bg-aura-ink rounded-xl border border-aura-umber overflow-hidden hover:border-aura-clay transition-colors duration-200 group text-left"
+                className="lp-shop-card lp-reveal bg-surface rounded-xl border border-edge overflow-hidden hover:border-edge-focus transition-colors duration-200 group text-left"
                 onClick={() => navigate(`/shop?category=${cat.slug}`)}
               >
-                <div className="aspect-square bg-aura-bark overflow-hidden">
+                <div className="aspect-square bg-canvas overflow-hidden">
                   {cat.imageUrl ? (
                     <img
                       src={cat.imageUrl}
@@ -200,7 +200,7 @@ const LandingPage: React.FC = () => {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <ShoppingBagIcon className="w-10 h-10 text-aura-umber" />
+                      <ShoppingBagIcon className="w-10 h-10 text-content-secondary" />
                     </div>
                   )}
                 </div>

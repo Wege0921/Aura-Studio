@@ -19,28 +19,22 @@ const router = express.Router();
 // Get dashboard statistics
 router.get('/dashboard/stats', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const [
-      totalUsers,
-      totalClasses,
-      totalBookings,
-      totalRevenue,
-      activePackages,
-      pendingPayments,
-    ] = await Promise.all([
-      prisma.user.count(),
-      prisma.class.count(),
-      prisma.booking.count(),
-      prisma.payment.aggregate({
-        where: { status: 'VERIFIED' },
-        _sum: { amount: true },
-      }),
-      prisma.package.count({
-        where: { isActive: true },
-      }),
-      prisma.payment.count({
-        where: { status: 'PENDING' },
-      }),
-    ]);
+    // Run sequentially to avoid exhausting the Supabase pooler connection
+    // pool (6 parallel queries can timeout ~5s under load). These are all
+    // fast count/aggregate queries so serial execution is still <500ms.
+    const totalUsers = await prisma.user.count();
+    const totalClasses = await prisma.class.count();
+    const totalBookings = await prisma.booking.count();
+    const totalRevenue = await prisma.payment.aggregate({
+      where: { status: 'VERIFIED' },
+      _sum: { amount: true },
+    });
+    const activePackages = await prisma.package.count({
+      where: { isActive: true },
+    });
+    const pendingPayments = await prisma.payment.count({
+      where: { status: 'PENDING' },
+    });
 
     res.json({
       totalUsers,

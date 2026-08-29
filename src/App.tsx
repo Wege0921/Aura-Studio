@@ -61,15 +61,15 @@ const queryClient = new QueryClient({
 
 function PageLoader() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-aura-bark">
-      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-aura-umber"></div>
+    <div className="flex items-center justify-center min-h-screen bg-canvas">
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-edge"></div>
     </div>
   );
 }
 
 function PublicLayout({ children, fullWidth = false }: { children: React.ReactNode; fullWidth?: boolean }) {
   return (
-    <div className="min-h-screen bg-aura-bark pb-24 md:pb-0">
+    <div className={`min-h-screen bg-canvas pb-24 md:pb-0 ${fullWidth ? '' : 'pt-[68px] max-[920px]:pt-[63px]'}`}>
       <PublicHeader />
       {fullWidth ? (
         children
@@ -385,7 +385,7 @@ function App() {
       <ShopCartProvider>
       <ErrorBoundary>
       <Router>
-        <div className="min-h-screen bg-aura-bark">
+        <div className="min-h-screen bg-canvas">
           <NetworkStatusBar />
           <OfflineIndicator />
           <PWAInstallBanner />

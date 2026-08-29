@@ -149,7 +149,7 @@ const InstructorManagement: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600"></div>
       </div>
     );
   }
@@ -164,7 +164,7 @@ const InstructorManagement: React.FC = () => {
         </div>
         <button
           onClick={() => setShowForm(true)}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          className="px-4 py-2 bg-accent-600 text-content-on-accent rounded-lg hover:bg-accent-700 transition-colors"
         >
           Add Instructor
         </button>
@@ -172,25 +172,25 @@ const InstructorManagement: React.FC = () => {
 
       {/* Messages */}
       {successMessage && (
-        <div className="bg-green-900/60 border border-green-600/40 text-green-200 px-4 py-3 rounded">
+        <div className="bg-success-bg border border-success-border text-success px-4 py-3 rounded">
           {successMessage}
         </div>
       )}
 
       {error && (
-        <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
+        <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded">
           {error}
-          <button onClick={() => setError('')} className="ml-4 text-green-300 hover:text-green-200">×</button>
+          <button onClick={() => setError('')} className="ml-4 text-success hover:text-success">×</button>
         </div>
       )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-sm">
             <div className="flex items-center mb-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-900/60 flex items-center justify-center mr-3">
-                <ExclamationTriangleIcon className="w-6 h-6 text-red-400" />
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-danger-bg border border-danger-border flex items-center justify-center mr-3">
+                <ExclamationTriangleIcon className="w-6 h-6 text-danger" />
               </div>
               <h3 className="text-lg font-bold text-aura-cream">Delete Instructor</h3>
             </div>
@@ -204,7 +204,7 @@ const InstructorManagement: React.FC = () => {
               </button>
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                className="px-4 py-2 bg-danger text-content-on-accent rounded-md hover:opacity-90 transition-colors"
               >
                 Delete
               </button>
@@ -215,7 +215,7 @@ const InstructorManagement: React.FC = () => {
 
       {/* Add Instructor Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold text-aura-cream mb-4">Add New Instructor</h2>
 
@@ -228,7 +228,7 @@ const InstructorManagement: React.FC = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
                   placeholder="Enter instructor name"
                 />
               </div>
@@ -240,7 +240,7 @@ const InstructorManagement: React.FC = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
                   placeholder="Enter instructor email"
                 />
               </div>
@@ -252,7 +252,7 @@ const InstructorManagement: React.FC = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
                   placeholder="Enter instructor password"
                 />
               </div>
@@ -264,7 +264,7 @@ const InstructorManagement: React.FC = () => {
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
                   placeholder="Enter instructor phone"
                 />
               </div>
@@ -279,7 +279,7 @@ const InstructorManagement: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                  className="px-4 py-2 bg-accent-600 text-content-on-accent rounded-md hover:bg-accent-700"
                 >
                   Create Instructor
                 </button>
@@ -349,7 +349,7 @@ const InstructorManagement: React.FC = () => {
                         <div className="absolute right-0 mt-1 w-40 bg-aura-ink border border-aura-umber rounded-md shadow-lg z-50 py-1">
                           <button
                             onClick={() => { openDeleteModal(instructor.id); setOpenDropdown(null); }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-red-400 hover:bg-aura-umber/30"
+                            className="flex items-center w-full px-4 py-2 text-sm text-danger hover:bg-[var(--state-hover)]"
                           >
                             <TrashIcon className="w-4 h-4 mr-2" /> Delete
                           </button>
@@ -409,7 +409,7 @@ const InstructorManagement: React.FC = () => {
                       onClick={() => setCurrentPage(page)}
                       className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                         page === currentPage
-                          ? 'z-10 bg-purple-600 border-purple-600 text-white'
+                          ? 'z-10 bg-accent-600 border-accent-600 text-content-on-accent'
                           : 'bg-aura-ink border-aura-umber text-aura-sand hover:bg-aura-umber/30'
                       }`}
                     >

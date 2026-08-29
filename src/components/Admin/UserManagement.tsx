@@ -221,11 +221,11 @@ const UserManagement: React.FC = () => {
   const getRoleColor = (role: string) => {
     switch (role) {
       case 'ADMIN':
-        return 'bg-purple-900/40 text-purple-200';
+        return 'bg-accent-100 text-accent-900 border border-accent-400';
       case 'USER':
-        return 'bg-blue-900/40 text-blue-200';
+        return 'bg-info-bg text-info border border-info-border';
       case 'INSTRUCTOR':
-        return 'bg-green-900/40 text-green-200';
+        return 'bg-success-bg text-success border border-success-border';
       default:
         return 'bg-aura-umber/40 text-aura-sand';
     }
@@ -263,7 +263,7 @@ const UserManagement: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600"></div>
       </div>
     );
   }
@@ -285,15 +285,15 @@ const UserManagement: React.FC = () => {
 
       {/* Messages */}
       {successMessage && (
-        <div className="bg-green-900/60 border border-green-600/40 text-green-200 px-4 py-3 rounded">
+        <div className="bg-success-bg border border-success-border text-success px-4 py-3 rounded">
           {successMessage}
         </div>
       )}
 
       {error && (
-        <div className="bg-red-900/60 border border-red-600/40 text-red-200 px-4 py-3 rounded">
+        <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded">
           {error}
-          <button onClick={() => setError('')} className="ml-4 text-green-300 hover:text-green-200">×</button>
+          <button onClick={() => setError('')} className="ml-4 text-success hover:text-success">×</button>
         </div>
       )}
 
@@ -307,7 +307,7 @@ const UserManagement: React.FC = () => {
               value={filter.search}
               onChange={(e) => handleFilterChange('search', e.target.value)}
               placeholder="Name or email"
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
             />
           </div>
 
@@ -316,7 +316,7 @@ const UserManagement: React.FC = () => {
             <select
               value={filter.role}
               onChange={(e) => handleFilterChange('role', e.target.value)}
-              className="w-full px-2.5 py-1.5 text-sm bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-2.5 py-1.5 text-sm bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
             >
               <option value="">All</option>
               {roles.map(role => (
@@ -401,23 +401,23 @@ const UserManagement: React.FC = () => {
                             onClick={() => { viewUserDetails(user); setOpenDropdown(null); }}
                             className="flex items-center w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30"
                           >
-                            <EyeIcon className="w-4 h-4 mr-2 text-indigo-400" /> View
+                            <EyeIcon className="w-4 h-4 mr-2 text-accent-400" /> View
                           </button>
                           <button
                             onClick={() => { handleEditUser(user); setOpenDropdown(null); }}
                             className="flex items-center w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30"
                           >
-                            <PencilIcon className="w-4 h-4 mr-2 text-blue-400" /> Edit
+                            <PencilIcon className="w-4 h-4 mr-2 text-accent-400" /> Edit
                           </button>
                           <button
                             onClick={() => { setShowRoleEdit(true); setOpenDropdown(null); }}
                             className="flex items-center w-full px-4 py-2 text-sm text-aura-cream hover:bg-aura-umber/30"
                           >
-                            <ShieldCheckIcon className="w-4 h-4 mr-2 text-purple-400" /> Role
+                            <ShieldCheckIcon className="w-4 h-4 mr-2 text-accent-400" /> Role
                           </button>
                           <button
                             onClick={() => { openDeleteModal(user.id); setOpenDropdown(null); }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-red-400 hover:bg-aura-umber/30"
+                            className="flex items-center w-full px-4 py-2 text-sm text-danger hover:bg-[var(--state-hover)]"
                           >
                             <TrashIcon className="w-4 h-4 mr-2" /> Delete
                           </button>
@@ -477,7 +477,7 @@ const UserManagement: React.FC = () => {
                       onClick={() => setCurrentPage(page)}
                       className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                         page === currentPage
-                          ? 'z-10 bg-purple-600 border-purple-600 text-white'
+                          ? 'z-10 bg-accent-600 border-accent-600 text-content-on-accent'
                           : 'bg-aura-ink border-aura-umber text-aura-sand hover:bg-aura-umber/30'
                       }`}
                     >
@@ -500,7 +500,7 @@ const UserManagement: React.FC = () => {
 
       {/* User Details Modal */}
       {showDetails && selectedUser && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">User Details</h2>
             
@@ -539,7 +539,7 @@ const UserManagement: React.FC = () => {
             <div className="flex justify-end mt-6">
               <button
                 onClick={() => setShowDetails(false)}
-                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                className="px-4 py-2 bg-accent-600 text-content-on-accent rounded-md hover:bg-accent-700"
               >
                 Close
               </button>
@@ -550,11 +550,11 @@ const UserManagement: React.FC = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-sm">
             <div className="flex items-center mb-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-900/60 flex items-center justify-center mr-3">
-                <ExclamationTriangleIcon className="w-6 h-6 text-red-400" />
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-danger-bg border border-danger-border flex items-center justify-center mr-3">
+                <ExclamationTriangleIcon className="w-6 h-6 text-danger" />
               </div>
               <h3 className="text-lg font-bold text-aura-cream">Delete User</h3>
             </div>
@@ -568,7 +568,7 @@ const UserManagement: React.FC = () => {
               </button>
               <button
                 onClick={handleDeleteUser}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                className="px-4 py-2 bg-danger text-content-on-accent rounded-md hover:opacity-90 transition-colors"
               >
                 Delete
               </button>
@@ -579,7 +579,7 @@ const UserManagement: React.FC = () => {
 
       {/* Edit User Modal */}
       {showEditForm && selectedUser && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center p-4 z-[60]">
           <div className="bg-aura-ink rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Edit User</h2>
             
@@ -590,7 +590,7 @@ const UserManagement: React.FC = () => {
                   type="text"
                   value={editForm.name}
                   onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
                 />
               </div>
 
@@ -600,7 +600,7 @@ const UserManagement: React.FC = () => {
                   type="email"
                   value={editForm.email}
                   onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
                 />
               </div>
 
@@ -609,7 +609,7 @@ const UserManagement: React.FC = () => {
                 <select
                   value={editForm.role}
                   onChange={(e) => setEditForm(prev => ({ ...prev, role: e.target.value }))}
-                  className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
                 >
                   {roles.map(role => (
                     <option key={role} value={role}>{role}</option>
@@ -627,7 +627,7 @@ const UserManagement: React.FC = () => {
               </button>
               <button
                 onClick={handleUpdateUser}
-                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                className="px-4 py-2 bg-accent-600 text-content-on-accent rounded-md hover:bg-accent-700"
               >
                 Update User
               </button>
@@ -640,7 +640,7 @@ const UserManagement: React.FC = () => {
 
   {/* Add Instructor Modal */}
   {showInstructorForm && (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
+    <div className="fixed inset-0 bg-overlay flex items-center justify-center p-4 z-[60]">
       <div className="bg-aura-ink rounded-lg p-6 w-full max-w-md">
         <h2 className="text-xl font-bold mb-4">Add New Instructor</h2>
         
@@ -651,7 +651,7 @@ const UserManagement: React.FC = () => {
               type="text"
               value={instructorForm.name}
               onChange={(e) => setInstructorForm(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-3 py-2 bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
               placeholder="Enter instructor name"
             />
           </div>
@@ -662,7 +662,7 @@ const UserManagement: React.FC = () => {
               type="email"
               value={instructorForm.email}
               onChange={(e) => setInstructorForm(prev => ({ ...prev, email: e.target.value }))}
-              className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-3 py-2 bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
               placeholder="Enter instructor email"
             />
           </div>
@@ -673,7 +673,7 @@ const UserManagement: React.FC = () => {
               type="password"
               value={instructorForm.password}
               onChange={(e) => setInstructorForm(prev => ({ ...prev, password: e.target.value }))}
-              className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-3 py-2 bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
               placeholder="Enter instructor password"
             />
           </div>
@@ -684,7 +684,7 @@ const UserManagement: React.FC = () => {
               type="tel"
               value={instructorForm.phone}
               onChange={(e) => setInstructorForm(prev => ({ ...prev, phone: e.target.value }))}
-              className="w-full px-3 py-2 bg-aura-bark text-aura-cream border border-aura-umber rounded-md focus:outline-none focus:ring-purple-500"
+              className="w-full px-3 py-2 bg-canvas text-content border border-edge rounded-md focus:outline-none focus:ring-edge-focus"
               placeholder="Enter instructor phone"
             />
           </div>
@@ -699,7 +699,7 @@ const UserManagement: React.FC = () => {
           </button>
           <button
             onClick={handleCreateInstructor}
-            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            className="px-4 py-2 bg-success text-content-on-accent rounded-md hover:opacity-90"
           >
             Create Instructor
           </button>

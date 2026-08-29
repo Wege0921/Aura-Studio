@@ -119,6 +119,46 @@ folders under `backend/prisma/migrations/`.
 - Seed (core): `cd backend && npm run seed`
 - Seed (shop): `cd backend && npm run seed:shop`
 
+## Theme system (AURA Atelier PRD)
+
+- Semantic Tailwind color names in `tailwind.config.js` (semantic tokens):
+  `canvas`, `surface`(+`-raised`/`-sunken`), `overlay`, `content`(+`-secondary`/
+  `-muted`/`-emphasis`/`-inverse`/`-disabled`/`-on-accent`), `edge`(+`-subtle`/
+  `-strong`/`-focus`), `accent`(50/100/400/600/700/900 + DEFAULT), status tints
+  `success`/`success-bg`/`success-border`, `warning`/`warning-bg`/`warning-border`,
+  `danger`/`danger-bg`/`danger-border`, `info`/`info-bg`/`info-border`, and
+  elevation `elev-1`/`elev-2`. `danger` maps to the `--error` tokens.
+- Token source of truth: `src/styles/tokens.css` (dark / light / atelier tiers).
+  The Light `!important` override block in `src/index.css` is retained technical
+  debt — do not add new theme override blocks; extend `tokens.css` instead and
+  keep the semantic token values equal under Light so existing pixels don't change.
+- Status full-width bars/banners use tint pairs (`bg-*-bg text-* border-*-border`)
+  because solid status fills with white text fail contrast in Dark (status colors
+  are light). Sale badges use the success tint, never red.
+- Elevation uses `shadow-elev-1` (cards) / `shadow-elev-2` (popovers, hover).
+  Avoid `shadow-lg shadow-black/*` in Atelier.
+- PRD doc: `docs/THEME_PRD_ATELIER.md`.
+- Typecheck gate (frontend): `npx tsc --noEmit` must show no `src\` errors
+  (react-hook-form node_modules TS 4.9 mismatch errors are pre-existing/ignored).
+- Remaining deferred PRD items: `purple-*` color removal from config + tailwind
+  dependency, Light `!important` block removal, ThemeToggle focus polish,
+  skeleton loading states.
+
+## Windows PowerShell 5.1 file edits — encoding pitfall
+
+- `Get-Content -Raw` decodes with the ANSI codepage (CP1252), NOT UTF-8, and
+  `Set-Content -Encoding UTF8` writes a BOM. Reading a UTF-8 file then writing
+  it back with `-Encoding UTF8` **double-encodes every non-ASCII char**; writing
+  without `-Encoding` (ANSI) corrupts UTF-8 reads the same way.
+- Repair recipe if an earlier pass double-encoded a file: read the current bytes
+  as UTF-8, re-encode to CP1252, then decode as UTF-8 (once per UTF-8 write that
+  happened). Verify with `git diff` that only intended ASCII lines changed and
+  scan for U+FFFD / `Ã`/`â€*` mojibake.
+- Preferred: use the Read/Edit/Write tools for content changes; for bulk
+  find-and-replace, read with `[System.IO.File]::ReadAllText(path, UTF8)` and
+  write with `[System.IO.File]::WriteAllText(path, text, new UTF8Encoding($false))`
+  (no BOM). Strip BOMs afterwards if `Set-Content -Encoding UTF8` was used.
+
 ## Known gaps (post-P2)
 
 P0, P1, and P2 fixes are complete. Remaining items for a fully production

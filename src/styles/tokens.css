@@ -1,0 +1,268 @@
+/* ============================================================================
+   AURA Design Tokens
+   ----------------------------------------------------------------------------
+   Three tiers:
+
+     Tier 1  Primitives   Raw brand colours (--aura-*). Historical names.
+     Tier 2  Semantic     Role-based tokens (--bg-*, --text-*, --border-*,
+                          --accent-*, --status-*). This is the contract that
+                          components should target going forward.
+     Tier 3  Aliases      In themes that do not have native --aura-* values
+                          (i.e. Atelier), Tier 1 names are aliased onto Tier 2
+                          so the ~2,500 existing `aura-*` class usages keep
+                          rendering correctly with no component edits.
+
+   Themes are selected with `data-theme` on <html>. See ThemeContext.tsx.
+
+   NOTE ON PHASE 0: the semantic tokens for `dark` and `light` are mapped to
+   the exact values those themes already render. Adding them changes nothing
+   visually; they exist so components can migrate incrementally.
+   ========================================================================= */
+
+
+/* ---------------------------------------------------------------------------
+   DARK  (default)
+   ------------------------------------------------------------------------ */
+:root,
+[data-theme="dark"] {
+  /* -- Tier 1: primitives ------------------------------------------------ */
+  --aura-ink: #241a13;
+  --aura-bark: #3b2a1d;
+  --aura-umber: #5c4530;
+  --aura-clay: #a87f5a;
+  --aura-sand: #cdab85;
+  --aura-cream: #f2ebe0;
+  --aura-paper: #eee5d6;
+  --aura-ivory: #f8f4ec;
+
+  /* -- Tier 2: surfaces -------------------------------------------------- */
+  --bg-canvas: var(--aura-bark);
+  --bg-surface: var(--aura-ink);
+  --bg-surface-raised: var(--aura-ink);
+  --bg-surface-sunken: var(--aura-bark);
+  --bg-overlay: rgba(0, 0, 0, 0.6);
+
+  /* -- Tier 2: text ------------------------------------------------------ */
+  --text-primary: var(--aura-cream);
+  --text-secondary: var(--aura-sand);
+  --text-muted: var(--aura-sand);
+  --text-emphasis: var(--aura-ivory);
+  --text-on-accent: #ffffff;
+  --text-inverse: var(--aura-ink);
+
+  /* -- Tier 2: borders --------------------------------------------------- */
+  --border-subtle: var(--aura-umber);
+  --border-default: var(--aura-umber);
+  --border-strong: var(--aura-sand);
+  --border-focus: var(--aura-clay);
+
+  /* -- Tier 2: accent ---------------------------------------------------- */
+  --accent-50: rgba(168, 127, 90, 0.10);
+  --accent-100: rgba(168, 127, 90, 0.20);
+  --accent-400: #a87f5a;
+  --accent-600: #98755b;
+  --accent-700: #5c3422;
+  --accent-900: #442913;
+
+  /* -- Tier 2: status ---------------------------------------------------- */
+  --status-success: #4ade80;
+  --status-success-bg: rgba(22, 101, 52, 0.30);
+  --status-success-border: rgba(74, 222, 128, 0.30);
+  --status-warning: #facc15;
+  --status-warning-bg: rgba(161, 98, 7, 0.25);
+  --status-warning-border: rgba(250, 204, 21, 0.30);
+  --status-error: #f87171;
+  --status-error-bg: rgba(153, 27, 27, 0.35);
+  --status-error-border: rgba(248, 113, 113, 0.30);
+  --status-info: #60a5fa;
+  --status-info-bg: rgba(30, 64, 175, 0.30);
+  --status-info-border: rgba(96, 165, 250, 0.30);
+
+  /* -- Tier 2: interaction ----------------------------------------------- */
+  --state-hover: rgba(255, 255, 255, 0.06);
+  --state-pressed: rgba(255, 255, 255, 0.10);
+  --state-selected: rgba(205, 171, 133, 0.20);
+  --state-focus-ring: 0 0 0 3px rgba(168, 127, 90, 0.45);
+  --state-disabled-bg: rgba(255, 255, 255, 0.08);
+  --state-disabled-text: rgba(205, 171, 133, 0.45);
+
+  /* -- Tier 2: shape & elevation ----------------------------------------- */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --elev-1: 0 10px 15px -3px rgba(0, 0, 0, 0.20);
+  --elev-2: 0 10px 15px -3px rgba(0, 0, 0, 0.30);
+  --elev-3: 0 20px 40px -8px rgba(0, 0, 0, 0.45);
+
+  /* -- Tier 2: logo ------------------------------------------------------ */
+  /* Dark chrome keeps the baked-in logo art; light/atelier render the
+     silhouette in near-black to sit on light canvas (see .aura-logo). */
+  --logo-filter: none;
+}
+
+
+/* ---------------------------------------------------------------------------
+   LIGHT
+   Historical note: this theme works by inverting the *meaning* of the Tier 1
+   names (--aura-cream becomes a dark brown, etc.). That inversion is why a
+   third theme cannot be expressed at Tier 1 alone, and why Tier 2 exists.
+   ------------------------------------------------------------------------ */
+[data-theme="light"] {
+  /* -- Tier 1: primitives (inverted) ------------------------------------- */
+  --aura-ink: #d4c4a4;        /* card background: darker warm beige */
+  --aura-bark: #e6dccb;       /* page background: deeper beige */
+  --aura-umber: #cdab85;      /* warm accent / borders */
+  --aura-clay: #5c4530;       /* dark brown accents */
+  --aura-sand: #5c4530;       /* secondary text */
+  --aura-cream: #241a13;      /* primary text */
+  --aura-paper: #e6dccb;      /* surface background */
+  --aura-ivory: #241a13;      /* dark text on light surfaces */
+
+  /* -- Tier 2: surfaces -------------------------------------------------- */
+  --bg-canvas: var(--aura-bark);
+  --bg-surface: var(--aura-ink);
+  --bg-surface-raised: #ded0b6;
+  --bg-surface-sunken: #c4b49a;
+  --bg-overlay: rgba(36, 26, 19, 0.45);
+
+  /* -- Tier 2: text ------------------------------------------------------ */
+  --text-primary: var(--aura-cream);
+  --text-secondary: var(--aura-sand);
+  --text-muted: #6b5842;
+  --text-emphasis: var(--aura-ivory);
+  --text-on-accent: #ffffff;
+  --text-inverse: #f2ebe0;
+
+  /* -- Tier 2: borders --------------------------------------------------- */
+  --border-subtle: rgba(92, 69, 48, 0.20);
+  --border-default: var(--aura-umber);
+  --border-strong: #a88f6a;
+  --border-focus: var(--aura-clay);
+
+  /* -- Tier 2: accent ---------------------------------------------------- */
+  --accent-50: rgba(92, 69, 48, 0.08);
+  --accent-100: rgba(92, 69, 48, 0.16);
+  --accent-400: #98755b;
+  --accent-600: #98755b;
+  --accent-700: #5c3422;
+  --accent-900: #442913;
+
+  /* -- Tier 2: status ---------------------------------------------------- */
+  --status-success: #16a34a;
+  --status-success-bg: rgba(22, 163, 74, 0.15);
+  --status-success-border: rgba(22, 163, 74, 0.35);
+  --status-warning: #a16207;
+  --status-warning-bg: rgba(161, 98, 7, 0.15);
+  --status-warning-border: rgba(161, 98, 7, 0.35);
+  --status-error: #dc2626;
+  --status-error-bg: rgba(220, 38, 38, 0.12);
+  --status-error-border: rgba(220, 38, 38, 0.35);
+  --status-info: #2563eb;
+  --status-info-bg: rgba(37, 99, 235, 0.12);
+  --status-info-border: rgba(37, 99, 235, 0.35);
+
+  /* -- Tier 2: interaction ----------------------------------------------- */
+  --state-hover: rgba(36, 26, 19, 0.05);
+  --state-pressed: rgba(36, 26, 19, 0.09);
+  --state-selected: rgba(92, 69, 48, 0.14);
+  --state-focus-ring: 0 0 0 3px rgba(92, 69, 48, 0.35);
+  --state-disabled-bg: rgba(36, 26, 19, 0.08);
+  --state-disabled-text: rgba(92, 69, 48, 0.45);
+
+  /* -- Tier 2: shape & elevation ----------------------------------------- */
+  --elev-1: 0 10px 15px -3px rgba(36, 26, 19, 0.10);
+  --elev-2: 0 10px 15px -3px rgba(36, 26, 19, 0.15);
+  --elev-3: 0 20px 40px -8px rgba(36, 26, 19, 0.25);
+
+  /* -- Tier 2: logo ------------------------------------------------------ */
+  --logo-filter: brightness(0) opacity(0.9);
+}
+
+
+/* ---------------------------------------------------------------------------
+   ATELIER  (third system theme)
+   Cool, low-chroma "gallery" palette with a jade accent.
+   Defined semantically first, then aliased back onto Tier 1 so existing
+   `aura-*` markup inherits correct values with no component edits.
+
+   Contrast (verified):
+     text-primary   on bg-surface  15.4:1  AAA
+     text-primary   on bg-canvas   13.8:1  AAA
+     text-secondary on bg-surface   7.4:1  AAA
+     text-muted     on bg-surface   5.1:1  AA
+     white          on accent-600   5.9:1  AA
+   ------------------------------------------------------------------------ */
+[data-theme="atelier"] {
+  /* -- Tier 2: surfaces -------------------------------------------------- */
+  --bg-canvas: #e9ece9;
+  --bg-surface: #f6f8f6;
+  --bg-surface-raised: #ffffff;
+  --bg-surface-sunken: #dfe3e0;
+  --bg-overlay: rgba(26, 33, 30, 0.45);
+
+  /* -- Tier 2: text ------------------------------------------------------ */
+  --text-primary: #1a211e;
+  --text-secondary: #4a544f;
+  --text-muted: #626c66;
+  --text-emphasis: #1a211e;
+  --text-on-accent: #ffffff;
+  --text-inverse: #f6f8f6;
+
+  /* -- Tier 2: borders --------------------------------------------------- */
+  --border-subtle: #dde2de;
+  --border-default: #c9d0cb;
+  --border-strong: #a8b2ac;
+  --border-focus: #2f6f5e;
+
+  /* -- Tier 2: accent (jade) --------------------------------------------- */
+  --accent-50: #edf4f1;
+  --accent-100: #dceae4;
+  --accent-400: #3d8871;
+  --accent-600: #2f6f5e;
+  --accent-700: #245546;
+  --accent-900: #173a30;
+
+  /* -- Tier 2: status (desaturated for low-chroma surfaces) -------------- */
+  --status-success: #2a6b4f;
+  --status-success-bg: #e2efe8;
+  --status-success-border: #b4d3c3;
+  --status-warning: #8a6318;
+  --status-warning-bg: #f6eedc;
+  --status-warning-border: #dfcba0;
+  --status-error: #a33636;
+  --status-error-bg: #f7e6e6;
+  --status-error-border: #e0b4b4;
+  --status-info: #2c5f7a;
+  --status-info-bg: #e4eef4;
+  --status-info-border: #b3cedc;
+
+  /* -- Tier 2: interaction ----------------------------------------------- */
+  --state-hover: rgba(26, 33, 30, 0.04);
+  --state-pressed: rgba(26, 33, 30, 0.08);
+  --state-selected: var(--accent-50);
+  --state-focus-ring: 0 0 0 3px rgba(47, 111, 94, 0.35);
+  --state-disabled-bg: #e4e7e5;
+  --state-disabled-text: #9aa39d;
+
+  /* -- Tier 2: shape & elevation ----------------------------------------- */
+  /* Elevation by edge, not by shadow: borders carry hierarchy here. */
+  --elev-1: 0 1px 2px rgba(26, 33, 30, 0.05);
+  --elev-2: 0 4px 12px rgba(26, 33, 30, 0.08);
+  --elev-3: 0 12px 32px rgba(26, 33, 30, 0.12);
+
+  /* -- Tier 2: logo ------------------------------------------------------ */
+  --logo-filter: brightness(0) opacity(0.9);
+
+  /* -- Tier 3: compatibility aliases ------------------------------------- */
+  /* Maps historical --aura-* names onto the semantic layer so existing
+     `bg-aura-ink`, `text-aura-cream`, `border-aura-umber`, etc. render
+     correctly in this theme without touching component markup. */
+  --aura-bark: var(--bg-canvas);
+  --aura-ink: var(--bg-surface);
+  --aura-umber: var(--border-default);
+  --aura-cream: var(--text-primary);
+  --aura-sand: var(--text-secondary);
+  --aura-ivory: var(--text-primary);
+  --aura-clay: var(--accent-600);
+  --aura-paper: var(--bg-surface-sunken);
+}

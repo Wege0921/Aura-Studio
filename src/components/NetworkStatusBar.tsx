@@ -36,8 +36,8 @@ const NetworkStatusBar: React.FC = () => {
     <div
       className={`
         fixed top-0 left-0 right-0 z-[70] transition-all duration-300
-        ${isOnline ? 'bg-green-500' : 'bg-red-500'}
-        text-white text-center text-sm font-medium py-2 px-4
+        ${isOnline ? 'bg-success-bg text-success border-b border-success-border' : 'bg-danger-bg text-danger border-b border-danger-border'}
+        text-center text-sm font-medium py-2 px-4
       `}
       role="alert"
       aria-live="polite"

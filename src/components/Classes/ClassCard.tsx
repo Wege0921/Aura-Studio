@@ -35,10 +35,10 @@ const classTypeLabels: Record<string, string> = {
 
 const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist, onWaitlist = false }) => {
   const classTypeColors: Record<string, string> = {
-    PILATES: 'bg-aura-clay/20 text-aura-cream',
-    PRENATAL: 'bg-aura-sand/10 text-aura-cream',
-    POSTPARTUM: 'bg-aura-clay/15 text-aura-cream',
-    MEDITATION: 'bg-purple-500/15 text-aura-cream',
+    PILATES: 'bg-accent-100 text-content',
+    PRENATAL: 'bg-[var(--state-hover)] text-content',
+    POSTPARTUM: 'bg-accent-50 text-content',
+    MEDITATION: 'bg-accent-400/15 text-content',
   };
 
   const classDateTime = new Date(`${classItem.date.split('T')[0]}T${classItem.time}`);
@@ -51,21 +51,21 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
   };
 
   return (
-    <div className="bg-aura-ink rounded-xl shadow-lg shadow-black/20 p-6 hover:shadow-xl transition-shadow duration-200 border border-aura-umber">
+    <div className="bg-surface rounded-xl shadow-elev-1 p-6 hover:shadow-elev-2 transition-shadow duration-200 border border-edge">
       {/* Header — like PackageCard */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <h3 className="text-lg font-semibold text-aura-cream">{classItem.name}</h3>
-            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${classTypeColors[classItem.classType] || 'bg-aura-sand/15 text-aura-cream'}`}>
+            <h3 className="text-lg font-semibold text-content">{classItem.name}</h3>
+            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${classTypeColors[classItem.classType] || 'bg-[var(--state-hover)] text-content'}`}>
               {classTypeLabels[classItem.classType] || classItem.classType}
             </span>
           </div>
           {classItem.description && (
-            <p className="text-aura-sand text-sm">{classItem.description}</p>
+            <p className="text-content-secondary text-sm">{classItem.description}</p>
           )}
         </div>
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isPast ? 'bg-gray-700/50 text-gray-400' : classItem.isFullyBooked ? 'bg-red-900/30 text-red-300' : 'bg-green-900/30 text-green-300'}`}>
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isPast ? 'bg-surface-sunken text-content-muted' : classItem.isFullyBooked ? 'bg-danger-bg text-danger' : 'bg-success-bg text-success'}`}>
           {isPast ? 'Past' : classItem.isFullyBooked ? 'Full' : 'Open'}
         </span>
       </div>
@@ -74,30 +74,30 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
       <div className="space-y-2 mb-4">
         {!classItem.hideInstructor && (
           <div className="flex items-center justify-between">
-            <span className="text-sm text-aura-sand">Instructor:</span>
-            <span className="text-sm font-medium text-aura-cream">{classItem.instructor}</span>
+            <span className="text-sm text-content-secondary">Instructor:</span>
+            <span className="text-sm font-medium text-content">{classItem.instructor}</span>
           </div>
         )}
 
         <div className="flex items-center justify-between">
-          <span className="text-sm text-aura-sand">Date:</span>
-          <span className="text-sm font-medium text-aura-cream">{format(new Date(classItem.date), 'MMM dd, yyyy')}</span>
+          <span className="text-sm text-content-secondary">Date:</span>
+          <span className="text-sm font-medium text-content">{format(new Date(classItem.date), 'MMM dd, yyyy')}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm text-aura-sand">Time:</span>
-          <span className="text-sm font-medium text-aura-cream">{classItem.time}</span>
+          <span className="text-sm text-content-secondary">Time:</span>
+          <span className="text-sm font-medium text-content">{classItem.time}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm text-aura-sand">Duration:</span>
-          <span className="text-sm font-medium text-aura-cream">{classItem.duration} min</span>
+          <span className="text-sm text-content-secondary">Duration:</span>
+          <span className="text-sm font-medium text-content">{classItem.duration} min</span>
         </div>
 
         {!classItem.hideSpots && (
           <div className="flex items-center justify-between">
-            <span className="text-sm text-aura-sand">Spots:</span>
-            <span className={`text-sm font-medium ${classItem.isFullyBooked ? 'text-red-400' : 'text-aura-cream'}`}>
+            <span className="text-sm text-content-secondary">Spots:</span>
+            <span className={`text-sm font-medium ${classItem.isFullyBooked ? 'text-danger' : 'text-content'}`}>
               {classItem.availableSpots} / {classItem.capacity}
             </span>
           </div>
@@ -105,13 +105,13 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
       </div>
 
       {/* Price + CTA — like PackageCard */}
-      <div className="border-t border-aura-umber pt-4">
+      <div className="border-t border-edge pt-4">
         <div className="flex items-center justify-between mb-4">
-          <span className="text-2xl font-bold text-aura-cream">
+          <span className="text-2xl font-bold text-content">
             {classItem.price ? `ETB ${classItem.price.toLocaleString()}` : 'Free'}
           </span>
           {!classItem.hideSpots && (
-            <span className="text-sm text-aura-sand">
+            <span className="text-sm text-content-secondary">
               {classItem.isFullyBooked ? 'Waitlist available' : `${classItem.availableSpots} spots left`}
             </span>
           )}
@@ -120,7 +120,7 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
         {isPast ? (
           <button
             disabled
-            className="w-full px-4 py-2 rounded-lg text-sm font-medium bg-gray-700/50 text-gray-400 cursor-not-allowed"
+            className="w-full px-4 py-2 rounded-lg text-sm font-medium bg-surface-sunken text-content-muted cursor-not-allowed"
           >
             Past Class
           </button>
@@ -130,8 +130,8 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
             disabled={onWaitlist}
             className={`w-full px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
               onWaitlist
-                ? 'bg-amber-900/30 text-amber-300 cursor-default'
-                : 'bg-amber-700 text-aura-cream hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2'
+                ? 'bg-warning-bg text-warning cursor-default'
+                : 'bg-warning text-content-on-accent hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-warning focus:ring-offset-2'
             }`}
           >
             {onWaitlist ? 'On Waitlist' : 'Join Waitlist'}
@@ -139,7 +139,7 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem, onBook, onJoinWaitlist
         ) : (
           <button
             onClick={handleBookClick}
-            className="w-full px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 bg-purple-600 text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+            className="w-full px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 bg-accent-600 text-content-on-accent hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2"
           >
             Book Now
           </button>
