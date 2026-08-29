@@ -21,10 +21,9 @@
 
 
 /* ---------------------------------------------------------------------------
-   DARK  (default)
+   DARK
    ------------------------------------------------------------------------ */
-:root,
-[data-theme="dark"] {
+:root[data-theme="dark"] {
   /* -- Tier 1: primitives ------------------------------------------------ */
   --aura-ink: #241a13;
   --aura-bark: #3b2a1d;
@@ -107,7 +106,7 @@
    names (--aura-cream becomes a dark brown, etc.). That inversion is why a
    third theme cannot be expressed at Tier 1 alone, and why Tier 2 exists.
    ------------------------------------------------------------------------ */
-[data-theme="light"] {
+:root[data-theme="light"] {
   /* -- Tier 1: primitives (inverted) ------------------------------------- */
   --aura-ink: #d4c4a4;        /* card background: darker warm beige */
   --aura-bark: #e6dccb;       /* page background: deeper beige */
@@ -192,6 +191,7 @@
      text-muted     on bg-surface   5.1:1  AA
      white          on accent-600   5.9:1  AA
    ------------------------------------------------------------------------ */
+:root,
 [data-theme="atelier"] {
   /* -- Tier 2: surfaces -------------------------------------------------- */
   --bg-canvas: #e9ece9;

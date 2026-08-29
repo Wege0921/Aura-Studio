@@ -299,6 +299,16 @@
 [data-theme="light"] .landing-page .lp-hero {
   background: linear-gradient(125deg, #8a6a48 0%, #6b5238 45%, #523e2a 100%);
 }
+/* Atelier: pure-photo hero — the image fills the whole hero instead of the
+   brown gradient backdrop. Text and CTA keep their existing ivory styling.
+   (On mobile the image already spans the full hero.) */
+[data-theme="atelier"] .landing-page .lp-hero {
+  background: none;
+}
+[data-theme="atelier"] .landing-page .lp-hero-art {
+  position: absolute;
+  inset: 0;
+}
 .landing-page .lp-hero-content {
   align-self: center;
   padding: 0 4rem 0 3.6rem;

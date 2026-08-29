@@ -4,10 +4,11 @@ export type Theme = 'light' | 'dark' | 'atelier';
 
 export const THEMES: { value: Theme; label: string }[] = [
   { value: 'dark', label: 'Dark' },
-  { value: 'light', label: 'Light' },
   { value: 'atelier', label: 'Atelier' },
 ];
 
+// 'light' is retired from the switchers but kept as a valid stored value so
+// legacy persisted themes still parse (mapped to 'dark' at boot).
 const VALID_THEMES: Theme[] = ['light', 'dark', 'atelier'];
 
 interface ThemeContextValue {
@@ -35,16 +36,13 @@ function getStoredTheme(): Theme | null {
 }
 
 function getInitialTheme(): Theme {
-  // 1. Respect an explicit user choice
+  // 1. Respect an explicit user choice (Dark / Atelier). A legacy stored
+  //    'light' is retired and lands on the default.
   const stored = getStoredTheme();
-  if (stored) return stored;
+  if (stored === 'dark' || stored === 'atelier') return stored;
 
-  // 2. Only fall back to light if the user's system explicitly prefers light.
-  //    Atelier is never auto-selected; it is an opt-in aesthetic choice.
-  if (window.matchMedia('(prefers-color-scheme: light)').matches) return 'light';
-
-  // 3. Default to dark to match the brand
-  return 'dark';
+  // 2. Atelier is the brand default for visitors without a stored choice.
+  return 'atelier';
 }
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -83,8 +81,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const toggleTheme = useCallback(() => {
     setThemeState(prev => {
-      const idx = VALID_THEMES.indexOf(prev);
-      const next = VALID_THEMES[(idx + 1) % VALID_THEMES.length];
+      const visible = THEMES.map(t => t.value);
+      const idx = visible.indexOf(prev); // legacy 'light' is not in the list → -1
+      const next = visible[(idx + 1) % visible.length];
       applyTheme(next);
       try {
         localStorage.setItem(STORAGE_KEY, next);
@@ -99,19 +98,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     applyTheme(theme);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Follow system preference, but only while the user has made no explicit choice
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const handler = (e: MediaQueryListEvent) => {
-      if (getStoredTheme()) return;
-      const next: Theme = e.matches ? 'dark' : 'light';
-      setThemeState(next);
-      applyTheme(next);
-    };
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, [applyTheme]);
 
   // Keep other tabs in sync
   useEffect(() => {

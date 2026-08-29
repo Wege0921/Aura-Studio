@@ -73,12 +73,12 @@
       (function() {
         try {
           var stored = localStorage.getItem('aura-theme');
-          if (stored === 'light' || stored === 'dark' || stored === 'atelier') {
-            document.documentElement.setAttribute('data-theme', stored);
-          } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-            document.documentElement.setAttribute('data-theme', 'light');
-          } else {
+          // 'light' is retired — only Dark and Atelier are offered. Visitors
+          // without a stored choice get Atelier, the brand default.
+          if (stored === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.setAttribute('data-theme', 'atelier');
           }
         } catch (e) {}
       })();
