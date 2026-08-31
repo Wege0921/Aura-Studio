@@ -2,7 +2,8 @@ import React, { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
-import { ShopCartProvider } from './contexts/ShopCartContext';
+// TODO(shop): uncomment to re-enable the cart provider.
+// import { ShopCartProvider } from './contexts/ShopCartContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -34,15 +35,16 @@ const PackageManagement = lazy(() => import('./components/Admin/PackageManagemen
 const Analytics = lazy(() => import('./components/Admin/Analytics'));
 const MarketingDashboard = lazy(() => import('./components/Admin/MarketingDashboard'));
 
-// Shop routes (lazy-loaded)
-const ShopLanding = lazy(() => import('./components/Shop/ShopLanding'));
-const ShopCategoryPage = lazy(() => import('./components/Shop/ShopCategoryPage'));
-const ProductDetail = lazy(() => import('./components/Shop/ProductDetail'));
-const CartPage = lazy(() => import('./components/Shop/CartPage'));
-const CheckoutPage = lazy(() => import('./components/Shop/CheckoutPage'));
-const OrderConfirmationPage = lazy(() => import('./components/Shop/OrderConfirmationPage'));
-const MyOrders = lazy(() => import('./components/Shop/MyOrders'));
-const CartDrawer = lazy(() => import('./components/Shop/CartDrawer'));
+// Shop routes (lazy-loaded) — COMMENTED OUT while shop is hidden from customers.
+// Uncomment when ready to re-enable the storefront.
+// const ShopLanding = lazy(() => import('./components/Shop/ShopLanding'));
+// const ShopCategoryPage = lazy(() => import('./components/Shop/ShopCategoryPage'));
+// const ProductDetail = lazy(() => import('./components/Shop/ProductDetail'));
+// const CartPage = lazy(() => import('./components/Shop/CartPage'));
+// const CheckoutPage = lazy(() => import('./components/Shop/CheckoutPage'));
+// const OrderConfirmationPage = lazy(() => import('./components/Shop/OrderConfirmationPage'));
+// const MyOrders = lazy(() => import('./components/Shop/MyOrders'));
+// const CartDrawer = lazy(() => import('./components/Shop/CartDrawer'));
 const ShopProductManagement = lazy(() => import('./components/Admin/ShopProductManagement'));
 const ShopCategoryManagement = lazy(() => import('./components/Admin/ShopCategoryManagement'));
 const ShopOrderManagement = lazy(() => import('./components/Admin/ShopOrderManagement'));
@@ -127,7 +129,13 @@ function AppRoutes() {
         }
       />
 
-      {/* Shop — public browsing */}
+      {/* ---------------------------------------------------------------
+        SHOP — public browsing routes.
+        COMMENTED OUT while shop is hidden from customers.
+        Uncomment (and un-comment the Shop lazy imports above and the
+        ShopCartProvider/CartDrawer below) to re-enable the storefront.
+      ---------------------------------------------------------------- */}
+      {/*
       <Route
         path="/shop"
         element={
@@ -184,6 +192,7 @@ function AppRoutes() {
           </PublicLayout>
         }
       />
+      */}
 
       {/* Shop admin — protected */}
       <Route
@@ -382,7 +391,8 @@ function App() {
     <QueryClientProvider client={queryClient}>
     <ThemeProvider>
     <AuthProvider>
-      <ShopCartProvider>
+      {/* TODO(shop): wrap with <ShopCartProvider> ... </ShopCartProvider> and
+          render <CartDrawer /> when re-enabling the storefront. */}
       <ErrorBoundary>
       <Router>
         <div className="min-h-screen bg-canvas">
@@ -391,13 +401,14 @@ function App() {
           <PWAInstallBanner />
           <AppRoutes />
           <MobileBottomTabs />
-          <Suspense fallback={null}>
-            <CartDrawer />
-          </Suspense>
+          {/* TODO(shop): render <CartDrawer /> inside a <Suspense> here.
+              <Suspense fallback={null}>
+                <CartDrawer />
+              </Suspense>
+          */}
         </div>
       </Router>
       </ErrorBoundary>
-      </ShopCartProvider>
     </AuthProvider>
     </ThemeProvider>
     </QueryClientProvider>

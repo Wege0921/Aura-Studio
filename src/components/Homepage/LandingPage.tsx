@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ShoppingBagIcon } from '@heroicons/react/24/outline';
 import { useSEO } from '../../hooks/useSEO';
-import { api } from '../../lib/api';
-import { ProductCategory } from '../Shop/shopTypes';
+// TODO(shop): uncomment to re-enable the shop section on the home page.
+// import { ShoppingBagIcon } from '@heroicons/react/24/outline';
+// import { api } from '../../lib/api';
+// import { ProductCategory } from '../Shop/shopTypes';
 import './LandingPage.css';
 
-interface ShopCategoryBrief {
-  id: string;
-  slug: string;
-  name: string;
-  description?: string;
-  imageUrl?: string;
-  _count?: { products: number };
-}
+// TODO(shop): uncomment to re-enable the shop section on the home page.
+// interface ShopCategoryBrief {
+//   id: string;
+//   slug: string;
+//   name: string;
+//   description?: string;
+//   imageUrl?: string;
+//   _count?: { products: number };
+// }
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -23,11 +25,12 @@ const LandingPage: React.FC = () => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [newsletterMessage, setNewsletterMessage] = useState('');
-  const [shopCategories, setShopCategories] = useState<ShopCategoryBrief[]>([]);
+  // const [shopCategories, setShopCategories] = useState<ShopCategoryBrief[]>([]);
 
   // Scroll reveal animation
-  // Re-runs when shop categories load so the async-rendered cards (which
-  // don't exist at initial mount) also get observed and fade in correctly.
+  // (Shop scaffolding note: originally "Re-runs when shop categories load so the
+  // async-rendered cards (which don't exist at initial mount) also get observed
+  // and fade in correctly." — re-enable with the `[shopCategories.length]` dep below.)
   useEffect(() => {
     const items = document.querySelectorAll('.lp-reveal');
     const io = new IntersectionObserver(
@@ -43,7 +46,9 @@ const LandingPage: React.FC = () => {
     );
     items.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, [shopCategories.length]);
+    // TODO(shop): when re-enabling the shop section, change `[]` below back to
+    // `[shopCategories.length]` so the async-rendered shop cards get observed.
+  }, []);
 
   // Handle hash-based scrolling when navigating from other pages
   useEffect(() => {
@@ -56,14 +61,15 @@ const LandingPage: React.FC = () => {
     }
   }, [location]);
 
-  // Load shop categories so the About page can host the centralized
-  // shop + category descriptions (keeps individual shop pages compact).
-  useEffect(() => {
-    api
-      .get<ProductCategory[]>('/api/shop/categories')
-      .then((cats) => setShopCategories(cats.filter((c) => c.isActive).slice(0, 6)))
-      .catch(() => setShopCategories([]));
-  }, []);
+  // TODO(shop): uncomment to load shop categories on the home page.
+  // Original note: "Load shop categories so the About page can host the
+  // centralized shop + category descriptions (keeps individual shop pages compact)."
+  // useEffect(() => {
+  //   api
+  //     .get<ProductCategory[]>('/api/shop/categories')
+  //     .then((cats) => setShopCategories(cats.filter((c) => c.isActive).slice(0, 6)))
+  //     .catch(() => setShopCategories([]));
+  // }, []);
 
   const handleBookClass = () => {
     navigate('/classes');
@@ -73,9 +79,10 @@ const LandingPage: React.FC = () => {
     navigate('/packages');
   };
 
-  const handleVisitShop = () => {
-    navigate('/shop');
-  };
+  // TODO(shop): uncomment to re-enable the "Visit the Shop" handler.
+  // const handleVisitShop = () => {
+  //   navigate('/shop');
+  // };
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -168,7 +175,8 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ---------- AURA SHOP ---------- */}
+      {/* ---------- AURA SHOP (COMMENTED OUT — re-enable with storefront) ---------- */}
+      {/*
       <section className="lp-shop" id="shop">
         <p className="lp-eyebrow" style={{ fontWeight: 700 }}>The AURA Shop</p>
         <div className="lp-divider" />
@@ -215,6 +223,7 @@ const LandingPage: React.FC = () => {
           </div>
         )}
       </section>
+      */}
 
       {/* ---------- APPROACH ---------- */}
       <section className="lp-approach" id="approach">

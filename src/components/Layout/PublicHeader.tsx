@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { useShopCart } from '../../contexts/ShopCartContext';
 import ThemeToggle from '../ThemeToggle';
-import { ShoppingBagIcon } from '@heroicons/react/24/outline';
+// TODO(shop): uncomment to re-enable shop cart in the header.
+// import { useShopCart } from '../../contexts/ShopCartContext';
+// import { ShoppingBagIcon } from '@heroicons/react/24/outline';
 import './PublicHeader.css';
 
 const PublicHeader: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
-  const { totalItems, openCart } = useShopCart();
+  // TODO(shop): uncomment to re-enable shop cart in the header.
+  // const { totalItems, openCart } = useShopCart();
   const isAdmin = user?.role === 'ADMIN';
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -36,10 +38,10 @@ const PublicHeader: React.FC = () => {
     navigate('/packages');
   };
 
-  const handleShop = () => {
-    closeMenu();
-    navigate('/shop');
-  };
+  // const handleShop = () => {
+  //   closeMenu();
+  //   navigate('/shop');
+  // };
 
   const handleContact = () => {
     closeMenu();
@@ -143,7 +145,7 @@ const PublicHeader: React.FC = () => {
         <button onClick={() => handleNav('top')}>Home</button>
         <button onClick={handleClasses}>Classes</button>
         <button onClick={handlePackages}>Packages</button>
-        <button onClick={handleShop}>Shop</button>
+        {/* <button onClick={handleShop}>Shop</button> */}
         <button onClick={() => handleNav('approach')}>About</button>
         <button onClick={handleContact}>Contact</button>
         {user ? (
@@ -181,12 +183,13 @@ const PublicHeader: React.FC = () => {
           <button onClick={() => handleNav('top')}>Home</button>
           <button onClick={handleClasses}>Classes</button>
           <button onClick={handlePackages}>Packages</button>
-          <button onClick={handleShop}>Shop</button>
+          {/* <button onClick={handleShop}>Shop</button> */}
           <button onClick={() => handleNav('approach')}>About</button>
           <button onClick={handleContact}>Contact</button>
         </nav>
         <div className="ph-desktop-actions">
           <ThemeToggle className="hidden md:inline-flex" />
+          {/* TODO(shop): cart button — uncomment to re-enable.
           <button onClick={openCart} className="ph-cart-btn inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-[var(--state-hover)] transition-colors" aria-label="Cart" style={{ position: 'relative' }}>
             <ShoppingBagIcon className="w-5 h-5" />
             {totalItems > 0 && (
@@ -199,6 +202,7 @@ const PublicHeader: React.FC = () => {
               }}>{totalItems}</span>
             )}
           </button>
+          */}
           {user ? (
             <div className="ph-user-dropdown" ref={userMenuRef}>
               <button
