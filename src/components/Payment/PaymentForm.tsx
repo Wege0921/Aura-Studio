@@ -14,7 +14,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   onSuccess 
 }) => {
   const [formData, setFormData] = useState({
-    paymentMethod: 'BANK_TRANSFER' as 'BANK_TRANSFER' | 'MOBILE_MONEY' | 'CASH',
+    paymentMethod: 'BANK_TRANSFER' as 'BANK_TRANSFER' | 'MOBILE_MONEY',
     receipt: null as File | null,
   });
   const [loading, setLoading] = useState(false);
@@ -24,7 +24,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   const paymentMethods = [
     { value: 'BANK_TRANSFER', label: 'Bank Transfer', description: 'Transfer to our bank account' },
     { value: 'MOBILE_MONEY', label: 'Mobile Money', description: 'Telebirr, M-Pesa, or other mobile money' },
-    { value: 'CASH', label: 'Cash Payment', description: 'Pay in person at the studio' },
   ];
 
   const bankDetails = {
@@ -69,7 +68,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.receipt && formData.paymentMethod !== 'CASH') {
+    if (!formData.receipt) {
       setError('Please upload your payment receipt');
       return;
     }
@@ -212,22 +211,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           </div>
         )}
 
-        {/* Cash Payment Info */}
-        {formData.paymentMethod === 'CASH' && (
-          <div className="bg-warning-bg border border-warning-border rounded-md p-4">
-            <h4 className="font-medium text-warning mb-2">Cash Payment</h4>
-            <p className="text-sm text-warning">
-              Please visit our studio to make the cash payment. Our staff will verify your payment and activate your package immediately.
-            </p>
-            <div className="mt-2 text-sm text-warning">
-              <p><strong>Address:</strong> Bole, Addis Ababa</p>
-              <p><strong>Hours:</strong> Mon-Sat 6AM-8PM, Sun 7AM-12PM</p>
-            </div>
-          </div>
-        )}
-
         {/* Receipt Upload */}
-        {formData.paymentMethod !== 'CASH' && (
+        {(
           <div>
             <label className="block text-sm font-medium text-content-secondary mb-2">
               Payment Receipt *
@@ -273,7 +258,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={loading || (formData.paymentMethod !== 'CASH' && !formData.receipt)}
+          disabled={loading || !formData.receipt}
           className="w-full bg-accent-600 text-content-on-accent py-2 px-4 rounded-md hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? 'Submitting...' : 'Submit Payment'}

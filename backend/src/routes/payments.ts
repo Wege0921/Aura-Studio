@@ -39,7 +39,7 @@ const upload = multer({
 // Create a payment record
 router.post('/', authenticateToken, upload.single('receipt'), [
   body('amount').isFloat({ min: 0 }).withMessage('Amount must be positive'),
-  body('paymentMethod').isIn(['BANK_TRANSFER', 'MOBILE_MONEY', 'CASH']).withMessage('Invalid payment method'),
+  body('paymentMethod').isIn(['BANK_TRANSFER', 'MOBILE_MONEY']).withMessage('Invalid payment method'),
   body('packageId').optional().notEmpty().withMessage('Package ID is required for package payments'),
 ], async (req: AuthenticatedRequest, res: Response) => {
   try {

@@ -40,7 +40,7 @@ const upload = multer({
 // Create a booking with payment screenshot or package session
 router.post('/', authenticateToken, upload.single('paymentReceipt'), [
   body('classId').notEmpty().withMessage('Class ID is required'),
-  body('paymentMethod').isIn(['BANK_TRANSFER', 'MOBILE_MONEY', 'CASH', 'PACKAGE_SESSION']).withMessage('Invalid payment method'),
+  body('paymentMethod').isIn(['BANK_TRANSFER', 'MOBILE_MONEY', 'PACKAGE_SESSION']).withMessage('Invalid payment method'),
 ], async (req: AuthenticatedRequest, res: Response) => {
   try {
     const errors = validationResult(req);
@@ -133,8 +133,7 @@ router.post('/', authenticateToken, upload.single('paymentReceipt'), [
       bookingData.paidAt = new Date();
       bookingData.userPackageId = userPackageId;
     } else {
-      // Validate payment receipt requirement for non-cash payments
-      if (paymentMethod !== 'CASH' && !paymentReceiptFile) {
+      if (!paymentReceiptFile) {
         return res.status(400).json({ error: 'Payment receipt is required for bank transfer and mobile money payments' });
       }
 
@@ -173,7 +172,7 @@ router.post('/', authenticateToken, upload.single('paymentReceipt'), [
     });
 
     // Send Telegram notification to admin
-    if (!useSession && paymentMethod !== 'CASH' && booking.paymentReceiptUrl) {
+    if (!useSession && booking.paymentReceiptUrl) {
       try {
         await telegramService.sendPaymentNotification({
           userName: booking.user.name || 'Unknown User',
@@ -201,25 +200,10 @@ router.post('/', authenticateToken, upload.single('paymentReceipt'), [
       } catch (telegramError) {
         console.error('Telegram notification failed:', telegramError);
       }
-    } else if (paymentMethod === 'CASH') {
-      try {
-        await telegramService.sendBookingConfirmationNotification({
-          userName: booking.user.name || 'Unknown User',
-          userEmail: booking.user.email,
-          className: booking.class.name,
-          classDate: new Date(booking.class.date).toLocaleDateString(),
-          classTime: booking.class.time,
-          paymentStatus: 'PENDING',
-        });
-      } catch (telegramError) {
-        console.error('Telegram notification failed:', telegramError);
-      }
     }
 
     const message = useSession
       ? `Booking successful! Session deducted from ${booking.userPackage?.package?.name || 'your package'}.`
-      : paymentMethod === 'CASH'
-      ? 'Booking successful! Please pay at the studio to complete your booking.'
       : 'Booking successful! Payment receipt sent to admin for verification.';
 
     res.status(201).json({

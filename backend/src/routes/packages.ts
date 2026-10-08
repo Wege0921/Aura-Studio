@@ -80,7 +80,7 @@ router.get('/my-packages', authenticateToken, async (req: AuthenticatedRequest, 
 // Purchase a package — creates a PENDING payment; admin must verify to activate
 router.post('/purchase', authenticateToken, upload.single('paymentReceipt'), [
   body('packageId').notEmpty().withMessage('Package ID is required'),
-  body('paymentMethod').isIn(['BANK_TRANSFER', 'MOBILE_MONEY', 'CASH']).withMessage('Invalid payment method'),
+  body('paymentMethod').isIn(['BANK_TRANSFER', 'MOBILE_MONEY']).withMessage('Invalid payment method'),
 ], async (req: AuthenticatedRequest, res: Response) => {
   try {
     const errors = validationResult(req);
@@ -105,8 +105,7 @@ router.post('/purchase', authenticateToken, upload.single('paymentReceipt'), [
       return res.status(400).json({ error: 'Package is not available' });
     }
 
-    // Validate payment receipt requirement for non-cash payments
-    if (paymentMethod !== 'CASH' && !paymentReceiptFile) {
+    if (!paymentReceiptFile) {
       return res.status(400).json({ error: 'Payment receipt is required for bank transfer and mobile money payments' });
     }
 
@@ -147,7 +146,7 @@ router.post('/purchase', authenticateToken, upload.single('paymentReceipt'), [
 
     // Send Telegram notification to admin
     try {
-      if (paymentMethod !== 'CASH' && receiptUrl) {
+      if (receiptUrl) {
         await telegramService.sendPackagePurchaseNotification({
           userName: payment.user.name || 'Unknown User',
           userEmail: payment.user.email,

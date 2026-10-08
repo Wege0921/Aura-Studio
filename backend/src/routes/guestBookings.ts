@@ -47,7 +47,7 @@ const upload = multer({
 // Create a booking as a guest (no authentication required)
 router.post('/guest', guestBookingLimiter, upload.single('paymentReceipt'), [
   body('classId').notEmpty().withMessage('Class ID is required'),
-  body('paymentMethod').isIn(['BANK_TRANSFER', 'MOBILE_MONEY', 'CASH']).withMessage('Invalid payment method'),
+  body('paymentMethod').isIn(['BANK_TRANSFER', 'MOBILE_MONEY']).withMessage('Invalid payment method'),
 ], async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
@@ -134,7 +134,7 @@ router.post('/guest', guestBookingLimiter, upload.single('paymentReceipt'), [
           className: booking.class.name,
           classDate: new Date(booking.class.date).toLocaleDateString(),
           classTime: booking.class.time,
-          paymentMethod: paymentMethod || 'CASH',
+          paymentMethod: paymentMethod,
           amount: booking.paymentAmount || 0,
           receiptUrl,
         });
@@ -149,9 +149,7 @@ router.post('/guest', guestBookingLimiter, upload.single('paymentReceipt'), [
       }
     }
 
-    const message = paymentMethod === 'CASH'
-      ? 'Booking successful! Please pay at the studio to complete your booking.'
-      : 'Booking successful! Payment receipt sent to admin for verification.';
+    const message = 'Booking successful! Payment receipt sent to admin for verification.';
 
     res.status(201).json({
       message,
