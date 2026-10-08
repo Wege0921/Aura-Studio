@@ -25,14 +25,13 @@ const GuestBookingModal: React.FC<GuestBookingModalProps> = ({
   loading = false,
   bookingReference = null,
 }) => {
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('CASH');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('BANK_TRANSFER');
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [uploadError, setUploadError] = useState<string>('');
 
   if (!isOpen || !classInfo) return null;
 
   const paymentMethods = [
-    { value: 'CASH', label: 'Cash Payment', description: 'Pay in person at the studio' },
     { value: 'BANK_TRANSFER', label: 'Bank Transfer', description: 'Transfer to our bank account' },
     { value: 'MOBILE_MONEY', label: 'Mobile Money', description: 'Telebirr or other mobile money' },
   ];
@@ -169,15 +168,8 @@ const GuestBookingModal: React.FC<GuestBookingModalProps> = ({
               </div>
             )}
 
-            {selectedPaymentMethod === 'CASH' && (
-              <div className="mt-3 bg-warning-bg border border-warning-border rounded-md p-3">
-                <p className="text-xs font-medium text-warning mb-1">Cash Payment</p>
-                <p className="text-xs text-warning/80">Please visit our studio to make the cash payment.</p>
-              </div>
-            )}
-
-            {/* Receipt Upload for Non-Cash Payments */}
-            {selectedPaymentMethod !== 'CASH' && (
+            {/* Receipt Upload */}
+            {(
               <div className="mt-4">
                 <label className="block text-sm font-medium text-content mb-2">
                   Payment Receipt *
@@ -231,7 +223,7 @@ const GuestBookingModal: React.FC<GuestBookingModalProps> = ({
             </button>
             <button
               onClick={() => onConfirm(selectedPaymentMethod, receiptFile || undefined)}
-              disabled={loading || (selectedPaymentMethod !== 'CASH' && !receiptFile)}
+              disabled={loading || !receiptFile}
               className="px-4 py-2 bg-canvas text-content-emphasis rounded-md hover:bg-[var(--state-hover)] focus:outline-none focus:ring-2 focus:ring-edge disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Booking...' : 'Confirm Booking'}

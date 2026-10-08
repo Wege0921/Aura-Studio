@@ -33,7 +33,6 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
   const paymentMethods = [
     { value: 'BANK_TRANSFER', label: 'Bank Transfer', description: 'Transfer to our bank account' },
     { value: 'MOBILE_MONEY', label: 'Mobile Money', description: 'Telebirr, M-Pesa, or other mobile money' },
-    { value: 'CASH', label: 'Cash Payment', description: 'Pay in person at the studio' },
   ];
 
   const bankDetails = {
@@ -63,7 +62,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
   };
 
   const handleConfirm = () => {
-    if (selectedPaymentMethod !== 'CASH' && !receiptFile) {
+    if (!receiptFile) {
       setUploadError('Payment receipt is required for bank transfer and mobile money payments');
       return;
     }
@@ -145,14 +144,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
               </div>
             )}
 
-            {selectedPaymentMethod === 'CASH' && (
-              <div className="mt-3 bg-warning-bg border border-warning-border rounded-md p-3">
-                <p className="text-xs font-medium text-warning mb-1">Cash Payment</p>
-                <p className="text-xs text-warning/80">Please visit our studio to make the cash payment.</p>
-              </div>
-            )}
-
-            {selectedPaymentMethod !== 'CASH' && (
+            {(
               <div className="mt-4">
                 <label className="block text-sm font-medium text-content mb-2">
                   Payment Receipt *
@@ -204,7 +196,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
             </button>
             <button
               onClick={handleConfirm}
-              disabled={loading || (selectedPaymentMethod !== 'CASH' && !receiptFile)}
+              disabled={loading || !receiptFile}
               className="px-4 py-2 bg-canvas text-content-emphasis rounded-md hover:bg-surface-sunken focus:outline-none focus:ring-2 focus:ring-edge disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Processing...' : 'Confirm Purchase'}
